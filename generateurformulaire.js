@@ -1309,7 +1309,7 @@ var generateCode=function (codeType) {
 		'  <meta http-equiv="X-UA-Compatible" content="ie=edge" />',
 		'  <title>' + POSTformTitle + '</title>',
 		'',
-		'  <link rel="stylesheet" href="https://forumeiros.github.io/assets/src/form-generator/form-styles.css" />',
+		'  <link rel="stylesheet" href="https://bipofa.github.io/Forumactif/form-styles.css" />',
 		'</head>',
 		'<body>',
 		'',
@@ -1334,7 +1334,7 @@ var generateCode=function (codeType) {
 		'  <input type="hidden" id="fa-generated-title" value="' + POSTtopicTitle + '" />',
 		'',
 		'  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>',
-		'  <script src="https://forumeiros.github.io/assets/src/form-generator/form-replace.js" type="text/javascript"></script>',
+		'  <script src="https://bipofa.github.io/Forumactif/form-fields-generator.js" type="text/javascript"></script>',
 		'  <script type="text/javascript">',
 		'    (function ($) {',
 		'    	\'use strict\';',
@@ -1398,7 +1398,7 @@ var generateCode=function (codeType) {
 		'  <meta http-equiv="X-UA-Compatible" content="ie=edge" />',
 		'  <title>' + REPLYformTitle + '</title>',
 		'',
-		'  <link rel="stylesheet" href="https://forumeiros.github.io/assets/src/form-generator/form-styles.css" />',
+		'  <link rel="stylesheet" href="https://bipofa.github.io/Forumactif/form-styles.css" />',
 		'</head>',
 		'<body>',
 		'',
@@ -1422,7 +1422,7 @@ var generateCode=function (codeType) {
 		'  <textarea style="display: none;" id="fa-generated-message">' + REPLYtopicMessage + '</textarea>',
 		'',
 		'  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>',
-		'  <script src="https://forumeiros.github.io/assets/src/form-generator/form-replace.js" type="text/javascript"></script>',
+		'  <script src="https://bipofa.github.io/Forumactif/form-fields-generator.js" type="text/javascript"></script>',
 		'  <script type="text/javascript">',
 		'    (function ($) {',
 		'    	\'use strict\';',
@@ -1523,7 +1523,7 @@ target: function(trigger) {
 }
 });
 
-console.info('Scripts requeridos carregados com sucesso!\n[ @version 1.2 ]');
+console.info('Les scripts ont été chargés avec succès !\n[ @version 1.2 ]');
 });
 }
 
