@@ -17,7 +17,7 @@
 
 (function ($) {
 	'use strict';
-
+	
 	/**
 * Variables globales du script :
 */
@@ -33,12 +33,12 @@
 			var $table =$('.presets-table table');
 
 			/**
- * Cria o modal e o overlay (para gerar um novo campo):
- * @role Criação de HTML.
+ * Création du modal et de l'overlay (pour générer un nouveau champ) :
+ * @role Création du HTML.
  */
 			function addField () {
 				/**
-   * HTML do modal de criação do novo campo:
+   * HTML du modal et création d'un nouveau champ :
    */
 				$addField =$([ '<div class="modal-wrap">',
 					'  <div class="modal add-field">',
@@ -96,13 +96,13 @@
 					].join('\n')) .appendTo('body');
 
 				/**
-   * Trigger para fechar o modal ao clicar no overlay ou no link de fechar:
+   * Trigger pour fermer le modal lors du clic sur l'overlay ou du lien "fermer" :
    * @role Trigger.
    */
 				$addField .find('.modal-overlay, .close-modal') .on('click', closeModal);
 
 				/**
-   * Criação de cada tipo de input, com base no seu tipo:
+   * Création du choix du type de champ :
    * @role Trigger
    */
 				$addField .find('#radio-select-input-type') .on('submit', function (event) {
@@ -114,8 +114,8 @@
 			}
 
 			/**
- * Função para editar um campo,
- * tanto como posição, quanto como seus atributos.
+ * Fonction pour éditer un champ,
+ * a la fois sa position et ses attributs.
  */
 			function editField () {
 				var $this =$('#edit-field');
@@ -146,7 +146,7 @@
 				$zone .find('.fa-form-group') .append('<i class="fa fa-pencil-square input-edit-trigger"></i>');
 
 				/**
-   * Trigger para abrir o modal de edição:
+   * Trigger pour ouvrir le modal d'édition :
    * @role Trigger
    */
 				$zone .find('.input-edit-trigger') .on('click', function () {
@@ -190,7 +190,7 @@
 							'          <input id="edit-input-placeholder" value="' + placeholder + '" />',
 							'        </div>',
 							'        <div class="form-group required-check">',
-							'          <label for="is-required-modal">Required ?</label>',
+							'          <label for="is-required-modal">Requis ?</label>',
 							'          ' + requiredCheckbox,
 							'          <label for="is-required-modal" class="pseudo-checkbox-edition"></label>',
 							'        </div>',
@@ -233,7 +233,7 @@
 								'          <input id="edit-input-placeholder" value="' + placeholder + '" />',
 								'        </div>',
 								'        <div class="form-group">',
-								'          <label for="edit-input-max">Valeur maximal :</label>',
+								'          <label for="edit-input-max">Valeur maximale :</label>',
 								'          <input type="text" id="edit-input-max" value="' + maxLgt + '" />',
 								'        </div>',
 								'        <div class="form-group">',
@@ -241,7 +241,7 @@
 								'          <input type="text" id="edit-input-min" value="' + minLgt + '" />',
 								'        </div>',
 								'        <div class="form-group required-check">',
-								'          <label for="is-required-modal">Required ?</label>',
+								'          <label for="is-required-modal">Requis ?</label>',
 								'          ' + requiredCheckbox,
 								'          <label for="is-required-modal" class="pseudo-checkbox-edition"></label>',
 								'        </div>',
@@ -318,7 +318,7 @@
 								'          <textarea id="edit-vals-select" class="fa-valores" required></textarea>',
 								'        </div>',
 								'        <div class="form-group required-check">',
-								'          <label for="is-required-modal">Required ?</label>',
+								'          <label for="is-required-modal">Requis ?</label>',
 								'          ' + requiredCheckbox,
 								'          <label for="is-required-modal" class="pseudo-checkbox-edition"></label>',
 								'        </div>',
@@ -398,7 +398,7 @@
 							});
 
 						/**
-		 * Trigger para fechar o modal ao clicar no overlay ou no link de fechar:
+		 * Trigger pour fermer le modal après un clic sur l'overlay ou sur le lien "fermer" :
 		 * @role Trigger.
 		 */
 						$editField .find('.modal-overlay, .close-modal') .on('click', closeModal);
@@ -406,8 +406,8 @@
 					});
 
 				/**
-   * Criação dos botões de edição
-   * para subir ou descer um grupo de input.
+   * Création du bouton d'édition
+   * pour monter ou descendre un groupe d'input.
    */
 				var $group =$zone.find('.fa-form-group');
 
@@ -420,7 +420,7 @@
 					});
 
 				/**
-   * Trigger dos botões para subir ou descer um grupo de input.
+   * Trigger des boutons pour monter ou descendre un groupe d'input.
    */
 				$zone .find('.fa-move-to-top') .on('click', function () {
 
@@ -470,7 +470,7 @@
 		}
 
 		/**
- * Função para remover um grupo de input.
+ * Fonction pour supprimer un groupe d'input.
  */
 		function removeField () {
 			var $this =$('#remove-field');
@@ -505,7 +505,7 @@
 		}
 
 		/**
- * Trigger para criar, editar ou remover um grupo de input.
+ * Trigger pour créer, éditer et supprimer un champ.
  * @role Trigger.
  */
 		$('#add-field').on('click', addField);
@@ -526,7 +526,7 @@
 			$addField .find('h3') .text('Paramétrage du champ');
 
 			/**
-   * Criação dum input tipo texto:
+   * Criação d'un input type texte :
    */
 			if (type==='text') {
 				$addField .find('.modal') .append([ '<p class="part-obs">Vous avez choisi un champ texte, c\'est-à-dire qui peut contenir tout type de texte.</p>',
@@ -546,7 +546,7 @@
 					'      <input type="text" id="input-placeholder" value="" />',
 					'    </div>',
 					'    <div class="form-group">',
-					'      <label for="input-required">Required ?</label>',
+					'      <label for="input-required">Requis ?</label>',
 					'      <input type="checkbox" id="input-required" value="required" checked />',
 					'      <label for="input-required" class="pseudo-checkbox"></label>',
 					'    </div>',
@@ -559,7 +559,7 @@
 					].join('\n'));
 
 				/**
-	 * Input tipo texto:
+	 * Input type texte :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -589,7 +589,7 @@
 			}
 
 			/**
-   * Textarea:
+   * Textarea :
    */
 			if (type==='textarea') {
 				$addField .find('.modal') .append([ '<p class="part-obs">Vous avez choisi une zone de texte, c\'est-à-dire qui peut contenir tout type de texte.</p>',
@@ -609,7 +609,7 @@
 					'      <input type="text" id="input-placeholder" value="" />',
 					'    </div>',
 					'    <div class="form-group">',
-					'      <label for="input-required">Required ?</label>',
+					'      <label for="input-required">Requis ?</label>',
 					'      <input type="checkbox" id="input-required" value="required" checked />',
 					'      <label for="input-required" class="pseudo-checkbox"></label>',
 					'    </div>',
@@ -622,7 +622,7 @@
 					].join('\n'));
 
 				/**
-	 * Criação do input criado:
+	 * Création de l'input créé :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -652,7 +652,7 @@
 			}
 
 			/**
-   * Input de tipo data:
+   * Input de type date :
    */
 			if (type==='date') {
 				$addField .find('.modal') .append([ '<p class="part-obs">Vous avez choisi une date, c\'est-à-dire qui peut contenir seulement une date.</p>',
@@ -668,7 +668,7 @@
 					'      <input type="text" id="input-label" value="" required />',
 					'    </div>',
 					'    <div class="form-group">',
-					'      <label for="input-required">Required ?</label>',
+					'      <label for="input-required">Requis ?</label>',
 					'      <input type="checkbox" id="input-required" value="required" checked />',
 					'      <label for="input-required" class="pseudo-checkbox"></label>',
 					'    </div>',
@@ -681,7 +681,7 @@
 					].join('\n'));
 
 				/**
-	 * Criação do input criado:
+	 * Création de l'input créé :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -710,7 +710,7 @@
 			}
 
 			/**
-   * Input de tipo cor:
+   * Input de type couleur :
    */
 			if (type==='color') {
 				$addField .find('.modal') .append([ '<p class="part-obs">Vous avez choisi un champ de couleur, c\'est-à-dire qui peut contenir qu\'une couleur</p>',
@@ -734,7 +734,7 @@
 					].join('\n'));
 
 				/**
-	 * Criação do input criado:
+	 * Création de l'input créé :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -758,7 +758,7 @@
 			}
 
 			/**
-   * Criação dum input tipo número:
+   * Création d'un input pour renseigner un nombre :
    */
 			if (type==='number') {
 				$addField .find('.modal') .append([ '<p class="part-obs">Vous avez choisi un champ nombre, c\'est-à-dire qui peut contenir que des nombres.</p>',
@@ -778,15 +778,15 @@
 					'      <input type="text" id="input-placeholder" value="" />',
 					'    </div>',
 					'    <div class="form-group">',
-					'      <label for="input-max">Valeur maximum :</label>',
+					'      <label for="input-max">Valeur maximale :</label>',
 					'      <input type="text" id="input-max" value="20" />',
 					'    </div>',
 					'    <div class="form-group">',
-					'      <label for="input-min">Valeur minimum</label>',
+					'      <label for="input-min">Valeur minimale</label>',
 					'      <input type="text" id="input-min" value="1" />',
 					'    </div>',
 					'    <div class="form-group">',
-					'      <label for="input-required">Required ?</label>',
+					'      <label for="input-required">Requis ?</label>',
 					'      <input type="checkbox" id="input-required" value="required" checked />',
 					'      <label for="input-required" class="pseudo-checkbox"></label>',
 					'    </div>',
@@ -799,7 +799,7 @@
 					].join('\n'));
 
 				/**
-	 * Input tipo texto:
+	 * Création du champ créé :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -831,7 +831,7 @@
 			}
 
 			/**
-   * Criação dum input tipo select (único):
+   * Création de l'input d'un choix unique :
    */
 			if (type==='selectU') {
 				$addField .find('.modal') .append([ '<p class="part-obs">Vous avez choisi un champ "choix unique", c\'est-à-dire qu\'un seul choix pourra être sélectionné parmi une liste prédéfinie.</p>',
@@ -851,7 +851,7 @@
 					'      <textarea id="input-vals" class="fa-valores" required></textarea>',
 					'    </div>',
 					'    <div class="form-group">',
-					'      <label for="input-required">Required ?</label>',
+					'      <label for="input-required">Requis ?</label>',
 					'      <input type="checkbox" id="input-required" value="required" checked />',
 					'      <label for="input-required" class="pseudo-checkbox"></label>',
 					'    </div>',
@@ -864,7 +864,7 @@
 					].join('\n'));
 
 				/**
-	 * Input tipo texto:
+	 * Création du champ créé :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -912,7 +912,7 @@
 			}
 
 			/**
-   * Criação dum input tipo select (múltiplo):
+   * Création de l'input choix multiple :
    */
 			if (type==='selectM') {
 				$addField .find('.modal') .append([ '<p class="part-obs">Vous avez choisi un champ "choix multiple", c\'est-à-dire que plusieurs choix pourront être sélectionnés parmi une liste prédéfinie.</p>',
@@ -932,7 +932,7 @@
 					'      <textarea id="input-vals" required></textarea>',
 					'    </div>',
 					'    <div class="form-group">',
-					'      <label for="input-required">Required ?</label>',
+					'      <label for="input-required">Requis ?</label>',
 					'      <input type="checkbox" id="input-required" value="required" checked />',
 					'      <label for="input-required" class="pseudo-checkbox"></label>',
 					'    </div>',
@@ -945,7 +945,7 @@
 					].join('\n'));
 
 				/**
-	 * Input tipo texto:
+	 * ICréation du champ créé :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -993,7 +993,7 @@
 			}
 
 			/**
-   * Criação dum subtítulo
+   * Création d'un titre de section
    */
 			if (type==='subtitle') {
 
@@ -1016,7 +1016,7 @@
 					].join('\n'));
 
 				/**
-	 * Input tipo texto:
+	 * Création du champ créé :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -1038,7 +1038,7 @@
 			}
 
 			/**
-   * Criação dum parágrafo explicativo.
+   * Création d'un paragraphe explicatif :
    */
 			if (type==='exp-paragraph') {
 
@@ -1061,7 +1061,7 @@
 					].join('\n'));
 
 				/**
-	 * Input tipo texto:
+	 * Création du champ créé :
 	 */
 				$addField .find('.configure-input') .on('submit', function (event) {
 						event.preventDefault();
@@ -1083,7 +1083,7 @@
 			}
 
 			/**
-   * Trigger dotão para voltar à seleção do tipo do input:
+   * Trigger du bouton pour revenir à la section des inputs :
    * @role Trigger.
    */
 			$addField .find('.reset-create-field') .on('click', function () {
@@ -1099,8 +1099,7 @@
 		;
 
 		/**
- * Função para remover qualquer modal aberto
- * na página. Basta chamar:
+ * Fonction pour supprimer tout modal ouvert sur une page. Il suffit d'appeler la fonction suivante :
  * closeModal();
  */
 		function closeModal () {
@@ -1109,8 +1108,7 @@
 		}
 
 		/**
- * Função para identificar quando um editor
- * está ativado:
+ * Fonction pour identifier si l'éditeur est activé :
  */
 		$('#edit-field, #remove-field').on('click', function () {
 
@@ -1125,16 +1123,16 @@
 			});
 
 		/**
- *! END PARTE 1 !
+ *! FIN PARTE 1 !
  */
 
 		/**
-  *! BEGIN PARTE 2 !
+  *! DEBUT PARTE 2 !
   *
   */
 
 		/**
- * Navegação via menu:
+ * Manu de navigation :
  */
 		$('#step-1').on('click', function () {
 				$('.global-part-2, .global-part-3').slideUp();
@@ -1147,7 +1145,7 @@
 			});
 
 		/**
- * Back Btns:
+ * Boutons retour / suivant :
  */
 		$('.global-part-2 .back-part-btn').on('click', function () {
 				$('.global-part-2, .global-part-3').slideUp();
@@ -1160,8 +1158,8 @@
 			});
 
 		/**
- * Adicionar/remover o cursor not-allowed,
- * no menu ou no botão, caso necessário:
+ * Actionner / retirer not-allowed,
+ * dans le menu ou sur le bouton (ci nécessaire):
  */
 		$('#create-text-btn, #step-2').on({
 			mouseenter: function () {
@@ -1181,7 +1179,7 @@
 		});
 
 	/**
- * Botão da parte 1 que leva à 2:
+ * Bouon PARTIE 1 menant à PARTIE 2 :
  */
 	$('#create-text-btn, #step-2, #back-to-2').on('click', function () {
 			if ($('.entry-prev').find('.fa-form-group input, .fa-form-group select, .fa-form-group textarea').length===0) {
@@ -1202,7 +1200,7 @@
 		});
 
 	/**
- * Gerar a tabela dos {{campos}}:
+ * Fénérer la table des {{fields}}:
  */
 	function generateTable () {
 
@@ -1225,15 +1223,14 @@
 			});
 
 		/**
-   * Arrumar a parte 2.
+   * Arrangement de l'affichage PARTIE 2.
    */
 		var presetesTableHeight=$('.presets-table').height() - 1;
 		$('.config-form').css('min-height', presetesTableHeight + 'px');
 	}
 
 	/**
- * Saber qual será o destino do formulário que
- * está sendo gerado.
+ * Savoir quelle sera la destination du formulaire et s'il est en cours de génération :
  */
 	var $formFunction =$('#form-function');
 
@@ -1271,9 +1268,9 @@
 	});
 
 /**
- * Parte 03:
- * Função para gerar o código:
- * topiccode, postcode
+ * PARTIE 3:
+ * Fonction pour générer le code :
+ * Copier / coller 
  */
 
 var $install =$('.install-wrapper');
@@ -1369,7 +1366,7 @@ var generateCode=function (codeType) {
 		$('#generated-code-zone pre').text(POSTgeneratedCode);
 	}
 
-	// End topiccode
+	// fin
 
 	if (codeType==='postcode') {
 		$install.find('h2.part-title span.html-form-type').text('Répondre au sujet');
@@ -1456,7 +1453,7 @@ var generateCode=function (codeType) {
 		$('#generated-code-zone pre').text(REPLYgeneratedCode);
 	}
 
-	// End postcode
+	// fin coller
 
 	function registerForm(type, title) {
 		var MAPPINGS= {
@@ -1493,7 +1490,7 @@ var generateCode=function (codeType) {
 	}
 
 	/**
-   * Gerar o código novamente caso saia da parte 3:
+   * Générer le code à nouveau si la personne quitte la partie 3 (retour):
    */
 	$('#back-to-2, #step-1, #step-2').on('click', function () {
 			$install.find('h3 span.form-type').text('');
@@ -1503,7 +1500,7 @@ var generateCode=function (codeType) {
 ;
 
 /**
- * Copy Btn.
+ * Bouton copie.
  */
 $('<a>', {
 	class: 'fa fa-clipboard',
