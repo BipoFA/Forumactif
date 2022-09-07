@@ -1,0 +1,553 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    font-family: sans-serif;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 17px;
+    background: #fff;
+    line-height: 1.5;
+    color: #262626;
+}
+
+/*
+* Basic Config:
+*/
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+a,
+a:link,
+a:visited,
+a:active {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+input,
+select,
+textarea {
+    color: #444;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 3px;
+    outline: 0 !important;
+}
+
+select:hover,
+select:active,
+select:focus,
+input:hover,
+input:active,
+input:focus,
+textarea:hover,
+textarea:focus,
+textarea:active {
+    border-color: #39c;
+    outline: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font {
+    font-family: "Trebuchet MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* Header */
+
+header.page-header {
+    background: #FA464B;
+    /*border-bottom: 1px solid #ccc;*/
+    padding: 40px 120px;
+}
+
+header.page-header a.logo {
+    color: #FFF;
+    text-transform: uppercase;
+    /*background: url(https://i.imgur.com/xPZysoy.png) no-repeat 0 0;*/
+    padding: 10px 0px 10px 70px;
+    text-decoration: none;
+    font-size: 40px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+header.page-header a.logo:hover {
+    border: none;
+}
+
+.musique {
+    float: right;
+}
+
+header.page-header .musique {
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+    vertical-align: middle;
+    background: no-repeat 50% 50% #bbb;
+    background-color: #333;
+    border-radius: 3px;
+    display: inline-block;
+    height: 32px;
+    width: 32px;
+    margin: 3px;
+    -webkit-transition: 300ms;
+    -moz-transition: 300ms;
+    -o-transition: 300ms;
+    -ms-transition: 300ms;
+    transition: 300ms;
+}
+
+header.page-header .musique:hover {
+    background-color: #E52C27;
+}
+
+header.page-header .musique i {
+    line-height: 34px;
+}
+
+/*
+* Parts
+*/
+
+h1,
+h2,
+h3 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+h2,
+.h2 {
+    font-size: 26px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    text-transform: uppercase;
+}
+
+.title {
+    text-align: center;
+    color: white;
+}
+
+.info-text a {
+    background-color: #c8f398;
+    border-radius: 3px;
+    color: #219613;
+    display: inline-block;
+    padding: 3px 8px;
+    text-decoration: none !important;
+}
+
+.global-wrap-event {
+    background: #FA464B;
+    display: none;
+    color: #FFF;
+    text-decoration: none;
+    font-size: 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-bottom: 40px;
+}
+
+.global-wrap-event-explain {
+    background: #84c754;
+    display: none;
+    color: #FFF;
+    text-decoration: none;
+    font-size: 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin-top: -20px;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-top: 10px;
+}
+
+.global-wrap-warning {
+    background-color: white;
+    display: none;
+    margin-top: -16px;
+}
+
+.global-wrap-jeu {
+    background-color: white;
+    display: none;
+    margin-top: -25px;
+    padding-left: 6%;
+    padding-right: 6%;
+    padding-bottom: 30px;
+}
+
+.global-wrap-button {
+    background: #FA464B;
+    color: #FFF;
+    display: none;
+    height: 105px !important;
+    padding-top: 20px;
+}
+
+.global-wrap-warning2 {
+    background: #FA464B;
+    display: none;
+    color: #FFF;
+    text-decoration: none;
+    font-size: 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 65px !important;
+}
+
+.info-text.align-center {
+    margin-bottom: 0px;
+    text-align: center;
+}
+
+.info-text p {
+    font-size: 16px;
+    color: white;
+    font-family: Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+}
+
+.btn {
+    background-color: white;
+    border: none;
+    color: #e9553c;
+    cursor: pointer;
+    display: inline-block;
+    text-transform: uppercase;
+    font-size: 18px;
+    padding: 15px 20px;
+    outline: none;
+    position: relative;
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover,
+.btn:focus {
+    background-color: #ecb520;
+    color: white;
+    text-decoration: none;
+}
+
+/* form elements */
+
+.dataform {
+    color: #FFF;
+    background: #FA464B;
+    border-radius: 3px;
+}
+
+.dataform .help-text {
+    font-style: italic;
+    margin: 5px 0;
+}
+
+.dataform a {
+    color: #219613;
+    text-decoration: underline;
+}
+
+.dataform h2 {
+    font-size: 18px;
+    text-transform: uppercase;
+    border-bottom: 2px solid;
+    padding-bottom: 10px;
+    text-align: left;
+}
+
+.dataform .group {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.dataform label {
+    font-size: 16px;
+    margin-bottom: 5px;
+    width: 100%;
+    float: left;
+    cursor: pointer;
+    text-align: left;
+}
+
+.dataform select,
+.inputbox,
+.dataform textarea {
+    color: #555;
+    font-size: 14px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    border: 1px solid #FFF;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    padding: 18px;
+    width: 100%;
+}
+
+.inputbox:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+    color: #999
+}
+
+.dataform textarea {
+    height: 250px
+}
+
+.dataform .box .inputbox {
+    width: 70%
+}
+
+.dataform select {
+    width: 90%
+}
+
+.dataform .box select {
+    width: 80%
+}
+
+.dataform .box {
+    width: 50%;
+    position: relative;
+}
+
+.dataform .left {
+    float: left
+}
+
+.dataform .right {
+    float: right
+}
+
+.offset {
+    padding: 10px 20px;
+    margin: 25px auto;
+    width: 60%;
+}
+
+/*
+* Footer:
+* Thanks to Ange Tuteur.
+*/
+
+#footer {
+    color: #AAA;
+    background: #333;
+    padding: 0 0 60px;
+    font-size: 14px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#footer .content {
+    padding: 0 15px;
+    margin: 0 auto;
+    width: 80%;
+}
+
+#footer .footer-link {
+    padding-top: 20px;
+    text-align: center;
+}
+
+#footer hr {
+    border: none;
+    border-top: 2px solid #FFF;
+    margin: 40px auto 0;
+    width: 100px;
+}
+
+#footer span {
+    color: #FFF;
+    margin: 10px;
+    display: inline-block;
+}
+
+#footer strong.h3 {
+    font-size: 17px;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 60px;
+    margin-bottom: 25px;
+}
+
+#footer .bloc a {
+    color: #AAA;
+}
+
+#footer .bloc a:hover {
+    color: #DDD;
+    border-bottom: none;
+}
+
+#footer .bloc div {
+    margin-bottom: 10px;
+}
+
+#footer .bloc i {
+    width: 20px;
+    text-align: center;
+}
+
+#footer .bloc {
+    float: left;
+    width: 25%;
+}
+
+/*
+* Responsive:
+*/
+
+@media (max-width: 650px) {
+    #footer .bloc {
+        float: none;
+        width: 100%;
+        text-align: center;
+    }
+
+    header.page-header {
+        padding: 40px 30px;
+    }
+
+    header.page-header a.logo {
+        font-size: 28px;
+        padding-left: 70px;
+    }
+
+    header.page-header .social {
+        display: none;
+    }
+
+    .modal {
+        width: 97%;
+        top: 5px;
+        max-height: 98vh;
+        overflow: auto;
+    }
+}
+
+/* CSS Grille mots croisés */
+table.crossword-grid {
+    margin: 0 auto;
+    border-spacing: 1px;
+    border-collapse: separate;
+}
+
+.crossword-row {
+    clear: left;
+}
+
+.grid-square {
+    position: relative;
+    background-clip: padding-box;
+    width: 50px;
+    max-width: 50px;
+}
+
+.grid-square::after {
+    content: '';
+    display: block;
+    margin-top: 100%;
+}
+
+.grid-square.active {
+    border: 1px solid #e9553c;
+}
+
+.char {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 1.2em;
+    font-size: calc(8px + .5vw);
+    font-weight: 600;
+    border: 0;
+    padding: 0;
+    text-transform: uppercase;
+    border-radius: 0;
+    background-color: #f8f9fa;
+    color: #e9553c;
+    border: none;
+    margin: 0;
+}
+
+.lm {
+    background-color: #ecb520;
+    color: #e9553c;
+}
+
+.num {
+    color: #2e3133;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: left;
+    font-size: .6em;
+    line-height: 1em;
+    pointer-events: none;
+    font-weight: 700;
+    padding-left: 2px;
+    padding-top: 2px;
+}
+
+table.crossword-list {
+    margin: 0 auto;
+    border-spacing: 1px;
+    border-collapse: separate;
+}
+
+.list-title {
+    color: #555;
+    text-transform: uppercase;
+    font-size: 24px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    height: 70px;
+}
+
+.list-num {
+    color: #555;
+    font-size: 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    width: 2%;
+}
+
+.list-def {
+    color: #555;
+    font-size: 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-align: left;
+    width: 50%;
+}
