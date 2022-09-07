@@ -1,5 +1,7 @@
 $(function() {
     $.getScript("https://illiweb.com/rs3/10/frm/snow.js");
+});
+$(function() {
     $('.musique').click(function() {
         if($('.footer_musique iframe').length) {
              $('.footer_musique iframe').remove();
