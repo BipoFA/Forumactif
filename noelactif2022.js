@@ -1,36 +1,44 @@
 $(function() {
     $.getScript("https://illiweb.com/rs3/10/frm/snow.js");
 });
+
 $(function() {
     $('.musique').click(function() {
-        if($('.footer_musique iframe').length) {
+        if(!$('.footer_musique iframe').length) {
             $('.footer_musique').html('<iframe width="0" height="0" src="https://www.youtube.com/embed/R1gskElaLNo?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>');
-             $('header.page-header .musique span.volume').html('<i class="fa fa-volume-off"></i>')
-          } 
-          else {
+            $('header.page-header .musique span.volume').html('<i class="fa fa-volume-off"></i>')
+        } 
+        else {
             $('.footer_musique iframe').remove();
             $('header.page-header .musique span.volume').html('<i class="fa fa-volume-up"></i>')
-          }
-      });
-      $.get('/profile?mode=editprofile', function(d) {
-          var name = $('.inputbox[name="username"]', d)
-          if(!name.length)
-          {
-              $('div#warning').css("display","block");
-              $('div#jeu').css("display","none");
-              $('div#button').css("display","none");
-          }
-      });
-      $.get('/privmsg?folder=outbox', function(d) {
-      var anim = $('.pmlist span em a[href^="/u"]', d)
-      if(anim == "Lutins")
-      {
-              $('div#jeu').css("display","none");
-              $('div#button').css("display","none");
-              $('div#warning2').css("display","block");
-          }    
+        }
+    });
+});
+
+$(function() {   
+    $.get('/profile?mode=editprofile', function(d) {
+        var name = $('.inputbox[name="username"]', d)
+        if(!name.length)
+        {
+            $('div#warning').css("display","block");
+            $('div#jeu').css("display","none");
+            $('div#button').css("display","none");
+        }
+    });
+});
+
+$(function() { 
+    $.get('/privmsg?folder=outbox', function(d) {
+        var anim = $('.pmlist span em a[href^="/u"]', d)
+        if(anim == "Lutins")
+        {
+            $('div#jeu').css("display","none");
+            $('div#button').css("display","none");
+            $('div#warning2').css("display","block");
+        }    
       });
   });
+
   $(function() {
           'use strict';
           $(window).on('load', function () {
