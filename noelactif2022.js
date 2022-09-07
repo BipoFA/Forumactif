@@ -6,13 +6,13 @@ $(function() {
 // Gestion de la musique
 $(function() {
     $('.musique').click(function() {
-        if($('.footer_musique iframe').length) {
-            $('.footer_musique iframe').remove();
-            $('header.page-header .musique span.volume').html('<i class="fa fa-volume-up"></i>')
-        } 
-        else {
+        if(!$('.footer_musique iframe').length) {
             $('.footer_musique').html('<iframe width="0" height="0" src="https://www.youtube.com/embed/R1gskElaLNo?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>');
             $('header.page-header .musique span.volume').html('<i class="fa fa-volume-off"></i>')
+        } 
+        else if ($('.footer_musique iframe').length) {
+            $('.footer_musique iframe').remove();
+            $('header.page-header .musique span.volume').html('<i class="fa fa-volume-up"></i>')
         }
     });
 });
