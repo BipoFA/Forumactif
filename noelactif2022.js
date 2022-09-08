@@ -20,9 +20,9 @@ $(function() {
 // Gestion de la connexion du membre
 $(function() {   
     $.get('/profile?mode=editprofile', function(d) {
-        var name = $('.inputbox[name="username"]', d)
-        console.log(name);
-        if(!name.length)
+        var url = $('#profile_field_3_-10', d)
+        console.log(url);
+        if(!url.length)
         {
             $('div#warning').css("display","block");
             $('div#jeu').css("display","none");
