@@ -34,7 +34,7 @@ $(function() {
 $(function() { 
     $.get('/privmsg?folder=outbox', function(d) {
         var anim = $('.pmlist span em a[href^="/u"]', d)
-        if(anim == "Lutins")
+        if(anim.length == "Lutins")
         {
             $('div#jeu').css("display","none");
             $('div#button').css("display","none");
