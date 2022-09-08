@@ -33,7 +33,7 @@ $(function() {
 // Gestion de la participation du membre
 $(function() { 
     $.get('/privmsg?folder=outbox', function(d) {
-        var anim = $('.pmlist span em a[href^="/u"]', d)
+        var anim = $('.pmlist span em', d)
         console.log(anim);
         if(anim.length == "Lutins")
         {
