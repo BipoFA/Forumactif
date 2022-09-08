@@ -21,6 +21,7 @@ $(function() {
 $(function() {   
     $.get('/profile?mode=editprofile', function(d) {
         var name = $('.inputbox[name="username"]', d)
+        console.log(name);
         if(!name.length)
         {
             $('div#warning').css("display","block");
@@ -33,7 +34,7 @@ $(function() {
 // Gestion de la participation du membre
 $(function() { 
     $.get('/privmsg?folder=outbox', function(d) {
-        var anim = $('.pmlist span em', d)
+        var anim = $('.pmlist span em a[href^="/u"]', d)
         console.log(anim);
         if(anim.length == "Lutins")
         {
