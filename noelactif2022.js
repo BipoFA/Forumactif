@@ -34,9 +34,7 @@ $(function() {
 // Gestion de la participation du membre
 $(function() { 
     $.get('/privmsg?folder=outbox', function(d) {
-        var mps = $('.pmlist span em a[href^="/u"]', d).filter(function(mpsnumb){
-            return mpsnumb === "Lutins";
-        }).closest('dt').wrapInner('<li/>').find('li').length;
+        var mps = $('.pmlist span em a[href="/u177295"]', d).length;
         console.log(mps);
         if(mps >= 1)
         {
