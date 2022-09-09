@@ -38,7 +38,7 @@ $(function() {
             return mpsnumb === "Lutins";
         }).closest('dt').wrapInner('<li/>').find('li').length;
         console.log(mps);
-        if(mps)
+        if(mps >= 1)
         {
             $('div#jeu').css("display","none");
             $('div#button').css("display","none");
