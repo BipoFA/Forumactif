@@ -44,7 +44,6 @@ $(function() {
             $('div#warning2').css("display","block");
         }    
       });
-      console.log(mps)
   });
 
 // Gestion de l'envoi de la participation
