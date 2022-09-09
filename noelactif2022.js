@@ -35,7 +35,7 @@ $(function() {
 $(function() { 
     $.get('/privmsg?folder=outbox', function(d) {
         var mps = $('.pmlist span em a[href^="/u"]', d).filter(function(){
-            return mps.length == "Lutins";
+            return mps == "Lutins";
         });
         if(mps.length > 1)
         {
