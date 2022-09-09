@@ -37,7 +37,7 @@ $(function() {
         var mps = $('.pmlist span em a[href^="/u"]', d).filter(function(mpsnumb){
             return mpsnumb === "Lutins";
         }).length;
-        if(mps > 1)
+        if(mps >= 1)
         {
             $('div#jeu').css("display","none");
             $('div#button').css("display","none");
