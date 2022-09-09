@@ -21,7 +21,6 @@ $(function() {
 $(function() {   
     $.get('/profile?mode=editprofile', function(d) {
         var url = $('#profile_field_3_-10', d)
-        console.log(url);
         if(!url.length)
         {
             $('div#warning').css("display","block");
@@ -35,15 +34,17 @@ $(function() {
 // Gestion de la participation du membre
 $(function() { 
     $.get('/privmsg?folder=outbox', function(d) {
-        var anim = $('.pmlist span em a[href^="/u"]', d)
-        console.log(anim);
-        if(anim.length == "Lutins")
+        var mps = $('.pmlist span em a[href^="/u"]', d).filter(function(){
+            return mps.length == "Lutins";
+        });
+        if(mps.length > 1)
         {
             $('div#jeu').css("display","none");
             $('div#button').css("display","none");
             $('div#warning2').css("display","block");
         }    
       });
+      console.log(mps)
   });
 
 // Gestion de l'envoi de la participation
