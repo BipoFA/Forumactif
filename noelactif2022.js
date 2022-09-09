@@ -27,6 +27,7 @@ $(function() {
             $('div#warning').css("display","block");
             $('div#jeu').css("display","none");
             $('div#button').css("display","none");
+            $('div#warning2').css("display","none");
         }
     });
 });
