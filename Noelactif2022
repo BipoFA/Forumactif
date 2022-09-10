@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <title>Forumactif fête Noël (Noëlactif 2022)</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="cleartype" content="on" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="shortcut icon" href="https://i.imgur.com/NArRdII.png" />
+        <meta name="twitter:site" content="@Forumactif_fr"/>
+        <meta name="twitter:title" content="Concours de Noël de Forumactif" />
+        <meta name="twitter:description" content="Forumactif fête Noël ! Venez célébrer Noël sur Forumactif et tentez de remporter des crédits et des badges !" />
+        <meta name="twitter:image" content="https://i.imgur.com/Y3HAczE.png" />
+        <meta property="og:title" content="Concours de Noël de Forumactif" />
+        <meta property="og:type" content="article" />
+        <meta property="og:image" content="https://i.imgur.com/Y3HAczE.png" />
+        <meta property="og:description" content="Forumactif fête Noël ! Venez célébrer Noël sur Forumactif et tentez de remporter des crédits et des badges !" />
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i,700,700i" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css" />
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="https://bipofa.github.io/Forumactif/noelactif2022.css" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://bipofa.github.io/Forumactif/noelactif2022.js"></script>
+</head>
+<body>
+    <header class="page-header clearfix">
+        <a href="/" class="logo">&#127876;<strong style="color:#84c754;">Forum</strong>actif fête Noël !</a>
+        <div class="musique">
+            <span class="volume">
+                <i class="fa fa-volume-up"></i>
+            </span>
+        </div>
+    </header>
+    <!-- page-header -->
+    <div class="global-wrap-event info-text align-center" style="display: block;">
+        <p class="info-text">
+            L'évènement "Forumactif fête Noël" commence le <strong>vendredi 16 décembre 2022 à 17h30</strong> <em>(heure de Paris)</em><br /> et se termine le <strong>dimanche 25 décembre 2022 à 23h59</strong> <em>(heure de Paris)</em>.
+        </p>
+        <br />
+        <iframe src="https://www.develforumactif.com/h14-" height="300px" width="60%" frameborder="0" scrolling="no"></iframe>
+    </div>
+    <div class="global-wrap-event-explain info-text" style="display: block;">
+        <h2 class="title">Conditions pour participer à l'évènement</h2>
+        <p class="info-text">
+            <i class="fa fa-chevron-circle-right"></i> Être inscrit(e) sur le <a target="_blank" href="https://forum.forumactif.com">Forum des Forums</a>.
+            <br />
+            <i class="fa fa-chevron-circle-right"></i> Posséder un forum Forumactif dont l'adresse est correctement renseignée dans votre <a target="_blank" href="https://forum.forumactif.com/profile?mode=editprofile">profil</a> sur le Forum des Forums. 
+        </p>
+        <h2 class="title">Règles du jeu</h2>
+        <p class="info-text">
+            <i class="fa fa-chevron-circle-right"></i> Chaque participant(e) doit trouver, au mieux, <strong>dix mots</strong> pour que sa participation soit acceptée.
+            <br />
+            <i class="fa fa-chevron-circle-right"></i> Chaque participant(e) ne pourra envoyer qu'une seule participation aux lutins.
+         <br />
+            <i class="fa fa-chevron-circle-right"></i> Chaque participant(e) s'interdit de publier les réponses sur le Forum des Forums afin de ne pas nuire à l'expérience des autres joueurs(euses).
+        </p>
+        <h2 class="title">Gains</h2>
+        <p class="info-text">
+            <i class="fa fa-chevron-circle-right"></i> Pour percevoir un gain en crédits, il faut impérativement que les participant(e)s trouvent les seize mots. Les gains seront attribués comme suit :
+            <br />
+            <br />
+            <i class="fa fa-trophy"></i> 1<sup>re</sup> : 1 200 crédits pour votre forum et un badge en or "Concours Noëlactif 2022" sur votre profil.        
+            <br />
+            <i class="fa fa-trophy"></i> 2<sup>e</sup> : 1 000 crédits pour votre forum et un badge en argent "Concours Noëlactif 2022" sur votre profil.        
+            <br />
+            <i class="fa fa-trophy"></i> 3<sup>e</sup> : 800 crédits pour votre forum et un badge en bronze "Concours Noëlactif 2022" sur votre profil.
+            <br />
+            <br />
+            <i class="fa fa-chevron-circle-right"></i> <strong>A noter que si plus de trois membres ont trouvé les seize mots, les trois places seront tirées au sort parmi ces derniers.</strong>
+            <br />
+            <br />
+            <i class="fa fa-chevron-circle-right"></i> Pour les autres participant(e)s : un badge "Concours Noëlactif 2022" sur votre profil, que vous ayez trouvé les seize mots ou au moins dix.
+            <br />
+            <br />
+        </p>
+    </div>
+    <!-- LOG IN FORM FOR GUESTS -->
+    <div id="warning" class="global-wrap-warning info-text align-center" style="display:none;">
+        <div class="errorconnect direct-chat-danger offset">
+            <div class="direct-chat-msg right">
+                <img class="direct-chat-img" src="https://2img.net/u/2913/10/00/00/avatars/6249-67.png" alt="message user image" />
+                <div class="direct-chat-text">
+                    <em>Ho ho ho !</em> Pour participer à cette activité, tu dois être connecté(e) sur le Forum des Forums !<br /> Si tu possèdes un compte, <strong>connecte-toi</strong> vite ! Sinon, tu peux <strong>créer un compte</strong> et rejoindre notre communauté !   
+                </div>
+            </div>
+        </div>
+        <form class="dataLogin" name="form_login" method="post" action="/login">
+            <div class="dataform offset">
+                <fieldset>
+                    <h2><i class="fa fa-sign-in"></i> Connexion</h2>
+                    <div class="group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input id="username" class="inputbox" name="username" type="text" placeholder="Nom d'utilisateur" />
+                    </div>
+                    <div class="group">
+                        <label for="password">Mot de passe</label>
+                        <input id="password" class="inputbox" name="password" type="password" placeholder="Mot de passe" />
+                        <p class="help-text" style="margin-top:-15px;margin-bottom:15px;"><a href="/profile?mode=sendpassword">J'ai oublié mon mot de passe</a> &bull; <a href="/register">Je n'ai pas encore de compte</a></p>
+                    </div>
+                    <div class="center"><input class="btn" type="submit" value="Connexion" name="login"/></div>
+                </fieldset>
+            </div>
+            <input type="hidden" value="/h13-" name="redirect"/>
+        </form>
+    </div>
+    <form id="generated-form">
+        <div id="jeu" class="global-wrap-jeu info-text align-center" style="display: block;">
+    <table class="crossword-grid">
+        <tbody>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data1" type="text" class="char" maxlength="1" /><span class="num">1</span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data2" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data3" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data4" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data5" type="text" class="char lm" maxlength="1" /><span class="num">2</span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data6" type="text" class="char lm" maxlength="1" /><span class="num">3</span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data7" type="text" class="char" maxlength="1" /><span class="num">4</span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data8" type="text" class="char" maxlength="1" /><span class="num">5</span></td>
+                <td class="grid-square active"><input id="data9" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data10" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data11" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data12" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data13" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data14" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data15" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data16" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data17" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data18" type="text" class="char" maxlength="1" /><span class="num">7</span></td>
+                <td class="grid-square active"><input id="data19" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data20" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data21" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data22" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data23" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data24" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data25" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data26" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data27" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data28" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data29" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data30" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data31" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data32" type="text" class="char" maxlength="1" /><span class="num">8</span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data33" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data34" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data35" type="text" class="char" maxlength="1" /><span class="num">9</span></td>
+                <td class="grid-square active"><input id="data36" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data37" type="text" class="char" maxlength="1" /><span class="num">10</span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data38" type="text" class="char" maxlength="1" /><span class="num">11</span></td>
+                <td class="grid-square active"><input id="data39" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data40" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data41" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data42" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data43" type="text" class="char" maxlength="1" /><span class="num">12</span></td>
+                <td class="grid-square active"><input id="data44" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data45" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data46" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data47" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data48" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data49" type="text" class="char" maxlength="1" /><span class="num">13</span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data50" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data51" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data52" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data53" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data54" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data55" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data56" type="text" class="char" maxlength="1" /><span class="num">14</span></td>
+                <td class="grid-square active"><input id="data57" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data58" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data59" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data60" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data61" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data62" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data63" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data64" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data65" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data66" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data67" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data68" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data69" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data70" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data71" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data72" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data73" type="text" class="char" maxlength="1" /><span class="num">15</span></td>
+                <td class="grid-square active"><input id="data74" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data75" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data76" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data77" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data78" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data79" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data80" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data81" type="text" class="char" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>
+            <tr class="crossword-row">
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square active"><input id="data82" type="text" class="char lm" maxlength="1" /><span class="num">Bonus</span></td>
+                <td class="grid-square active"><input id="data83" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data84" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data85" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data86" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data87" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data88" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data89" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square active"><input id="data90" type="text" class="char lm" maxlength="1" /><span class="num"></span></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+                <td class="grid-square"></td>
+            </tr>            
+        </tbody>
+    </table>
+    <br />
+    </div>
+    <div id="jeu" class="global-wrap-jeu info-text" style="display: block;">
+    <table class="table.crossword-list">
+        <tbody>
+            <thead>
+                <tr>
+                    <th class="list-title" colspan="2">Horizontal</th>
+                    <th class="list-title"colspan="2">Vertical</th>
+                </tr>
+            </thead>
+            <tr>
+                <td class="list-num">5.</td>
+                <td class="list-def">Astuce consistant à créer une page HTML pour faciliter la publication des messages.</td>
+                <td class="list-num">1.</td>
+                <td class="list-def">Nom de la mascotte de Forumactif, partie à la retraite en 2014.</td>
+            </tr>
+            <tr>
+                <td class="list-num">7.</td>
+                <td class="list-def">Texte qui se trouve, généralement, en-dessous du pseudo d'un membre.</td>
+                <td class="list-num">2.</td>
+                <td class="list-def">Terme anglais d'une action avertissant un membre qu'on le cite dans un sujet.</td>
+            </tr>
+            <tr>
+                <td class="list-num">9.</td>
+                <td class="list-def">Option de modération pour identifier les doubles comptes.</td>
+                <td class="list-num">3.</td>
+                <td class="list-def">Monnaies virtuelles sur Forumactif.</td>
+            </tr>
+            <tr>
+                <td class="list-num">11.</td>
+                <td class="list-def">Espace privé pour un (ou plusieurs) groupe(s) sur la ChatBox.</td>
+                <td class="list-num">4.</td>
+                <td class="list-def">Options payantes permettant d'obtenir des fonctionnalités supplémentaires.</td>
+            </tr>
+            <tr>
+                <td class="list-num">12.</td>
+                <td class="list-def">Terme anglais désignant des outils permettant d'afficher des informations comme des news, un agenda, sondage...</td>
+                <td class="list-num">5.</td>
+                <td class="list-def">Terme anglais désignant le comportement d'un membre à poster plusieurs messages en quelques secondes.</td>
+            </tr>
+            <tr>
+                <td class="list-num">14.</td>
+                <td class="list-def">Message personnalisé en-dessous d'un message publié.</td>
+                <td class="list-num">8.</td>
+                <td class="list-def">Terme anglais désignant une récompense attribuée, manuellement ou automatiquement à un membre.</td>
+            </tr>
+            <tr>
+                <td class="list-num">15.</td>
+                <td class="list-def">Option permettant de modifier la structure de votre forum, accessible uniquement aux fondateurs.</td>
+                <td class="list-num">10.</td>
+                <td class="list-def">Outil permettant de contacter les administrateurs et / ou modérateurs par message privé ou email.</td>
+            </tr>
+            <tr>
+                <td class="list-num"></td>
+                <td class="list-def"></td>
+                <td class="list-num">13.</td>
+                <td class="list-def">Outils permettant d'améliorer le référencement d'un forum.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div id="button" class="global-wrap-button info-text align-center" style="display:block;">   
+        <input class="btn" type="submit" name="post" value="Envoyer mes mots croisés aux lutins !" />
+</div>
+</form>
+<div id="warning2" class="global-wrap-warning2 info-text align-center" style="display:none;">   
+    <p class="info-text">
+        Votre participation a été envoyée aux Lutins ! Merci de votre aide et passez de joyeuses fêtes de fin d'année sur Forumactif ! 
+    </p>
+</div>
+  <!-- BEGIN Footer -->
+  <div id="footer">
+    <div class="content">
+      <div>&nbsp;</div>
+      <div class="bloc">
+        <strong class="h3">FORUMACTIF</strong>
+        <div><a href="https://forum.forumactif.com/">Retour sur le support de Forumactif</a></div>
+        <div><a href="https://forum.forumactif.com/t114086-l-equipe-forumactif-staff" target="_blank">Staff du forum</a></div>
+        <div><a href="https://www.forumactif.com/litigation" target="_blank">Déclarer un litige</a></div>
+        <div><a href="https://www.forumactif.com/outils" target="_blank">Outils des fondateurs</a></div>     
+      </div>
+
+      <div class="bloc">
+        <strong class="h3">Services</strong>
+        <div><a href="https://fr.hitskin.com/" target="_blank">Thèmes de forum gratuits</a></div>
+        <div><a href="https://forum.forumactif.com/f53-service-de-creation-graphique" target="_blank">Service de Création Graphique</a></div>
+        <div><a href="https://www.annuairedeforums.com/" target="_blank">Annuaire des forums</a></div>
+      </div>
+
+      <div class="bloc">
+        <strong class="h3">SUIVEZ-NOUS</strong>
+        <div><a href="https://www.facebook.com/forumactif" target="_blank"><i class="fa fa-facebook"></i> Facebook</a></div>
+        <div><a href="https://twitter.com/forumactif" target="_blank"><i class="fa fa-twitter"></i> Twitter</a></div>
+        <div><a href="https://www.youtube.com/user/TVForumActif/?sub_confirmation=1" target="_blank"><i class="fa fa-youtube-play"></i> Youtube</a></div>
+      </div>
+
+      <div class="bloc">
+        <strong class="h3">INFORMATION SUPPLÉMENTAIRE</strong>
+        <div><a href="https://forum.forumactif.com/latest" target="_blank">Dernières discussions</a></div>
+        <div><a href="https://forum.forumactif.com/t78679-" target="_blank">Questions fréquentes</a></div>
+        <div><a href="https://forum.forumactif.com/t94973-" target="_blank">Trucs et astuces</a></div>
+        <div class="lffg-contact-info">
+          <p></p>
+        </div>
+      </div>
+
+      <div style="clear:both"></div>
+      <hr />
+      <div class="footer-link">
+        <div><a href="https://www.forumactif.com/creer-un-forum/modernbb" target="_blank"><span>Créer un forum</span></a></div>
+        <div></div>
+        <div><a href="https://www.forumactif.com/" target="_blank"><span>© <script>document.write(new Date().getFullYear());</script>, forumactif.com</span></a></div>
+      </div>
+    </div>
+  </div>
+  <!-- Gestion de la musique (Youtube) -->
+  <div class="footer_musique" style="display: none;"></div>
+  <!-- .footer -->
+</body>
+</html>
