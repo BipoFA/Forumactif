@@ -556,9 +556,9 @@ table.crossword-list {
 /* Patch boulet */
 
 #data5 {
-    background-color: #f8f9fa; 
+    background-color: #f8f9fa!important; 
 }  
 
 #data8 { 
-    background-color: #ecb520; 
+    background-color: #ecb520!important; 
 }
