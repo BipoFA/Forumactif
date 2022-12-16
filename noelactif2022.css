@@ -552,3 +552,13 @@ table.crossword-list {
     text-align: left;
     width: 50%;
 }
+
+/* Patch boulet */
+
+#data5 {
+    background-color: #f8f9fa; 
+}  
+
+#data8 { 
+    background-color: #ecb520; 
+}
