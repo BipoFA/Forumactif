@@ -80,7 +80,7 @@
 [td][center][b][color=#68b800][/color][/b][/center][/td]
 [td][center][b][color=#68b800][/color][/b][/center][/td]
 [td][center][b][color=#68b800][/color][/b][/center][/td]
-[td][center][b][color=#68b800][/color][/b][/center][/td]
+[td][/td]
 [td][/td]
 [/tr]
 [tr]
