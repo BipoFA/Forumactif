@@ -881,11 +881,11 @@
 [size=11][color=#369fcf]. . . . .[/color]Des guides sont à votre disposition pour aborder convenablement la programmation et le codage basique.[/size][/td][/tr][/table]
 
 [list][table class="tag"][tr][td]Guides[/td][/tr][/table][/list]
-[list][*][url=https://forum.forumactif.com/t378848-]Ajouter un forum à l'écran d'accueil de son iPhone, iPad[/url] ;
-[*][url=https://forum.forumactif.com/t177550-]Faire une capture d'écran [i](screenshot)[/i][/url] ;
+[list][*][url=https://forum.forumactif.com/t177550-]Faire une capture d'écran [i](screenshot)[/i][/url] ;
 [*][url=https://forum.forumactif.com/t255189-]Héberger une musique sur Archive-Host et intégrer un lecteur[/url] ;
 [*][url=https://forum.forumactif.com/t313408-]Installer de la musique sur son forum avec Deezer[/url] ;
 [*][url=https://forum.forumactif.com/t350419-]Modifications de template (PhpBB2 et PunBB) - Compatibilité W3C[/url] ;
+[*][url=https://forum.forumactif.com/t376158-]Modifier la couleur d'un texte ou d'un élément[/url] ;
 [*][url=https://forum.forumactif.com/t373690-]Module agenda avancé Allgenda[/url] ;
 [*][url=https://forum.forumactif.com/t274033-]Les principaux identifiants CSS (phpBB2 & phpBB3)[/url] ;
 [*][url=https://forum.forumactif.com/t232307-]Les principaux identifiants CSS (Invision)[/url] 
