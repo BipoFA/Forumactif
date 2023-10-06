@@ -224,7 +224,7 @@
 [td][/td]
 [/tr]
 [tr]
-[td] [url=https://forum.forumactif.com/t398141-]Convertir les liens Youtube et Dailymotion en vidéos dans les sujets[/url][/td]
+[td] [url=https://forum.forumactif.com/t398141-]Convertir les liens YouTube, Dailymotion ou TikTok en vidéos dans les sujets[/url][/td]
 [td][center][b][color=#68b800][/color][/b][/center][/td]
 [td][center][b][color=#68b800][/color][/b][/center][/td]
 [td][center][b][color=#68b800][/color][/b][/center][/td]
