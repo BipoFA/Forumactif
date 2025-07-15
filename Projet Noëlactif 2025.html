@@ -1,0 +1,1343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" id="min-width" lang="fr" xml:lang="fr" xmlns:og="http://opengraphprotocol.org/schema/">
+    <head>
+        <title>Forumactif fête Noël (Noëlactif 2025)</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="cleartype" content="on" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="shortcut icon" href="https://i.imgur.com/NArRdII.png" />
+        <meta name="twitter:site" content="@Forumactif_fr"/>
+        <meta name="twitter:title" content="Concours de Noël de Forumactif" />
+        <meta name="twitter:description" content="Forumactif fête Noël ! Venez célébrer Noël sur Forumactif et tentez de remporter des crédits et des badges !" />
+        <meta name="twitter:image" content="https://i.imgur.com/Y3HAczE.png" />
+        <meta property="og:title" content="Concours de Noël de Forumactif" />
+        <meta property="og:type" content="article" />
+        <meta property="og:image" content="https://i.imgur.com/Y3HAczE.png" />
+        <meta property="og:description" content="Forumactif fête Noël ! Venez célébrer Noël sur Forumactif et tentez de remporter des crédits et des badges !" />
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i,700,700i" rel="stylesheet" />
+        <!-- Permet de gérer l'affichage de la ShootBox de l'atelier du Père Noël -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css" />
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: sans-serif;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 17px;
+            background: #AA2C17;
+            line-height: 1.5;
+            color: #262626;
+        }
+
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /*
+        * Basic Config:
+        */
+
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        a,
+        a:link,
+        a:visited,
+        a:active {
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        input,
+        select,
+        textarea {
+            color: #622417;
+            background: #FBD79D;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 3px;
+            outline: 0 !important;
+        }
+
+        select:hover,
+        select:active,
+        select:focus,
+        input:hover,
+        input:active,
+        input:focus,
+        textarea:hover,
+        textarea:focus,
+        textarea:active {
+            border-color: #662517;
+            outline: 0;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .font {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+
+        h2{
+            text-transform: uppercase;
+        }
+
+        p a {
+            color: #F7DBA4;
+            font-weight: bold;
+            text-decoration: none !important;
+        }
+
+        p a:hover {
+            color: #AB2E1A;
+            font-weight: bold;
+            text-decoration: none !important;
+        }
+
+        /* Header */
+
+        header.page-header {
+            color: #F7DBA4;
+            background: #AD3019;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 40px;
+            vertical-align: middle;
+            /*border-bottom: 1px solid #ccc;*/
+            text-transform: uppercase;
+            padding: 10px 0px 10px 70px;
+            text-decoration: none;
+            font-size: 40px;
+            padding: 40px 120px;
+        }
+
+        header.page-header a.logo {
+            padding: 10px 0px 10px 70px;
+        }
+
+        header.page-header a.logo:hover {
+            border: none;
+        }
+
+        .musique {
+            float: right;
+        }
+
+        header.page-header .musique {
+            color: #F7DBA4;
+            font-size: 18px;
+            text-align: center;
+            vertical-align: middle;
+            background: no-repeat 50% 50% #bbb;
+            background-color: #333;
+            border-radius: 3px;
+            display: inline-block;
+            height: 32px;
+            width: 32px;
+            margin: 3px;
+            -webkit-transition: 300ms;
+            -moz-transition: 300ms;
+            -o-transition: 300ms;
+            -ms-transition: 300ms;
+            transition: 300ms;
+        }
+
+        header.page-header .musique:hover {
+            background-color: #17482A;
+        }
+
+        header.page-header .musique i {
+            line-height: 34px;
+        }
+
+        /*
+        * Title_tools
+        */
+
+        .form-title_event {
+            background: #17482A;
+            padding: 20px 125px;
+
+        }
+
+        span.title_event {
+            color: #FBD79D;
+            display: block;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+
+        /*
+        * Connexion non connecté
+        */
+
+        .global-wrap-warning {
+            background-color: #174629;
+            display: none;
+        }
+
+        .info-text, .align-center {
+            margin-bottom: 0px;
+            text-align: center;
+        }
+
+        .info-text p {
+            
+            font-size: 16px;
+            color: #FBD79D;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+
+        p.help-text a{
+            color:#FBD79D;
+        }
+
+        .button-connexion {
+            background-color:#DF9F3F;
+            border: none;
+            color: #AC2E1A;
+            cursor: pointer;
+            display: inline-block;
+            text-transform: uppercase;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 18px;
+            padding: 10px 10px;
+            outline: none;
+            position: relative;
+            -webkit-transition: all 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .button-connexion:hover {
+            background-color:#507F41;
+            color: #DF9F3F;
+        }
+
+        /*
+        Atelier du PN
+        */
+        .card {
+            background-color: #FCE1AC;
+        }
+
+        .card-danger:not(.card-outline)>.card-header {
+            background-color: #632318;
+        }
+
+        .card-title {
+            color: #FCE1AC;
+        }
+
+        .direct-chat-timestamp {
+            color: #9D4D21;
+        }
+
+        .direct-chat-danger .right>.direct-chat-text {
+            background-color: #AA2C17;
+            border-color: #AA2C17;
+            color: #FBD79D;
+        }
+
+        .direct-chat-danger .right>.direct-chat-text::after, .direct-chat-danger .right>.direct-chat-text::before {
+            border-left-color: #AA2C17;
+        }
+
+        .direct-chat-text {
+            background-color: #508242;
+            border: 1px solid #508242;
+            color: #FBD79D;
+        }
+
+        .direct-chat-text::after, .direct-chat-text::before {
+            border-right-color: #508242;
+        }
+
+        /*
+        * Parties
+        */
+
+        .global-wrap {
+            display: none;
+        }
+
+        .part-history {
+            display: block;
+            position: relative;
+            width: 60%;
+            margin: 45px auto 0px auto;
+            border-radius: 3px;
+            padding: 10px 20px;
+            color: #FBD79D;
+        }
+
+        .part-event {
+            background-color: #164629;
+            display: block;
+            position: relative;
+            width: 60%;
+            margin: 45px auto 0px auto;
+            border-radius: 3px;
+            padding: 10px 20px;
+            color: #FBD79D;
+        }
+
+        .part-participation {
+            background-color: #164629;
+            display: block;
+            position: relative;
+            width: 60%;
+            margin: 45px auto 0px auto;
+            border-radius: 3px;
+            padding: 10px 20px;
+            color: #FBD79D;
+        }
+        .collapsible{
+            background-color: #4A7C3C!important;
+            cursor: pointer!important;
+        }
+
+        .info-text-event{
+            margin-top: 13px;
+        }
+
+        .info-text-event a {
+            color: #FBD79D;
+            text-decoration: none !important;
+        }
+
+        .enigme {
+            background-color: #164629;
+            border: 1px solid #4A7C3C;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        label:not(.form-check-label):not(.custom-file-label) {
+         font-weight: 400;
+        }
+
+        .verif-conditions-ok, .verif-conditions-nook  {
+            background-color: #AA2C17!important;
+            border-radius: 3px;
+            color: #FBD79D;
+            display: inline-block;
+            padding: 8px 16px 1px 16px;
+            text-decoration: none !important;
+            width: 100%;
+        }
+
+        .verif-conditions-nook a {
+            background-color:#AA2C17;
+            border-radius: 3px;
+            color: #FBD79D!important;
+            display: inline-block;
+            font-weight: normal!important;
+            padding: 3px 8px;
+            text-decoration: none !important;
+        }
+
+        .verif-participations {
+            background-color: #AA2C17;;
+            border-radius: 3px;
+            color: #FBD79D!important;
+            display: inline-block;
+            margin-top: 10px;
+            padding: 17px 16px 1px 16px;
+            text-decoration: none !important;
+            width: 100%;
+        }
+
+        /* Formulaire de participation */
+
+        .fa-form-group {
+            color: #FBD79D;
+            padding-top: 10px;
+            -moz-transition: 100ms;
+            -ms-transition: 100ms;
+            -webkit-transition: 100ms;
+            -o-transition: 100ms;
+            transition: 100ms;
+        }
+
+        .fa-form-group label {
+            display: block;
+            display: table;
+            cursor: pointer;
+        }
+
+        .fa-form-group input,
+        .fa-form-group textarea,
+        .fa-form-group select {
+            margin-bottom: 20px;
+            padding: 8px 9px;
+            width: 100%;
+            border: solid 1px #FBD79D;
+            border-radius: 3px;
+            margin-top: 5px;
+            font-size: 15px;
+            color: #622417;
+            font-family: inherit;
+            resize: none;
+            -webkit-transition: all ease-in-out .19s, width 0s;
+            transition: all ease-in-out .19s, width 0s;
+        }
+
+        .fa-form-group input[type="color"] {
+            padding: 8px 10px;
+            height: 40px;
+            max-height: 40px !important;
+        }
+
+        .fa-form-group input:focus,
+        .fa-form-group textarea:focus,
+        .fa-form-group select:focus {
+            box-shadow: inset 0 0 1px #622417, 0 0 1px 1px #622417;
+            border-color: #622417;
+            outline: 0;
+        }
+
+        .fa-form-group p {
+            font-size: 16.7px;
+        }
+
+        .part-button-aide {
+            background-color: #4A7C3C;
+            border: solid 0px;
+            border-radius: 2px;
+            color: #FBD79D;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 18px;
+            padding: 10px 18px;
+            position: relative;
+            text-transform: uppercase;
+            transition: all .18s;
+            -webkit-transition: all .18s;
+        }
+
+        .part-button-aide:hover {
+            color: #DF9F3F;
+        }
+
+        .part-button-enigme {
+            background-color: #4A7C3C;
+            border: solid 0px;
+            border-radius: 2px;
+            color: #FBD79D;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 18px;
+            padding: 10px 18px;
+            position: relative;
+            text-transform: uppercase;
+            transition: all .18s;
+            -webkit-transition: all .18s;
+        }
+
+        .part-button-enigme:hover {
+            color: #DF9F3F;
+        }
+
+        .part-button-enigme-disabled {
+            background-color: #622417!important;
+            cursor: not-allowed!important;
+        }
+
+        .part-button-send {
+            background-color: #AA2C17;
+            border: solid 0px;
+            border-radius: 2px;
+            color: #FBD79D;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 18px;
+            padding: 10px 18px;
+            position: relative;
+            text-transform: uppercase;
+            transition: all .18s;
+            -webkit-transition: all .18s;
+        }
+
+        .part-button-send:hover {
+            color: #DF9F3F;
+        }
+
+        .part-button-send-disabled {
+            background-color: #622417!important;
+            cursor: not-allowed!important;
+        }
+        .wrapper-inner{
+            text-align: center;
+        }
+
+        /* form elements */
+
+        .dataform {
+            color: #FBD79D;
+            background: #AA2C17;
+            border-radius: 3px;
+            margin-bottom: 10px!important;
+        }
+
+        .dataform .help-text {
+            font-style: italic;
+            margin: 5px 0;
+        }
+
+        .dataform a {
+            color: #144426;
+            text-decoration: underline;
+        }
+
+        .dataform h2 {
+            font-size: 18px;
+            text-transform: uppercase;
+            border-bottom: 2px solid;
+            padding-bottom: 10px;
+            text-align: left;
+        }
+
+        .dataform .group {
+            width: 100%;
+            float: left;
+            position: relative;
+        }
+
+        .dataform label {
+            font-size: 16px;
+            margin-bottom: 5px;
+            width: 100%;
+            float: left;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .dataform select,
+        .inputbox,
+        .dataform textarea {
+            color: #622417;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            border: 1px solid #FBD79D;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            padding: 18px;
+            width: 100%;
+        }
+
+        .dataform select,
+        .inputbox:hover,
+        .dataform textarea:hover {
+            border: 1px solid #AA2C17
+        }
+
+        .inputbox:-ms-input-placeholder,
+        textarea:-ms-input-placeholder {
+            color: #999
+        }
+
+        .dataform textarea {
+            height: 250px
+        }
+
+        .dataform .box .inputbox {
+            width: 70%
+        }
+
+        .dataform select {
+            width: 90%
+        }
+
+        .dataform .box select {
+            width: 80%
+        }
+
+        .dataform .box {
+            width: 50%;
+            position: relative;
+        }
+
+        .dataform .left {
+            float: left
+        }
+
+        .dataform .right {
+            float: right
+        }
+
+        .offset {
+            padding: 10px 20px;
+            margin: 25px auto;
+            width: 60%;
+        }
+
+        /*
+        * Footer:
+        * Thanks to Ange Tuteur.
+        */
+
+        #footer {
+            color: #AAA;
+            background: #333;
+            padding: 0 0 60px;
+            font-size: 14px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        #footer .content {
+            padding: 0 15px;
+            margin: 0 auto;
+            width: 80%;
+        }
+
+        #footer .footer-link {
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        #footer hr {
+            border: none;
+            border-top: 2px solid #FBD79D;
+            margin: 40px auto 0;
+            width: 100px;
+        }
+
+        #footer span {
+            color: #aaa;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        #footer strong.h3 {
+            font-size: 17px;
+            text-transform: uppercase;
+            display: block;
+            margin-top: 60px;
+            margin-bottom: 25px;
+        }
+
+        #footer .bloc a {
+            color: #AAA;
+        }
+
+        #footer .bloc a:hover {
+            color: #DDD;
+            border-bottom: none;
+        }
+
+        #footer .bloc div {
+            margin-bottom: 10px;
+        }
+
+        #footer .bloc i {
+            width: 20px;
+            text-align: center;
+        }
+
+        #footer .bloc {
+            float: left;
+            width: 25%;
+        }
+
+        /*
+        * Responsive:
+        */
+
+        @media (max-width: 1015px) {
+            .form-title_event {
+                padding: 20px 30px;
+            }
+
+            .form-title_event.clearfix * {
+                font-size: 13px;
+            }
+
+            header.page-header {
+                padding: 40px 60px;
+            }
+        }
+
+        @media (max-width: 1099px) {
+            .part, .global-wrap-warning {
+                width: 75%;
+            }
+        }
+
+        @media (max-width: 909px) {
+            .part, .global-wrap-warning {
+                width: 80%;
+            }
+        }
+
+        @media (max-width: 809px) {
+            .part, .global-wrap-warning {
+                width: 80%;
+            }
+
+            .part.create-text {
+                -ms-flex-wrap: wrap;
+                -moz-flex-wrap: wrap;
+                -webkit-flex-wrap: wrap;
+                -o-flex-wrap: wrap;
+                flex-wrap: wrap;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+            #footer .bloc {
+                float: none;
+                width: 100%;
+                text-align: center;
+            }
+
+            header.page-header, header.page-header a {
+                font-size: 17px!important;
+                float: none;
+                width: 100%;
+                text-align: center;
+            }
+
+            header.page-header a.logo {
+                display: none;
+            }
+
+            header.page-header .musique {
+                display: none;
+            }
+
+            .global-wrap-warning {
+                width: 100%!important;
+            }
+
+            #atelier {
+                display: none;
+            }
+
+            .global-wrap  .global-part-1 {
+                font-size: 10px!important;
+                margin-left: 10px!important;
+                width: 110%!important;
+            }
+
+            h2.info-text{
+                font-size: 13px!important;
+            }
+            p, .info-text-event{
+                font-size: 12px!important;
+            }
+            .info-text{
+                font-size: 13px!important;
+            }
+
+            input::placeholder, textarea::placeholder, select::content, .part-consignes {
+                font-size: 10px!important;
+            }
+
+            .part-consignes {
+                font-size: 13px!important;
+                width: 93%;
+            }
+
+            .part-button-send {
+                font-size: 13px!important;
+                margin-right: 10px;
+                padding: 5px;
+            }
+         
+            .modalfa {
+                width: 97%;
+                top: 5px;
+                max-height: 98vh;
+                overflow: auto;
+            }
+        }
+
+        #footer .footer-link div>img {
+            display: none;
+        }
+
+        #footer .footer-link div:nth-child(2)::before {
+            content: "\f0e6";
+            font-family: "FontAwesome";
+            color: #aaa;
+            margin-right: 8px;
+            font-size: 55px;
+            margin-top: -15px;
+            display: block;
+            margin-bottom: -5px;
+        }
+
+        #footer>div>div:nth-child(5)>div:nth-child(5)>p>a {
+            font-size: 0px;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border-radius: 3px;
+            background-color: #39c;
+            color: #FFF;
+            transition: all 120ms linear;
+            text-align: center;
+            background-image: url(https://lffg.github.io/assets/img/background.svg), linear-gradient(to bottom, #2d91c3, #1e6cb9);
+            font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Ubuntu', 'Arial', sans-serif;
+        }
+
+        #footer>div>div:nth-child(5)>div:nth-child(5)>p>a:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+        </style>
+        <!-- Script permettant de récupérer les variables de Forumactif -->
+        <script type="text/javascript" src="https://sd-1.archive-host.com/membres/up/137670929941788204/var_fa.js" defer></script>
+        <!-- Script permettant de gérer Jquery -->
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <!-- Script permettant de gérer l'envoi des formulaires -->
+        <script type="text/javascript" src="https://bipofa.github.io/Forumactif/form-fields-generator.js"></script>
+        <!-- Script permettant de changer le "Bonjour" ou "Bonsoir" en fonction de l'heure -->
+        <script type="text/javascript">
+            $(function() {
+                var today = new Date();
+                var h = today.getHours();
+                if (h > 0 && h < 19) { // Détermination de l'heure */
+                document.getElementById("text_welcome_hours").innerHTML = 'Bonjour'
+                }
+                else{
+                document.getElementById("text_welcome_hours").innerHTML = 'Bonsoir'
+                }
+            });
+        </script>
+        <!-- Script permettant de gérer la neige -->
+        <script type="text/javascript">
+        $(function() {
+            $.getScript("https://illiweb.com/rs3/10/frm/snow.js");
+        });
+        </script>
+        <!-- Script permettant de gérer la musique -->
+        <script type="text/javascript">
+        $(function() {
+            $('.musique').click(function() {
+                if(!$('.footer_musique iframe').length) {
+                    $('.footer_musique').html('<iframe width="0" height="0" src="https://www.youtube.com/embed/sE3uRRFVsmc?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>');
+                    $('header.page-header .musique span.volume').html('<i class="fa fa-volume-off"></i>')
+                }
+                else if ($('.footer_musique iframe').length) {
+                    $('.footer_musique iframe').remove();
+                    $('header.page-header .musique span.volume').html('<i class="fa fa-volume-up"></i>')
+                }
+            });
+        }); 
+        </script>
+        <!-- Script permettant de gérer la connexion du membre -->
+        <script type="text/javascript">
+        $(function() {
+            $.get('/profile?mode=editprofile', function(d) {
+                var url = $('#profile_field_3_-10', d)
+                if(!url.length)
+                {
+                    $('div#warning').css("display","block");
+                    $('div#history').css("display","none");
+                    $('div#event').css("display","none");
+                }
+            });
+        });
+        </script>
+        <!-- Script permettant de plier / déplier les parties -->    
+        <script type="text/javascript">
+        $(function() {
+            var coll = document.getElementsByClassName("collapsible");
+            var i;
+            for (i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var contentcollapsible = this.nextElementSibling;
+                    if (contentcollapsible.style.display === "block") {
+                        contentcollapsible.style.display = "none";
+                    } else {
+                        contentcollapsible.style.display = "block";
+                    }
+                });
+            }
+        });  
+        </script> 
+      <!-- Script permettant de gérer l'envoi la participation à Forumactif -->
+      <script type="text/javascript">
+        $(window).on('load', function() {
+            $('#fa-generated-form').on('submit', function(event) {
+                event.preventDefault();
+                $(this).find('button[type="submit"]').text('En cours d\'envoi ...');
+                setTimeout(function() {
+                    var pseudo = $("#pseudo").text();
+                    var lien = $('#fa-generated-message').val().trim();
+                    $.post('/post', {
+                        't':'411820',
+                        /*662*/
+                        'mode': 'reply',
+                        'tid': $('[name="tid"]:first').val(),
+                        'post': '1',
+                        'message': 'Le membre [b]' + pseudo + '[/b] participe à l\'événement.\n\n' + lien,
+                    }).done(function() {
+                        var pseudo = $("#pseudo").text();
+                        $.post('/privmsg', {
+                            'username': 'Lutins',
+                            /*Typlo*/
+                            'subject': 'Participation de ' + pseudo,
+                            'mode': 'post',
+                            'post': '1',
+                            'folder': 'inbox',
+                            'usergroup': '1',
+                            'message': $('#fa-generated-message').val().trim(),
+                        });
+                        alert("Tes réponses ont été envoyées aux Lutins ! Il ne te reste plus qu'à t'armer de patience et attendre les résultats !");
+                        $('#fa-generated-form').find('button[type="submit"]').text('Réponses envoyées !');
+                        $('#button-send').prop('disabled', 'true').addClass('part-button-send-disabled');
+                    });
+                });
+            });
+        });
+    </script>     
+    <!-- Script permettant de gérer la participation du membre -->
+    <script type="text/javascript">
+        $(function() {
+            $.get('/privmsg?folder=outbox', function(d) {
+                var mps = $('pmlist span em a[href="/u177295"]', d).length; /*.tcl a u1*/
+                console.log(mps);
+                if(mps >= 1)
+                {
+                    $('#participation').css("display","none");
+                    $('#verif-participations').css("display","block");
+                    $('#participation_ok').css("display","block");
+                } 
+            });
+        });
+    </script>
+    <!-- Script permettant d'afficher les énigmes -->  
+    <script type="text/javascript">
+        $(function showDailyEnigme() {
+            var today = new Date();
+            var dayOfMonth = today.getDate();
+            var month = today.getMonth(); // Décembre = 11
+
+            if (month === 11) {
+                // On est bien en décembre
+                for (var i = 1; i <= 24; i++) {
+                    var enigme = document.getElementById('enigme' + i);
+                    if (enigme) {
+                        if (i <= dayOfMonth) {
+                            enigme.style.display = 'block';
+                        } else {
+                            enigme.style.display = 'none';
+                        }
+                    }
+                }
+
+                $('#button-enigme').on('click', function () {
+                    if (confirm("Tu es sûr de vouloir tout dévoiler ? Les lutins ne seront pas contents !")) {
+                        for (var i = 1; i <= 24; i++) {
+                            $('#enigme' + i).slideDown();
+                        }
+                        $(this).prop('disabled', true).addClass('part-button-send-disabled').text("Toutes les cases sont ouvertes !");
+                    }
+                });
+
+            } else {
+                // Si on n’est pas en décembre, tout reste masqué
+                for (var i = 1; i <= 24; i++) {
+                    var enigme = document.getElementById('enigme' + i);
+                    if (enigme) {
+                        enigme.style.display = 'none';
+                    }
+                }
+
+                // Désactiver les boutons pour éviter les bêtises !
+                $('#button-enigme').prop('disabled', true).text("Disponible en décembre !");
+                $('#button-send').prop('disabled', 'true').addClass('part-button-send-disabled');
+            }
+        });
+    </script>
+    <!-- Script permettant de sauvegarder les saisies dans le formulaire -->  
+    <script type="text/javascript">
+        $(document).ready(function() {
+            const formId = "#fa-generated-form";
+            const storageKey = "formDataById";
+
+            if (localStorage.getItem(storageKey)) {
+                const data = JSON.parse(localStorage.getItem(storageKey));
+                for (const id in data) {
+                    $(`#${id}`).val(data[id]);
+                }
+            }
+            $(`${formId} input, ${formId} textarea, ${formId} select`).on('input change', function() {
+                const formData = {};
+                $(`${formId} input, ${formId} textarea, ${formId} select`).each(function() {
+                    const id = $(this).attr('id');
+                    if (id) {
+                        formData[id] = $(this).val();
+                    }
+                });
+                localStorage.setItem(storageKey, JSON.stringify(formData));
+            });
+
+            $(formId).on('submit', function() {
+                localStorage.removeItem(storageKey);
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        (function(d) {
+            var s=d.createElement("script"); s.setAttribute("data-account", "WX1Z7vZ7Mg"); s.setAttribute("src", "https://cdn.userway.org/widget.js"); (d.body || d.head).appendChild(s);
+        })(document)
+    </script>
+    <noscript>Please ensure Javascript is enabled for purposes of <a href="https://userway.org">website accessibility</a></noscript>
+</head>
+<body>
+    <!-- page-header -->
+    <header class="page-header clearfix">
+        <a href="/" class="logo"><img src=""></a><strong style="color:#164629;">Forum</strong>actif fête Noël !
+        <div class="musique">
+            <span class="volume">
+                <i class="fa fa-volume-up"></i>
+            </span>
+        </div>
+    </header>
+    <div class="form-title_event clearfix">
+        <span class="title_event"><i class="fa fa-tree"></i> <span id="text_welcome_hours"></span> <strong><span id="pseudo" style="color:#B32A15;" class="USERNAME pseudo-connecte"></span></strong>, Forumactif te souhaite de joyeuses fêtes de fin d'année ! <i class="fa fa-tree"></i></span>
+    </div>
+    <!-- Modal de connexion pour les membres non identifiés -->
+    <div id="warning" class="global-wrap-warning info-text align-center" style="display:none;">
+        <div class="errorconnect direct-chat-danger offset">
+            <div class="direct-chat-msg right">
+                <img class="direct-chat-img" src="https://i38.servimg.com/u/f38/11/01/36/00/image532.png" alt="message user image" />
+                <div class="direct-chat-text">
+                    <em>Ho ho ho !</em> Pour participer à cette activité, tu dois être connecté(e) sur le Forum des Forums !<br /> Si tu possèdes un compte, <strong>connecte-toi</strong> vite ! Sinon, tu peux <strong>créer un compte</strong> et rejoindre notre communauté !
+                </div>
+            </div>
+        </div>
+        <form class="dataLogin" name="form_login" method="post" action="/login">
+        <div class="dataform offset">
+            <fieldset>
+                <h2><i class="fa fa-sign-in"></i> Connexion</h2>
+                <div class="group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input id="username" class="inputbox" name="username" type="text" placeholder="Nom d'utilisateur" />
+                </div>
+                <div class="group">
+                    <label for="password">Mot de passe</label>
+                    <input id="password" class="inputbox" name="password" type="password" placeholder="Mot de passe" />
+                    <p class="help-text" style="margin-top:-15px;margin-bottom:15px;"><a href="/profile?mode=sendpassword">J'ai oublié mon mot de passe</a> &bull; <a href="/register">Je n'ai pas encore de compte</a></p>
+                </div>
+                <div class="center"><input class="button-connexion" type="submit" value="Connexion" name="login"/></div>
+            </fieldset>
+        </div>
+        <input type="hidden" value="/h10-" name="redirect"/>
+        </form>
+        <br />
+    </div>
+        <!-- Histoire de l'event -->
+        <div id="history" class="global-wrap global-part-1" style="display: block;">
+            <div class="wrap">
+                <div class="part-history clearfix">
+                    <p class="info-text">
+                        L'événement "Forumactif fête Noël" commence le <strong>lundi 1 décembre 2025 à 12h00</strong> <em>(heure de Paris)</em><br /> et se termine le <strong>jeudi 25 décembre 2025 à 23h59</strong> <em>(heure de Paris)</em>.
+                    </p>
+                    <br />
+                    <div id="atelier" class="card card-danger direct-chat direct-chat-danger">
+                        <div class="card-header">
+                            <h3 class="card-title">En direct de l'atelier du Père Noël...</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <!-- Conversations are loaded here -->
+                            <div class="direct-chat-messages">
+                                  <!-- Message to the right -->
+                                  <div class="direct-chat-msg">
+                                    <div class="direct-chat-infos clearfix">
+                                      <span class="direct-chat-name float-left" style="color:#961613">Lutins</span>
+                                      <span class="direct-chat-timestamp float-right">Lundi 1 décembre 2025</span>
+                                  </div>
+                                  <!-- /.direct-chat-infos -->
+                                  <img class="direct-chat-img" src="https://i38.servimg.com/u/f38/11/01/36/00/image533.png" alt="message user image" />
+                                  <!-- /.direct-chat-img -->
+                                  <div class="direct-chat-text">
+                                    Bon, on a encore reçu 348 lettres pour des paillettes licornes, 812 pour des jeux vidéo… et... tiens donc ? Une enveloppe spéciale avec… un calendrier de l'Avent ?! Attends, je reconnais cette écriture… <strong>Pinguino</strong> ?!
+                                  </div>
+                                  <!-- /.direct-chat-text -->
+                              </div>
+                              <!-- /.direct-chat-msg -->                           
+                             
+                                <!-- Message. Default to the left -->
+                                <div class="direct-chat-msg right">
+                                    <div class="direct-chat-infos clearfix">
+                                        <span class="direct-chat-name float-left" style="color:#961613">Père Noël</span>
+                                        <span class="direct-chat-timestamp float-right">Lundi 1 décembre 2025</span>
+                                    </div>
+                                    <!-- /.direct-chat-infos -->
+                                    <img class="direct-chat-img" src="https://i38.servimg.com/u/f38/11/01/36/00/image532.png" alt="message user image" />
+                                    <!-- /.direct-chat-img -->
+                                    <div class="direct-chat-text">
+                                        <em>Ho ho ho !</em> Quel est donc ce drôle de courrier qui sent le chocolat chaud et les crayons de couleur ? 
+                                    </div>
+                                    <!-- /.direct-chat-text -->
+                                </div>
+                                <!-- /.direct-chat-msg -->
+                             
+                                <!-- Message to the right -->
+                                <div class="direct-chat-msg">
+                                    <div class="direct-chat-infos clearfix">
+                                        <span class="direct-chat-name float-left" style="color:#961613">Lutins</span>
+                                        <span class="direct-chat-timestamp float-right">Lundi 1 décembre 2025</span>
+                                    </div>
+                                    <!-- /.direct-chat-infos -->
+                                    <img class="direct-chat-img" src="https://i38.servimg.com/u/f38/11/01/36/00/image533.png" alt="message user image" />
+                                    <!-- /.direct-chat-img -->
+                                    <div class="direct-chat-text">
+                                        Un calendrier de l'Avent... fait main, signé Pinguino. Et il a noté : <em>Et il a noté : "Chaque jour une énigme, et à la fin… une moto ? Peut-être ?". Par exemple, Jour 14 : "Je suis rapide, je vrombis, je suis le rêve de Pinguino pour aller livrer les cadeaux…"</em> Hmmm, on dirait une tentative discrète pour parler de la moto…
+                                    </div>
+                                    <!-- /.direct-chat-text -->
+                                </div>   
+                                <!-- /.direct-chat-msg -->
+
+                                <!-- Message. Default to the left -->
+                                <div class="direct-chat-msg right">
+                                    <div class="direct-chat-infos clearfix">
+                                        <span class="direct-chat-name float-left" style="color:#961613">Père Noël</span>
+                                        <span class="direct-chat-timestamp float-right">Lundi 1 décembre 2025</span>
+                                    </div>
+                                    <!-- /.direct-chat-infos -->
+                                    <img class="direct-chat-img" src="https://i38.servimg.com/u/f38/11/01/36/00/image532.png" alt="message user image" />
+                                    <!-- /.direct-chat-img -->
+                                    <div class="direct-chat-text">
+                                        En tout cas, l'idée du calendrier de l'Avent est pleine d'esprit de Noël ! D'ailleurs, je propose que nous réalisions un calendrier de l'Avent pour les membres de Forumactif ! Et pour <strong>Pinguino</strong>, il verra bien ce que lui apporte la 24e case... Mais d'ici là, au travail ! Noël approche ! 
+                                    </div>
+                                    <!-- /.direct-chat-text -->
+                                </div>
+                                <!-- /.direct-chat-msg -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Histoire de l'event -->
+        <form id="fa-generated-form">
+        <div id="event" class="global-wrap global-part-1" style="display: block;">
+            <div class="wrap">
+                <div class="part-event clearfix">
+                    <h2 class="info-text collapsible">Condition pour participer à l'événement</h2>
+                        <div class="contentcollapsible">
+                            <p class="info-text-event ">
+                                <i class="fa fa-chevron-circle-right"></i> Avoir publié au moins cinq messages (actuellement, tu en as publié <span id="nbmessages" class="USERCOUNTPOST" style="color: #AA2C17;font-weight: bold;"></span>) sur le <a target="_blank" href="https://forum.forumactif.com">Forum des Forums</a> .
+                            </p>
+                        </div>
+                    <h2 class="info-text collapsible">Fonctionnement de l'événement</h2>
+                        <div class="contentcollapsible">
+                            <p class="info-text-event contentcollapsible">
+                                <p><i class="fa fa-chevron-circle-right"></i> Du 1er au 24 décembre inclus, une nouvelle énigme sera automatiquement publiée chaque jour à minuit (heure de Paris) dans notre calendrier de l'Avent.</p>
+                                <p><i class="fa fa-chevron-circle-right"></i> Les énigmes se débloquent jour après jour… sauf si tu craques et cliques sur le bouton « Flemme d'attendre ! » — auquel cas toutes les cases s'ouvriront d'un coup (mais attention, les lutins surveillent).</p>
+                                <p><i class="fa fa-chevron-circle-right"></i> Tu dois envoyer toutes tes réponses en une seule fois : soit une fois que tu as résolu toutes les énigmes, soit quand tu décides d'arrêter l'aventure. Les lutins s'adapteront à ton rythme ! </p>
+                                <p><i class="fa fa-chevron-circle-right"></i> <strong>Un seul envoi par membre, pas plus !</strong> Alors relis bien tes réponses avant de les confier aux lutins… car une fois parties, elles ne reviendront pas ! </p>
+                                <p><i class="fa fa-warning"></i> Pas de tricherie dans l'atelier ! Les réponses ne doivent en aucun cas être partagées sur le forum de support. En revanche, tu peux échanger impressions, galères et fous rires dans <a href="https://forum.forumactif.com/t407344-" target="_blank"><strong>Le café de Forumactif</strong></a>. Tu peux y papoter de l'événement, râler un peu sur les énigmes, partager tes théories ou rigoler avec les autres… mais chut ! <strong>Les réponses doivent rester secrètes !</strong></p>
+                                <p><i class="fa fa-warning"></i> Les lutins sont malins, ne tentez pas de les berner ! La participation avec plusieurs comptes est interdite. En cas de triche, Forumactif se réserve le droit d'intervenir et de rétablir l'équilibre dans l'atelier.</p>
+                            </p>
+                        </div>
+                    <h2 class="info-text collapsible">Récompenses</h2>
+                        <div class="contentcollapsible">
+                            <p class="info-text-event contentcollapsible">
+                                <p><i class="fa fa-chevron-circle-right"></i> Les lutins ont préparé de jolies surprises pour les plus perspicaces d'entre vous ! À la fin de l'événement, les membres ayant trouvé le plus grand nombre de bonnes réponses remporteront les cadeaux suivants :</p>
+                                <p><i class="fa fa-trophy" style="color:#FFD700;"></i> 1<sup>re</sup> : 1 200 crédits pour le forum désigné et un badge en or "Concours Noëlactif 2025" sur le profil du <a target="_blank" href="https://forum.forumactif.com">Forum des Forums</a>.</p>
+                                <p><i class="fa fa-trophy" style="color:#C0C0C0;"></i> 2<sup>e</sup> : 1 000 crédits pour le forum désigné et un badge en argent "Concours Noëlactif 2025" sur le profil du <a target="_blank" href="https://forum.forumactif.com">Forum des Forums</a>.</p>
+                                <p><i class="fa fa-trophy" style="color:#614E1A;"></i> 3<sup>e</sup> : 800 crédits pour le forum désigné et un badge en bronze "Concours Noëlactif 2025" sur le profil du <a target="_blank" href="https://forum.forumactif.com">Forum des Forums</a>.</p>
+                                <p><i class="fa fa-chevron-circle-right"></i> Pour les autres participant(e)s : un badge "Concours Noëlactif 2025" sur le profil du <a target="_blank" href="https://forum.forumactif.com">Forum des Forums</a>.</p>
+                                <p><i class="fa fa-chevron-circle-right"></i> Si plusieurs membres obtiennent le même score, un tirage au sort sera effectué sur <a href="https://plouf-plouf.fr/" target="_blank">plouf-plouf.fr</a> pour départager les <em>ex æquo</em> ! Le tirage au sort sera enregistré et partagé en toute transparence… les lutins veillent à ce que tout soit équitable !</p>
+                            </p>
+                        </div>
+                    <h2 class="info-text collapsible">Les énigmes du Calendrier de l'Avent</h2>
+                    <div id="participation" class="contentcollapsible" style="display:block; width:100%; height:500px; overflow:auto; padding:10px;">
+                        <div class="enigme fa-form-group clearfix" id="enigme1">
+                            <label for="fields1"><p><strong>Jour 1 :</strong> Je vole dans le ciel la nuit de Noël, mais je n'ai ni ailes ni moteur. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields1" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme2">
+                            <label for="fields2"><p><strong>Jour 2 :</strong> Je viens dans les rêves des enfants pour leur offrir des jouets, mais je ne suis ni un magicien ni un esprit. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields2" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme3">
+                            <label for="fields3"><p><strong>Jour 3 :</strong> Je tombe du ciel pendant l'hiver, mais je ne suis ni pluie ni grêle. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields3" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme4">
+                            <label for="fields4"><p><strong>Jour 4 :</strong> Je suis la personne qui veille sur les sujets, verrouille les discussions et applique les règles. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields4" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme5">
+                            <label for="fields5"><p><strong>Jour 5 :</strong> On me suspend et parfois on s'embrasse dessous. Je suis une plante bien connue. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields5" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme6">
+                            <label for="fields6"><p><strong>Jour 6 :</strong> Je suis un petit dessin qui accompagne ton pseudo, souvent rond et stylisé. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields6" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme7">
+                            <label for="fields7"><p><strong>Jour 7 :</strong> Je brille, je scintille, je couronne souvent le sapin. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields7" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme8">
+                            <label for="fields8"><p><strong>Jour 8 :</strong> Je suis une cérémonie virtuelle où l'on félicite les membres actifs. Je rime avec "festif". Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields8" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme9">
+                            <label for="fields8"><p><strong>Jour 9 :</strong> Je suis fabriqué avec de la neige, des boutons et un nez en carotte. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields9" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme10">
+                            <label for="fields10"><p><strong>Jour 10 :</strong> J'apparais sous ton message, je peux être drôle, inspirante ou signer ton passage. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields10" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme11">
+                            <label for="fields11"><p><strong>Jour 11 :</strong> On me suspend au-dessus de la cheminée dans l'attente de cadeaux, mais je ne suis pas un vêtement ordinaire. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields11" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme12">
+                            <label for="fields12"><p><strong>Jour 12 :</strong> Je peux être dans un groupe invisible, et je peux tout modifier. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields12" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme13">
+                            <label for="fields13"><p><strong>Jour 13 :</strong> Je brille pendant les repas et les décorations, mais je ne suis ni un feu ni une lampe. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields13" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme14">
+                            <label for="fields14"><p><strong>Jour 14 :</strong> Je permets d'envoyer un message sans que tout le monde ne le voie. Je suis confidentiel. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields14" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme15">
+                            <label for="fields15"><p><strong>Jour 15 :</strong> Je suis rouge et je brille la nuit de Noël, mais je ne suis ni une lampe ni une étoile. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields15" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme16">
+                            <label for="fields16"><p><strong>Jour 16 :</strong> Je peux être posté tous les mois, tous les trimestres, ou pour un événement spécial. On y lit les nouvelles du forum. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields16" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme17">
+                            <label for="fields17"><p><strong>Jour 17 :</strong> Je suis petit, joyeux et plein de malice ! Dans les contes de Noël, j'aide le Père Noël avec délice. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields17" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme18">
+                            <label for="fields18"><p><strong>Jour 18 :</strong> Je suis spécial, pas une personne, souvent coloré. Je donne accès à des zones privées. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields18" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme19">
+                            <label for="fields19"><p><strong>Jour 19 :</strong> e suis une friandise sucrée, rayée de rouge et blanc. On me croque en décembre, je suis un bâton charmant. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields19" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme20">
+                            <label for="fields20"><p><strong>Jour 20 :</strong> Il a un nez rouge et éclaire la nuit, il guide un traîneau dans le ciel enneigé. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields20" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme21">
+                            <label for="fields21"><p><strong>Jour 21 :</strong> Je suis un monstre vert, amateur de cookies, disparu depuis 2016. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields21" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme22">
+                            <label for="fields22"><p><strong>Jour 22 :</strong> On me partage souvent à Noël, mais je ne suis ni une carte ni un cadeau. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields22" placeholder="Inscris ta réponse !" />
+                        </div>                                              
+                        <div class="enigme fa-form-group clearfix" id="enigme23">
+                            <label for="fields23"><p><strong>Jour 23 :</strong> Je suis la version miniature de ton site, utilisée sur les navigateurs et les onglets. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields23" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="enigme fa-form-group clearfix" id="enigme24">
+                            <label for="fields24"><p><strong>Jour 24 :</strong> J'ai 24 cases, je vous fais patienter avec plaisir… parfois avec du chocolat. Qui suis-je ?</p></label>
+                            <input type="text" data-type="text" id="fields24" placeholder="Inscris ta réponse !" />
+                        </div>
+                        <div class="fa-form-group clearfix">
+                        <p>
+                            <label for="fields25">Lien URL du forum Forumactif sur lequel les crédits seront attribués (en cas de gain) :</label>
+                            <input type="url" data-type="url" id="fields25" pattern="https://.*" placeholder="Renseignes le lien URL du forum Forumactif." required="" />
+                        </p>
+                    </div>
+                    <div class="wrapper-inner">
+                        <p>
+                            <button id="admin-reveal-btn" style="display: none; margin: 10px 0;">Modsred</button>
+                            <button id="button-enigme" class="font part-button-enigme"> <i class="fa fa-table"></i> Flemme d'attendre !</button>
+                            <button type="submit" id="button-send" class="font part-button-send"> <i class="fa fa-envelope"></i> Envoyer mes réponses !</button>
+                        </p>                     
+                    </div>
+                </div>
+                    <div id="verif-participations" class="verif-participations" style="display: none;">
+                        <p id="participation_ok" style="display:none;">
+                            <i class="fa fa-check" style="color:#164629"></i> Les réponses ont bien été reçues !
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    <br />
+  <!-- BEGIN Footer -->
+  <div id="footer">
+    <div class="content">
+      <div class="footer-link">
+        <div></div>
+        <div><a href="https://www.forumactif.com/" target="_blank"><span>© <script>document.write(new Date().getFullYear());</script> - forumactif.com</span></a></div>
+      </div>
+    </div>
+  </div>
+  <!-- Gestion de la musique (Youtube) -->
+  <div class="footer_musique" style="display: none;"></div>
+  <!-- .footer -->
+</body>
+</html>
+<!-- Gestion de l'envoi des participations à l'équipe Forumactif -->
+<textarea style="display: none;" id="fa-generated-message">
+     [b]Réponse à l'énigme n°1 :[/b] {{fields1}} .
+     [b]Réponse à l'énigme n°2 :[/b] {{fields2}} .
+     [b]Réponse à l'énigme n°3 :[/b] {{fields3}} .
+     [b]Réponse à l'énigme n°4 :[/b] {{fields4}} .
+     [b]Réponse à l'énigme n°5 :[/b] {{fields5}} .
+     [b]Réponse à l'énigme n°6 :[/b] {{fields6}} .
+     [b]Réponse à l'énigme n°7 :[/b] {{fields7}} .
+     [b]Réponse à l'énigme n°8 :[/b] {{fields8}} .
+     [b]Réponse à l'énigme n°9 :[/b] {{fields9}} .
+     [b]Réponse à l'énigme n°10 :[/b] {{fields10}} .
+     [b]Réponse à l'énigme n°11 :[/b] {{fields11}} .
+     [b]Réponse à l'énigme n°12 :[/b] {{fields12}} .
+     [b]Réponse à l'énigme n°13 :[/b] {{fields13}} .
+     [b]Réponse à l'énigme n°14 :[/b] {{fields14}} .
+     [b]Réponse à l'énigme n°15 :[/b] {{fields15}} .
+     [b]Réponse à l'énigme n°16 :[/b] {{fields16}} .
+     [b]Réponse à l'énigme n°17 :[/b] {{fields17}} .
+     [b]Réponse à l'énigme n°18 :[/b] {{fields18}} .
+     [b]Réponse à l'énigme n°19 :[/b] {{fields19}} .
+     [b]Réponse à l'énigme n°20 :[/b] {{fields20}} .
+     [b]Réponse à l'énigme n°21 :[/b] {{fields21}} .
+     [b]Réponse à l'énigme n°22 :[/b] {{fields22}} .
+     [b]Réponse à l'énigme n°23 :[/b] {{fields23}} .
+     [b]Réponse à l'énigme n°24 :[/b] {{fields24}} .
+     [b]Lien du forum Forumactif désigné en cas de gain :[/b] {{fields25}} .
+</textarea>
