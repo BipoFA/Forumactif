@@ -605,6 +605,7 @@
   
   .forum-link-signaler:hover {
     opacity: 1;
+    border:none;
     background-color: #e97465
   }
   
