@@ -19,12 +19,38 @@ $(function () {
 
   const $gallery = $('.gallery');
 
-  // Sauvegarde l'ordre initial (clone complet avec événements)
-  const initialClones = $gallery.children('.forum-card').map(function () {
-    return $(this).clone(true)[0];
+  // On récupère au chargement l'ordre initial des éléments
+  // sous forme de tableau des IDs dans l'ordre initial
+  const initialOrder = $gallery.children('.forum-card').map(function () {
+    return $(this).data('id');
   }).get();
 
-  // Met à jour les badges (À venir, Coup de cœur, Nouveau)
+  // Récupérer les éléments dans l'ordre donné par un tableau d'IDs
+  function getCardsByOrder(orderArray) {
+    const cards = [];
+    orderArray.forEach(id => {
+      const card = $gallery.find(`.forum-card[data-id="${id}"]`)[0];
+      if (card) cards.push(card);
+    });
+    return cards;
+  }
+
+  function updateFavoritesVisual() {
+    $('.forum-card').each(function () {
+      const forumId = $(this).data('id');
+      const $favBtn = $(this).find('.favorite-btn');
+      if (favorites.includes(forumId)) {
+        $favBtn.addClass('favorited')
+          .attr('aria-label', 'Retirer des favoris')
+          .text('★');
+      } else {
+        $favBtn.removeClass('favorited')
+          .attr('aria-label', 'Ajouter aux favoris')
+          .text('☆');
+      }
+    });
+  }
+
   function updateBadges() {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -42,7 +68,6 @@ $(function () {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
-      // Nettoyage badges/classes
       $card.removeClass('coming-soon new-forum fav-highlight');
       $card.find('.badge-coming, .badge-new, .badge-fav').remove();
 
@@ -57,24 +82,6 @@ $(function () {
     });
   }
 
-  // Met à jour l'affichage des favoris (étoiles)
-  function updateFavoritesVisual() {
-    $('.forum-card').each(function () {
-      const forumId = $(this).data('id');
-      const $favBtn = $(this).find('.favorite-btn');
-      if (favorites.includes(forumId)) {
-        $favBtn.addClass('favorited')
-          .attr('aria-label', 'Retirer des favoris')
-          .text('★');
-      } else {
-        $favBtn.removeClass('favorited')
-          .attr('aria-label', 'Ajouter aux favoris')
-          .text('☆');
-      }
-    });
-  }
-
-  // Toggle favori (ajout/retrait)
   function toggleFavorite(forumId) {
     if (favorites.includes(forumId)) {
       favorites = favorites.filter(id => id !== forumId);
@@ -86,7 +93,6 @@ $(function () {
     updateGallery();
   }
 
-  // Gestion clic sur étoile favoris
   $gallery.on('click', '.favorite-btn', function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -94,7 +100,6 @@ $(function () {
     toggleFavorite(forumId);
   });
 
-  // Gestion clavier pour accessibilité favoris
   $gallery.on('keydown', '.favorite-btn', function (e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -103,7 +108,6 @@ $(function () {
     }
   });
 
-  // Mise à jour de la galerie (filtrage, tri)
   function updateGallery() {
     const searchTerm = $('#search-forum').val() ? $('#search-forum').val().toLowerCase() : '';
     const selectedCat = $('#category-filter').val() || 'all';
@@ -113,17 +117,17 @@ $(function () {
     let cards;
 
     if (sortBy === 'alpha') {
+      // Récupérer toutes les cartes, trier par titre
       cards = $('.forum-card').get().sort((a, b) =>
         $(a).data('title').localeCompare($(b).data('title'))
       );
     } else {
-      // Tri par défaut = ordre initial cloné
-      cards = initialClones.map(el => $(el).clone(true)[0]);
+      // Sinon remettre l'ordre initial avec les éléments actuels (pas clones)
+      cards = getCardsByOrder(initialOrder);
     }
 
     $gallery.empty().append(cards);
 
-    // Filtrage affichage
     let visible = 0;
     $('.forum-card').each(function () {
       const title = $(this).find('.forum-title').text().toLowerCase();
@@ -146,7 +150,6 @@ $(function () {
     updateBadges();
   }
 
-  // Évènements sur filtres / tri
   $('#search-forum, #sort-forums, #category-filter').on('input change', updateGallery);
 
   $('#filter-favorites').on('click', function () {
@@ -156,7 +159,6 @@ $(function () {
     updateGallery();
   });
 
-  // Bouton réinitialiser : reset filtres + tri + favoris
   $('#reset-filters').on('click', function () {
     $('#search-forum').val('');
     $('#sort-forums').val('default');
@@ -170,6 +172,7 @@ $(function () {
   updateBadges();
   updateGallery();
 });
+
 
 
 // Script permettant de gérer les signalements (warning)
