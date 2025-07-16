@@ -40,20 +40,6 @@ $(function() {
   });
 });
 
-// Script permettant d'afficher la modale si le membre n'est pas connectée
-
-$(function() {   
-    $.get('/profile?mode=editprofile', function(d) {
-        var url = $('#profile_field_3_-10', d)
-        if(!url.length)
-        {
-            $('div#warning').css("display","block");
-            $('div#consignes').css("display","none");
-            $('div#interview').css("display","none");
-        }
-    });
-});
-
 // Script permettant de rechercher, trier, gérer les forums favoris
 
 $(function() {
@@ -244,7 +230,12 @@ $(function () {
       var url = $('#profile_field_3_-10', d)
       if(!url.length)
       {
-        $('.forum-link-signaler').css("display","block");
+        $('.forum-link-signaler').attr('disabled', true).css({
+          opacity: 0.4,
+          cursor: 'not-allowed',
+          pointerEvents: 'none',
+          filter: 'grayscale(1)'
+        }).attr('title', 'Forum déjà signalé récemment');
       }
     });
 
