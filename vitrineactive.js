@@ -110,24 +110,24 @@ $(function () {
 
     // Tri personnalisé
     forums.sort((a, b) => {
-      // Priorité badges (ordre souhaité)
+      // 1) Tri par badges prioritaires
       if (a.isFav && !b.isFav) return -1;
       if (!a.isFav && b.isFav) return 1;
-
+    
       if (a.isNew && !b.isNew) return -1;
       if (!a.isNew && b.isNew) return 1;
-
+    
       if (a.isComing && !b.isComing) return 1;
       if (!a.isComing && b.isComing) return -1;
-
-      // Ensuite tri par sélection utilisateur
+    
+      // 2) Si badges égaux, on trie selon la sélection utilisateur
       if (sortBy === 'alpha') {
         return a.title.localeCompare(b.title);
       } else if (sortBy === 'recent') {
         return b.date - a.date;
       }
-
-      // Sinon, garder ordre initial
+    
+      // 3) Sinon, on garde l'ordre initial (donc égalité)
       return 0;
     });
 
