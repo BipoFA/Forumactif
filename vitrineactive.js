@@ -68,10 +68,8 @@ $(function () {
     forumDate.setHours(0, 0, 0, 0);
 
     const forumId = $card.data('id');
-    const isFav = favorites.includes(forumId);
     const isComing = forumDate > now;
     const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
-    const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
     initialForums.push({
       element: $card,
@@ -79,9 +77,8 @@ $(function () {
       date: forumDate,
       category: $card.data('category'),
       id: forumId,
-      isFav,
-      isNew,
       isComing,
+      diffDays,
       index
     });
   });
@@ -130,7 +127,7 @@ $(function () {
 
     if (forum.isComing) {
       $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
-    } else if (forum.isFav) {
+    } else if (forum.isFavorite) {
       $card.addClass('fav-highlight').append('<div class="badge-fav">Coup de cœur</div>');
     } else if (forum.isNew) {
       $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
@@ -143,16 +140,18 @@ $(function () {
     const filterFavs = $favButton.data('active') === true || $favButton.data('active') === 'true';
 
     let forums = initialForums.map(forum => {
+      const isFavorite = favorites.includes(forum.id);
+      const isNew = !isFavorite && !forum.isComing && forum.diffDays >= 0 && forum.diffDays <= 30;
       return {
         ...forum,
-        isFav: favorites.includes(forum.id),
-        isNew: !favorites.includes(forum.id) && !forum.isComing && (now - forum.date) / (1000 * 60 * 60 * 24) <= 30
+        isFavorite,
+        isNew
       };
     }).filter(forum => {
       if (selectedCategory !== 'all' && forum.category !== selectedCategory) {
         return false;
       }
-      if (filterFavs && !favorites.includes(forum.id)) {
+      if (filterFavs && !forum.isFavorite) {
         return false;
       }
       return true;
@@ -164,12 +163,10 @@ $(function () {
       forums.sort((a, b) => b.date - a.date);
     } else {
       forums.sort((a, b) => {
-        if (a.isFav && !b.isFav) return -1;
-        if (!a.isFav && b.isFav) return 1;
-        if (a.isNew && !b.isNew) return -1;
-        if (!a.isNew && b.isNew) return 1;
-        if (a.isComing && !b.isComing) return 1;
-        if (!a.isComing && b.isComing) return -1;
+        // Ordre : Favoris (non à venir), Coup de coeur, Nouveau, Sans badge, À venir
+        const aScore = a.isComing ? 4 : a.isFavorite ? 0 : a.isNew ? 2 : 3;
+        const bScore = b.isComing ? 4 : b.isFavorite ? 0 : b.isNew ? 2 : 3;
+        if (aScore !== bScore) return aScore - bScore;
         return a.index - b.index;
       });
     }
