@@ -13,6 +13,34 @@ $(function() {
 
 // Script permettant de gérer le mode dark (Bipo a mal à ses yeux)
 
+$(function() {
+  const themeKey = 'forumTheme';
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      $('body').addClass('dark-mode');
+      $('#theme-toggle').text('Mode clair');
+    } else {
+      $('body').removeClass('dark-mode');
+      $('#theme-toggle').text('Mode sombre');
+    }
+  }
+
+  // Charger le thème au démarrage
+  const savedTheme = localStorage.getItem(themeKey) || 'light';
+  applyTheme(savedTheme);
+
+  // Gestion du clic toggle
+  $('#theme-toggle').on('click', function() {
+    const currentTheme = $('body').hasClass('dark-mode') ? 'dark' : 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+    localStorage.setItem(themeKey, newTheme);
+  });
+});
+
+// Fonction recherche / tri / catégories / favoris ...
+
 $(function () {
   const favoritesKey = 'forumFavorites';
   let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
@@ -126,6 +154,7 @@ $(function () {
   updateFavoritesVisual();
   updateGallery();
 });
+
 
 
 
