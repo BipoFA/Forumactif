@@ -46,7 +46,7 @@ $(function () {
   let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
 
   const $gallery = $('.gallery');
-  const initialOrder = $gallery.children('.forum-card').toArray(); // ordre initial DOM
+  const initialOrder = $gallery.children('.forum-card').toArray(); // ordre DOM initial
 
   function updateFavoritesVisual() {
     $('.forum-card').each(function () {
@@ -60,6 +60,34 @@ $(function () {
         $favBtn.removeClass('favorited')
           .attr('aria-label', 'Ajouter aux favoris')
           .text('☆');
+      }
+    });
+  }
+
+  function updateBadges() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    $('.forum-card').each(function () {
+      const $card = $(this);
+      const dateStr = $card.data('date');
+      const forumDate = new Date(dateStr);
+      forumDate.setHours(0, 0, 0, 0);
+
+      const isComing = forumDate > now;
+      const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
+      const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
+
+      // Nettoyage
+      $card.removeClass('coming-soon new-forum');
+      $card.find('.badge-coming, .badge-new').remove();
+
+      if (isComing) {
+        $card.addClass('coming-soon')
+          .append('<div class="badge-coming">À venir</div>');
+      } else if (isNew) {
+        $card.addClass('new-forum')
+          .append('<div class="badge-new">Nouveau</div>');
       }
     });
   }
@@ -103,9 +131,28 @@ $(function () {
         $(a).data('title').localeCompare($(b).data('title'))
       );
     } else if (sortBy === 'recent') {
-      cards = $('.forum-card').get().sort((a, b) =>
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      const all = $('.forum-card').get();
+
+      const pastOrToday = all.filter(card => {
+        const date = new Date($(card).data('date'));
+        date.setHours(0, 0, 0, 0);
+        return date <= now;
+      });
+
+      const future = all.filter(card => {
+        const date = new Date($(card).data('date'));
+        date.setHours(0, 0, 0, 0);
+        return date > now;
+      });
+
+      pastOrToday.sort((a, b) =>
         new Date($(b).data('date')) - new Date($(a).data('date'))
       );
+
+      cards = [...pastOrToday, ...future];
     } else {
       cards = initialOrder;
     }
@@ -131,6 +178,7 @@ $(function () {
 
     $('#no-result').toggle(visible === 0);
     updateFavoritesVisual();
+    updateBadges();
   }
 
   $('#search-forum, #sort-forums, #category-filter').on('input change', updateGallery);
@@ -154,7 +202,6 @@ $(function () {
   updateFavoritesVisual();
   updateGallery();
 });
-
 
 
 
