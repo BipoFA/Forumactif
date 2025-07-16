@@ -40,10 +40,6 @@ $(function() {
   });
 });
 
-
-
-
-
 // Script permettant de gérer les badges (Nouveau, à venir, coup de coeur)
 
 $(function () {
@@ -52,7 +48,6 @@ $(function () {
   const $categorySelect = $('#category-filter');
   const $favButton = $('#filter-favorites');
   const $resetButton = $('#reset-filters');
-  const $searchInput = $('#search-forum');
 
   const favoritesKey = 'forumFavorites';
   let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
@@ -142,11 +137,10 @@ $(function () {
     const sortBy = $sortSelect.val();
     const selectedCategory = $categorySelect.val();
     const filterFavs = $favButton.data('active') === true || $favButton.data('active') === 'true';
-    const searchTerm = $searchInput.val().toLowerCase().trim();
 
     let forums = initialForums.map(forum => {
       const isFavorite = favorites.includes(forum.id);
-      const isNew = !isFavorite && !forum.isComing && forum.diffDays >= 0 && forum.diffDays <= 30;
+      const isNew = !forum.isCoupDeCoeur && !forum.isComing && forum.diffDays >= 0 && forum.diffDays <= 30;
       return {
         ...forum,
         isFavorite,
@@ -157,10 +151,6 @@ $(function () {
         return false;
       }
       if (filterFavs && !forum.isFavorite) {
-        return false;
-      }
-      // Filtre recherche sur titre
-      if (searchTerm && !forum.title.includes(searchTerm)) {
         return false;
       }
       return true;
@@ -212,28 +202,12 @@ $(function () {
     $sortSelect.val('default');
     $categorySelect.val('all');
     $favButton.data('active', false).removeClass('active');
-    $searchInput.val('');
     updateGallery();
   });
 
   updateFavoriteVisuals();
   updateGallery();
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Script permettant de gérer les signalements (warning)
 
