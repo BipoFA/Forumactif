@@ -793,7 +793,7 @@
     }
   
     header.page-header a.logo {
-      display: block;
+      background: none;
     }
   
     header.page-header .social {
