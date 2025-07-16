@@ -266,88 +266,92 @@ $(function () {
 
     // Désactiver bouton si signalé il y a moins de 5 jours
     $('.forum-card').each(function () {
-        const forumId = $(this).data('id');
-        const bouton = $(this).find('.forum-link-signaler');
-        const stored = localStorage.getItem('signalement_' + forumId);
-
-        if (stored) {
-            try {
-                const data = JSON.parse(stored);
-                const signalementDate = new Date(data.date);
-                const now = new Date();
-                const diffJours = (now - signalementDate) / (1000 * 60 * 60 * 24);
-
-                if (diffJours < DELAI_JOURS) {
-                    bouton.addClass('signaled').attr('disabled', true).css({
-                        opacity: 0.4,
-                        cursor: 'not-allowed',
-                        pointerEvents: 'none',
-                        filter: 'grayscale(1)'
-                    }).attr('title', 'Forum déjà signalé récemment');
-                } else {
-                    localStorage.removeItem('signalement_' + forumId);
-                }
-            } catch (e) {
-                // Fallback si vieux format (texte simple)
-                localStorage.removeItem('signalement_' + forumId);
-            }
+      const forumId = $(this).data('id');
+      const bouton = $(this).find('.forum-link-signaler');
+      const stored = localStorage.getItem('signalement_' + forumId);
+    
+      if (stored) {
+        try {
+          const data = JSON.parse(stored);
+          const signalementDate = new Date(data.date);
+          const now = new Date();
+          const diffJours = (now - signalementDate) / (1000 * 60 * 60 * 24);
+    
+          if (diffJours < DELAI_JOURS) {
+            bouton.addClass('signaled').attr('disabled', true).css({
+              opacity: 0.4,
+              cursor: 'not-allowed',
+              pointerEvents: 'none',
+              filter: 'grayscale(1)'
+            }).attr('title', 'Forum déjà signalé récemment');
+          } else {
+            localStorage.removeItem('signalement_' + forumId);
+          }
+        } catch (e) {
+          localStorage.removeItem('signalement_' + forumId);
         }
+      }
     });
-
+    
     // Ouvrir la modale
     $('.gallery').on('click', '.forum-link-signaler:not(.signaled)', function (e) {
-        e.preventDefault();
-
-        const $card = $(this).closest('.forum-card');
-        forumSignale = $card.data('id') || $card.data('title');
-        $boutonActif = $(this);
-
-        $('#modal-forum-title').text(`Forum concerné : ${$card.data('title')}`);
-        $('#modal-report-message').val('');
-        $('#modal-overlay, #custom-report-modal').fadeIn(200);
+      e.preventDefault();
+    
+      const $card = $(this).closest('.forum-card');
+      forumSignale = $card.data('id') || $card.data('title');
+      $boutonActif = $(this);
+    
+      $('#modal-forum-title').text(`Forum concerné : ${$card.data('title')}`);
+      $('#modal-report-message').val('');
+      $('#modal-overlay, #custom-report-modal').fadeIn(200);
     });
-
-    // Annuler
+    
+    // Fermer modale
     $('#modal-cancel-btn, #modal-overlay').on('click', function () {
-        $('#modal-overlay, #custom-report-modal').fadeOut(200);
+      $('#modal-overlay, #custom-report-modal').fadeOut(200);
     });
-
-    // Envoyer
+    
+    // Envoyer signalement
     $('#modal-send-btn').on('click', function () {
-        const contenu = $('#modal-report-message').val().trim();
-        if (!contenu) {
-            alert("Merci d'indiquer un message pour votre signalement.");
-            return;
-        }
-        else 
-        {
-            $('#modal-send-btn').text('En cours d\'envoi...');
-            setTimeout(function () {
-            $.post('/post', {
-            't': '662',
-            'mode': 'reply',
-            'tid': $('[name="tid"]:first').val(),
-            'post': '1',
-            'message': 'La (les) question(s) suivante(s) concernant son interview ont été posée(s):\n\n [quote]' + $("#questions_modal_content").val() +'[/quote]\n\n'
-            });
-          });
-        };
-        
+      const contenu = $('#modal-report-message').val().trim();
+    
+      if (!contenu) {
+        alert("Merci d'indiquer un message pour votre signalement.");
+        return;
+      }
+    
+      $('#modal-send-btn').text('En cours d\'envoi...');
+    
+      const message = 'La (les) question(s) suivante(s) concernant son interview ont été posée(s):\n\n [quote]' + contenu + '[/quote]\n\n';
+    
+      $.post('/post', {
+        't': '662',
+        'mode': 'reply',
+        'tid': $('[name="tid"]:first').val(),
+        'post': '1',
+        'message': message
+      })
+      .done(function () {
         const stockage = {
-            message: contenu,
-            date: new Date().toISOString()
+          message: contenu,
+          date: new Date().toISOString()
         };
-
+    
         localStorage.setItem('signalement_' + forumSignale, JSON.stringify(stockage));
-
+    
         $boutonActif.addClass('signaled').attr('disabled', true).css({
-            opacity: 0.4,
-            cursor: 'not-allowed',
-            pointerEvents: 'none',
-            filter: 'grayscale(1)'
+          opacity: 0.4,
+          cursor: 'not-allowed',
+          pointerEvents: 'none',
+          filter: 'grayscale(1)'
         }).attr('title', 'Forum déjà signalé récemment');
-
+    
         $('#modal-overlay, #custom-report-modal').fadeOut(200);
         alert("Merci ! Votre signalement a bien été transmis.");
-    });
+      })
+      .fail(function () {
+        alert("Une erreur est survenue lors de l'envoi du signalement.");
+        $('#modal-send-btn').text('Envoyer');
+      });
+    });    
 });
