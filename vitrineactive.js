@@ -60,7 +60,6 @@ $(function () {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  // Met à jour l'affichage des étoiles
   function updateFavoritesVisual() {
     $('.forum-card').each(function () {
       const forumId = $(this).data('id');
@@ -77,7 +76,6 @@ $(function () {
     });
   }
 
-  // Met à jour les badges Nouveau / À venir
   function updateBadges() {
     $('.forum-card').each(function () {
       const $card = $(this);
@@ -102,7 +100,6 @@ $(function () {
     });
   }
 
-  // Active/désactive un favori et met à jour le localStorage
   function toggleFavorite(forumId) {
     if (favorites.includes(forumId)) {
       favorites = favorites.filter(id => id !== forumId);
@@ -114,7 +111,6 @@ $(function () {
     updateGallery();
   }
 
-  // Met à jour la galerie en fonction des filtres, recherche, tri et favoris
   function updateGallery() {
     const searchTerm = $searchInput.val().toLowerCase();
     const selectedCat = $categoryFilter.val();
@@ -123,7 +119,6 @@ $(function () {
 
     const forums = [];
 
-    // Parcours chaque forum et applique les filtres
     $('.forum-card').each(function () {
       const $card = $(this);
       const title = $card.find('.forum-title').text().toLowerCase();
@@ -134,7 +129,6 @@ $(function () {
       const forumDate = new Date(dateStr);
       forumDate.setHours(0, 0, 0, 0);
 
-      // Conditions filtres/recherche/favoris
       const matchSearch = title.includes(searchTerm) || desc.includes(searchTerm);
       const matchCat = selectedCat === 'all' || cat === selectedCat;
       const matchFav = !showFavOnly || favorites.includes(forumId);
@@ -157,14 +151,12 @@ $(function () {
       }
     });
 
-    // Trie selon la sélection
     forums.sort((a, b) => {
       if (sortBy === 'alpha') {
         return a.title.localeCompare(b.title);
       } else if (sortBy === 'recent') {
         return b.date - a.date;
       } else {
-        // Ordre par badge par défaut : coup de coeur, nouveau, à venir, autre
         if (a.isFav && !b.isFav) return -1;
         if (!a.isFav && b.isFav) return 1;
         if (a.isNew && !b.isNew) return -1;
@@ -175,21 +167,16 @@ $(function () {
       }
     });
 
-    // Vider la galerie et réinsérer les cartes triées
     $gallery.empty();
     forums.forEach(f => {
       $gallery.append(f.element.show());
     });
 
-    // Mettre à jour les visuels favoris et badges
     updateFavoritesVisual();
     updateBadges();
-
-    // Message si aucun résultat
     $('#no-result').toggle(forums.length === 0);
   }
 
-  // Événements
   $gallery.on('click', '.favorite-btn', function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -224,10 +211,10 @@ $(function () {
     updateGallery();
   });
 
-  // Initialisation
   updateFavoritesVisual();
   updateGallery();
 });
+
 
 
 
