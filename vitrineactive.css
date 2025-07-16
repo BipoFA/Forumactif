@@ -794,6 +794,7 @@
   
     header.page-header a.logo {
       background: none;
+      padding: 0px 0 0px 0px;
     }
   
     header.page-header .social {
