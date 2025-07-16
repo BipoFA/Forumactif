@@ -54,6 +54,9 @@ $(function () {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
+  // 1. On mémorise l'ordre initial (array de DOM elements)
+  const initialOrder = $('.forum-card').get();
+
   function updateGallery() {
     const sortBy = $sortSelect.val();
     const selectedCat = $categoryFilter.val();
@@ -66,12 +69,13 @@ $(function () {
       $card.find('.badge-coming, .badge-new, .badge-fav').remove();
     });
 
-    $('.forum-card').each(function () {
+    // Parcourir toutes les cartes en ordre initial
+    $(initialOrder).each(function () {
       const $card = $(this);
       const cardCat = $card.data('category');
+
       if (selectedCat !== 'all' && cardCat !== selectedCat) {
-        // Si filtre activé et catégorie ne correspond pas, on ignore cette carte
-        return;
+        return; // exclure si filtre catégorie ne correspond pas
       }
 
       const title = $card.find('.forum-title').text().toLowerCase();
@@ -104,22 +108,12 @@ $(function () {
       });
     });
 
-    // Trier
-    forums.sort((a, b) => {
-      if (sortBy === 'alpha') {
-        return a.title.localeCompare(b.title);
-      } else if (sortBy === 'recent') {
-        return b.date - a.date;
-      } else {
-        if (a.isFav && !b.isFav) return -1;
-        if (!a.isFav && b.isFav) return 1;
-        if (a.isNew && !b.isNew) return -1;
-        if (!a.isNew && b.isNew) return 1;
-        if (a.isComing && !b.isComing) return 1;
-        if (!a.isComing && b.isComing) return -1;
-        return 0;
-      }
-    });
+    // Trier sauf si tri 'default' => on garde l'ordre initial (forums est dans l'ordre initial)
+    if (sortBy === 'alpha') {
+      forums.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === 'recent') {
+      forums.sort((a, b) => b.date - a.date);
+    }
 
     // Vider et remplir galerie
     $gallery.empty();
@@ -143,6 +137,7 @@ $(function () {
   // Initialisation
   updateGallery();
 });
+
 
 
 
