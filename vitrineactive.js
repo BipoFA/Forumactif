@@ -59,12 +59,16 @@ $(function () {
     const sortBy = $sortSelect.val();
     const forums = [];
 
-    // Reprendre tous les forums sans se baser sur leur visibilité actuelle
+    // Prendre toutes les cartes
     $('.forum-card').each(function () {
       const $card = $(this);
-
-      // Données
       const title = $card.find('.forum-title').text().toLowerCase();
+
+      if (!title.includes(searchTerm)) {
+        $card.hide();
+        return;
+      }
+
       const dateStr = $card.data('date');
       const forumDate = new Date(dateStr);
       forumDate.setHours(0, 0, 0, 0);
@@ -74,11 +78,10 @@ $(function () {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
-      // Nettoyage des anciens badges
+      // Nettoyage complet badges
       $card.removeClass('coming-soon new-forum fav-highlight');
       $card.find('.badge-coming, .badge-new, .badge-fav').remove();
 
-      // Appliquer les bons badges
       if (isComing) {
         $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
       } else if (isFav) {
@@ -87,29 +90,24 @@ $(function () {
         $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
       }
 
-      // Vérifier si le titre contient le mot recherché
-      const matchesSearch = title.includes(searchTerm);
+      $card.show();
 
-      if (matchesSearch) {
-        forums.push({
-          element: $card,
-          title,
-          date: forumDate,
-          isFav: isFav && !isComing,
-          isNew,
-          isComing
-        });
-      }
+      forums.push({
+        element: $card,
+        title,
+        date: forumDate,
+        isFav: isFav && !isComing,
+        isNew,
+        isComing
+      });
     });
 
-    // Tri
     forums.sort((a, b) => {
       if (sortBy === 'alpha') {
         return a.title.localeCompare(b.title);
       } else if (sortBy === 'recent') {
         return b.date - a.date;
       } else {
-        // Tri par badges par défaut
         if (a.isFav && !b.isFav) return -1;
         if (!a.isFav && b.isFav) return 1;
         if (a.isNew && !b.isNew) return -1;
@@ -120,30 +118,21 @@ $(function () {
       }
     });
 
-    // Réinitialisation du contenu
     $gallery.empty();
+    forums.forEach(f => $gallery.append(f.element));
 
-    // Réinjection des forums visibles
-    forums.forEach(f => {
-      f.element.show();
-      $gallery.append(f.element);
-    });
-
-    // Si aucun forum ne correspond
+    // Message aucun résultat
     $('#no-result').toggle(forums.length === 0);
   }
 
-  // Événements
   $searchInput.on('input', updateGallery);
   $sortSelect.on('change', updateGallery);
-
   $('#reset-filters').on('click', function () {
     $searchInput.val('');
     $sortSelect.val('default');
     updateGallery();
   });
 
-  // Initialisation
   updateGallery();
 });
 
