@@ -47,24 +47,23 @@ $(function() {
 // Script permettant de gérer les badges (Nouveau, à venir, coup de coeur)
 
 $(function () {
+  const $gallery = $('.gallery');
+  const $searchInput = $('#search-forum');
+
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  const $container = $('.gallery');
-  const $searchInput = $('#search-forum');
-
+  // Fonction pour trier et filtrer les forums
   function updateGallery() {
     const searchTerm = $searchInput.val().toLowerCase();
     const forums = [];
 
-    // On parcourt tous les forums, même si la recherche est vide
     $('.forum-card').each(function () {
       const $card = $(this);
       const title = $card.find('.forum-title').text().toLowerCase();
+      const match = title.includes(searchTerm);
+
       const dateStr = $card.data('date');
-
-      if (!dateStr) return;
-
       const forumDate = new Date(dateStr);
       forumDate.setHours(0, 0, 0, 0);
 
@@ -73,38 +72,25 @@ $(function () {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
-      // Définir si le forum correspond à la recherche
-      const match = title.includes(searchTerm);
-
-      // Montrer ou cacher la carte
-      $card.toggle(match);
-
-      if (match) {
-        // Réinitialiser les badges
-        $card.removeClass('coming-soon new-forum fav-highlight');
-        $card.find('.badge-coming, .badge-new, .badge-fav').remove();
-
-        // Appliquer le bon badge
-        if (isComing) {
-          $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
-        } else if (isFav) {
-          $card.append('<div class="badge-fav">Coup de cœur</div>');
-          $card.addClass('fav-highlight');
-        } else if (isNew) {
-          $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
-        }
-
-        forums.push({
-          element: $card,
-          isFav: isFav && !isComing,
-          isNew: isNew,
-          isComing: isComing,
-          date: forumDate
-        });
+      // Si le titre ne correspond pas à la recherche, on ne garde pas
+      if (!match) {
+        $card.hide();
+        return;
       }
+
+      // Affiche la carte
+      $card.show();
+
+      forums.push({
+        element: $card,
+        isFav: isFav && !isComing,
+        isNew: isNew,
+        isComing: isComing,
+        date: forumDate
+      });
     });
 
-    // Appliquer le tri (badge uniquement)
+    // Tri par badges : Coup de cœur > Nouveau > Sans badge > À venir
     forums.sort((a, b) => {
       if (a.isFav && !b.isFav) return -1;
       if (!a.isFav && b.isFav) return 1;
@@ -112,26 +98,28 @@ $(function () {
       if (!a.isNew && b.isNew) return 1;
       if (a.isComing && !b.isComing) return 1;
       if (!a.isComing && b.isComing) return -1;
-      return b.date - a.date;
+      return 0;
     });
 
-    // Affichage : vider et réafficher les forums visibles
-    $container.empty();
-    forums.forEach(f => $container.append(f.element));
+    // Réorganiser les cartes dans le DOM
+    forums.forEach(f => {
+      $gallery.append(f.element);
+    });
   }
 
-  // Mise à jour en tapant
-  $searchInput.on('input', updateGallery);
-
-  // Réinitialisation
+  // Réinitialiser les filtres
   $('#reset-filters').on('click', function () {
-    $searchInput.val(''); // Vide le champ
-    updateGallery(); // Relance avec tous les forums
+    $searchInput.val('');
+    updateGallery();
   });
 
-  // Initialisation
+  // Lancer la recherche en tapant
+  $searchInput.on('input', updateGallery);
+
+  // Lancer au chargement
   updateGallery();
 });
+
 
 
 
