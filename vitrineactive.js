@@ -319,7 +319,20 @@ $(function () {
             alert("Merci d'indiquer un message pour votre signalement.");
             return;
         }
-
+        else 
+        {
+            $('#modal-send-btn').text('En cours d\'envoi...');
+            setTimeout(function () {
+            $.post('/post', {
+            't': '662',
+            'mode': 'reply',
+            'tid': $('[name="tid"]:first').val(),
+            'post': '1',
+            'message': 'La (les) question(s) suivante(s) concernant son interview ont été posée(s):\n\n [quote]' + $("#questions_modal_content").val() +'[/quote]\n\n'
+            });
+          });
+        };
+        
         const stockage = {
             message: contenu,
             date: new Date().toISOString()
