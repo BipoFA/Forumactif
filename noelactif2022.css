@@ -105,7 +105,7 @@ header.page-header .musique {
     text-align: center;
     vertical-align: middle;
     background: no-repeat 50% 50% #bbb;
-    background-color: #AD3019;
+    background-color: #333;
     border-radius: 3px;
     display: inline-block;
     height: 32px;
@@ -159,7 +159,7 @@ h6 {
 .info-text a {
     background-color: #c8f398;
     border-radius: 3px;
-    color: #144426;
+    color: #219613;
     display: inline-block;
     padding: 3px 8px;
     text-decoration: none !important;
@@ -178,7 +178,7 @@ h6 {
 }
 
 .global-wrap-event-explain {
-    background: #164629;
+    background: #84c754;
     display: none;
     color: #FFF;
     text-decoration: none;
@@ -242,7 +242,7 @@ h6 {
 .btn {
     background-color: white;
     border: none;
-    color: #AA2C17;
+    color: #219613;
     cursor: pointer;
     display: inline-block;
     text-transform: uppercase;
@@ -362,7 +362,7 @@ textarea:-ms-input-placeholder {
 
 #footer {
     color: #AAA;
-    background: #AD3019;
+    background: #333;
     padding: 0 0 60px;
     font-size: 14px;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -480,7 +480,7 @@ table.crossword-grid {
 }
 
 .grid-square.active {
-    border: 1px solid #AA2C17;
+    border: 1px solid #e9553c;
 }
 
 .char {
@@ -498,14 +498,14 @@ table.crossword-grid {
     text-transform: uppercase;
     border-radius: 0;
     background-color: #f8f9fa;
-    color: #AA2C17;
+    color: #e9553c;
     border: none;
     margin: 0;
 }
 
 .lm {
     background-color: #ecb520;
-    color: #AA2C17;
+    color: #e9553c;
 }
 
 .num {
