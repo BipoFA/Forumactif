@@ -169,12 +169,16 @@ $(function () {
     } else if (sortBy === 'oldest') {
       forums.sort((a, b) => a.date - b.date);
     } else {
+      // Ordre sans favoris en tête : Coup de cœur > Nouveau > Sans badge > À venir
       forums.sort((a, b) => {
-        // Ordre : Coup de coeur, Nouveau, Sans badge, À venir
-        // IMPORTANT : Favoris affichés seulement si bouton "Mes favoris" actif, pas ici
-        const aScore = a.isFavorite ? 0 : a.isNew ? 1 : a.isComing ? 3 : 2;
-        const bScore = b.isFavorite ? 0 : b.isNew ? 1 : b.isComing ? 3 : 2;
-        if (aScore !== bScore) return aScore - bScore;
+        function score(f) {
+          if (f.isComing) return 3;
+          if (f.isCoupDeCoeur) return 0;
+          if (f.isNew) return 1;
+          return 2;
+        }
+        const diff = score(a) - score(b);
+        if (diff !== 0) return diff;
         return a.index - b.index;
       });
     }
