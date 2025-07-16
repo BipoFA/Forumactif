@@ -238,6 +238,15 @@ $(function() {
 
 $(function () {
     const DELAI_JOURS = 5;
+    
+    // Retirer le bouton de signalement pour les invités !
+    $.get('/profile?mode=editprofile', function(d) {
+      var url = $('#profile_field_3_-10', d)
+      if(!url.length)
+      {
+        $('.forum-link-signaler').css("display","block");
+      }
+    });
 
     // Injecte la modale une seule fois
     if (!$('#custom-report-modal').length) {
@@ -321,8 +330,10 @@ $(function () {
       }
     
       $('#modal-send-btn').text('En cours d\'envoi...');
-    
-      const message = 'La (les) question(s) suivante(s) concernant son interview ont été posée(s):\n\n [quote]' + contenu + '[/quote]\n\n';
+      const forumTitre = $card.data('title');
+      const message = `Signalement pour le forum : [b]${forumTitre}[/b]\n\n` +
+                      `La (les) question(s) suivante(s) concernant son interview ont été posée(s) :\n\n` +
+                      `[quote]${contenu}[/quote]\n\n`;
     
       $.post('/post', {
         't': '662',
