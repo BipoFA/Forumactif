@@ -72,6 +72,8 @@ $(function () {
     const isComing = forumDate > now;
     const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
 
+    const isCoupDeCoeur = $card.data('fav') === true || $card.data('fav') === 'true' || $card.data('fav') === 1;
+
     initialForums.push({
       element: $card,
       title: $card.data('title').toLowerCase(),
@@ -80,6 +82,7 @@ $(function () {
       id: forumId,
       isComing,
       diffDays,
+      isCoupDeCoeur,
       index
     });
   });
@@ -128,7 +131,7 @@ $(function () {
 
     if (forum.isComing) {
       $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
-    } else if (forum.isFavorite) {
+    } else if (forum.isCoupDeCoeur) {
       $card.addClass('fav-highlight').append('<div class="badge-fav">Coup de cœur</div>');
     } else if (forum.isNew) {
       $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
@@ -156,6 +159,7 @@ $(function () {
       if (filterFavs && !forum.isFavorite) {
         return false;
       }
+      // Filtre recherche sur titre
       if (searchTerm && !forum.title.includes(searchTerm)) {
         return false;
       }
@@ -169,17 +173,16 @@ $(function () {
     } else if (sortBy === 'oldest') {
       forums.sort((a, b) => a.date - b.date);
     } else {
+      // Ordre sans favoris en tête : Coup de cœur > Nouveau > Sans badge > À venir
       forums.sort((a, b) => {
-        const getScore = (forum) => {
-          if (favorites.includes(forum.id) && !forum.isComing) return 0; // Favori non à venir
-          if (forum.isFavorite) return 1; // Coup de cœur
-          if (forum.isNew) return 2; // Nouveau
-          if (forum.isComing) return 4; // À venir
-          return 3; // Sans badge
-        };
-        const aScore = getScore(a);
-        const bScore = getScore(b);
-        if (aScore !== bScore) return aScore - bScore;
+        function score(f) {
+          if (f.isComing) return 3;
+          if (f.isCoupDeCoeur) return 0;
+          if (f.isNew) return 1;
+          return 2;
+        }
+        const diff = score(a) - score(b);
+        if (diff !== 0) return diff;
         return a.index - b.index;
       });
     }
@@ -204,7 +207,6 @@ $(function () {
 
   $sortSelect.on('change', updateGallery);
   $categorySelect.on('change', updateGallery);
-  $searchInput.on('input', updateGallery);
 
   $resetButton.on('click', function () {
     $sortSelect.val('default');
