@@ -54,12 +54,12 @@ $(function () {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  // Mémoriser ordre initial
+  // Sauvegarde de l'ordre initial des cartes
   const initialOrder = $('.forum-card').get();
 
   function updateGallery() {
     const sortBy = $sortSelect.val();
-    const selectedCat = $categoryFilter.val().toLowerCase();
+    const selectedCat = ($categoryFilter.val() || 'all').toLowerCase();
     const forums = [];
 
     // Nettoyer badges
@@ -69,13 +69,13 @@ $(function () {
       $card.find('.badge-coming, .badge-new, .badge-fav').remove();
     });
 
-    // Parcourir dans ordre initial
+    // On parcourt dans l'ordre initial
     $(initialOrder).each(function () {
       const $card = $(this);
       const cardCat = ($card.data('category') || '').toString().toLowerCase();
 
       if (selectedCat !== 'all' && cardCat !== selectedCat) {
-        return;
+        return; // exclure si catégorie ne correspond pas
       }
 
       const title = $card.find('.forum-title').text().toLowerCase();
@@ -100,7 +100,7 @@ $(function () {
 
       forums.push({
         element: $card,
-        title: title,
+        title,
         date: forumDate,
         isFav: isFav && !isComing,
         isNew,
@@ -108,34 +108,37 @@ $(function () {
       });
     });
 
-    // Tri personnalisé
+    // Fonction d'ordre des badges pour tri
+    function badgePriority(forum) {
+      if (forum.isFav) return 1;
+      if (forum.isNew) return 2;
+      if (forum.isComing) return 4;
+      return 3; // Sans badge
+    }
+
+    // Tri avec priorité badge, puis tri utilisateur
     forums.sort((a, b) => {
-      // 1) Tri par badges prioritaires
-      if (a.isFav && !b.isFav) return -1;
-      if (!a.isFav && b.isFav) return 1;
-    
-      if (a.isNew && !b.isNew) return -1;
-      if (!a.isNew && b.isNew) return 1;
-    
-      if (a.isComing && !b.isComing) return 1;
-      if (!a.isComing && b.isComing) return -1;
-    
-      // 2) Si badges égaux, on trie selon la sélection utilisateur
+      const badgeA = badgePriority(a);
+      const badgeB = badgePriority(b);
+
+      if (badgeA !== badgeB) {
+        return badgeA - badgeB; // ordre badge prioritaire
+      }
+
+      // Si même badge, appliquer tri utilisateur
       if (sortBy === 'alpha') {
         return a.title.localeCompare(b.title);
       } else if (sortBy === 'recent') {
         return b.date - a.date;
       }
-    
-      // 3) Sinon, on garde l'ordre initial (donc égalité)
+
+      // Sinon ordre initial conservé (égalité)
       return 0;
     });
 
-    // Vider et remplir galerie
+    // Mise à jour du DOM
     $gallery.empty();
-    forums.forEach(f => {
-      $gallery.append(f.element.show());
-    });
+    forums.forEach(f => $gallery.append(f.element.show()));
 
     $('#no-result').toggle(forums.length === 0);
   }
@@ -153,6 +156,7 @@ $(function () {
   // Initialisation
   updateGallery();
 });
+
 
 
 
