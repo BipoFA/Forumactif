@@ -71,7 +71,7 @@ $(function () {
     const isFav = favorites.includes(forumId);
     const isComing = forumDate > now;
     const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
-    const isNew = !isComing && !isFav && diffDays >= 0 && diffDays <= 30;
+    const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
     initialForums.push({
       element: $card,
@@ -79,10 +79,10 @@ $(function () {
       date: forumDate,
       category: $card.data('category'),
       id: forumId,
-      isFav: isFav && !isComing,
-      isNew: isNew,
-      isComing: isComing,
-      index: index
+      isFav,
+      isNew,
+      isComing,
+      index
     });
   });
 
@@ -130,7 +130,7 @@ $(function () {
 
     if (forum.isComing) {
       $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
-    } else if (favorites.includes(forum.id)) {
+    } else if (forum.isFav) {
       $card.addClass('fav-highlight').append('<div class="badge-fav">Coup de cœur</div>');
     } else if (forum.isNew) {
       $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
@@ -142,7 +142,13 @@ $(function () {
     const selectedCategory = $categorySelect.val();
     const filterFavs = $favButton.data('active') === true || $favButton.data('active') === 'true';
 
-    let filteredForums = initialForums.filter(forum => {
+    let forums = initialForums.map(forum => {
+      return {
+        ...forum,
+        isFav: favorites.includes(forum.id),
+        isNew: !favorites.includes(forum.id) && !forum.isComing && (now - forum.date) / (1000 * 60 * 60 * 24) <= 30
+      };
+    }).filter(forum => {
       if (selectedCategory !== 'all' && forum.category !== selectedCategory) {
         return false;
       }
@@ -153,21 +159,29 @@ $(function () {
     });
 
     if (sortBy === 'alpha') {
-      filteredForums.sort((a, b) => a.title.localeCompare(b.title));
+      forums.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === 'recent') {
-      filteredForums.sort((a, b) => b.date - a.date);
+      forums.sort((a, b) => b.date - a.date);
     } else {
-      filteredForums.sort((a, b) => a.index - b.index); // ordre initial strict
+      forums.sort((a, b) => {
+        if (a.isFav && !b.isFav) return -1;
+        if (!a.isFav && b.isFav) return 1;
+        if (a.isNew && !b.isNew) return -1;
+        if (!a.isNew && b.isNew) return 1;
+        if (a.isComing && !b.isComing) return 1;
+        if (!a.isComing && b.isComing) return -1;
+        return a.index - b.index;
+      });
     }
 
     $gallery.empty();
 
-    filteredForums.forEach(forum => {
+    forums.forEach(forum => {
       applyBadges(forum.element, forum);
       $gallery.append(forum.element.show());
     });
 
-    $('#no-result').toggle(filteredForums.length === 0);
+    $('#no-result').toggle(forums.length === 0);
     updateFavoriteVisuals();
   }
 
@@ -191,6 +205,7 @@ $(function () {
   updateFavoriteVisuals();
   updateGallery();
 });
+
 
 
 
