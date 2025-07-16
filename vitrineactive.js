@@ -46,7 +46,11 @@ $(function () {
   let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
 
   const $gallery = $('.gallery');
-  const initialOrder = $gallery.children('.forum-card').toArray(); // ordre DOM initial
+
+  // 🧠 CLONE DE L'ORDRE INITIAL POUR TRI PAR DÉFAUT
+  const initialClones = $gallery.children('.forum-card').map(function () {
+    return $(this).clone(true)[0]; // clone avec événements
+  }).get();
 
   function updateFavoritesVisual() {
     $('.forum-card').each(function () {
@@ -103,14 +107,14 @@ $(function () {
     updateGallery();
   }
 
-  $('.gallery').on('click', '.favorite-btn', function (e) {
+  $gallery.on('click', '.favorite-btn', function (e) {
     e.preventDefault();
     e.stopPropagation();
     const forumId = $(this).closest('.forum-card').data('id');
     toggleFavorite(forumId);
   });
 
-  $('.gallery').on('keydown', '.favorite-btn', function (e) {
+  $gallery.on('keydown', '.favorite-btn', function (e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       const forumId = $(this).closest('.forum-card').data('id');
@@ -154,7 +158,8 @@ $(function () {
 
       cards = [...pastOrToday, ...future];
     } else {
-      cards = initialOrder;
+      // Tri par défaut = re-clonage
+      cards = initialClones.map(el => $(el).clone(true)[0]);
     }
 
     $gallery.empty().append(cards);
@@ -198,10 +203,11 @@ $(function () {
     updateGallery();
   });
 
-  // Init
+  // Initialisation
   updateFavoritesVisual();
   updateGallery();
 });
+
 
 
 
