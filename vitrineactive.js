@@ -42,118 +42,149 @@ $(function() {
 
 // Script permettant de rechercher, trier, gérer les forums favoris
 
-$(function() {
-    const favoritesKey = 'forumFavorites';
-    let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
-  
-    // Met à jour visuellement les étoiles selon les favoris stockés
-    function updateFavoritesVisual() {
-      $('.forum-card').each(function() {
-        const forumId = $(this).data('id');
-        const $favBtn = $(this).find('.favorite-btn');
-        if (favorites.includes(forumId)) {
-          $favBtn.addClass('favorited')
-            .attr('aria-label', 'Retirer des favoris')
-            .text('★');
-        } else {
-          $favBtn.removeClass('favorited')
-            .attr('aria-label', 'Ajouter aux favoris')
-            .text('☆');
-        }
-      });
-    }
-  
-    // Ajout/retrait des favoris
-    function toggleFavorite(forumId) {
+$(function () {
+  const favoritesKey = 'forumFavorites';
+  let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
+
+  const $gallery = $('.gallery');
+
+  // Sauvegarder l'ordre initial (clone des cartes)
+  const initialClones = $gallery.children('.forum-card').map(function () {
+    return $(this).clone(true)[0];
+  }).get();
+
+  function updateFavoritesVisual() {
+    $('.forum-card').each(function () {
+      const forumId = $(this).data('id');
+      const $favBtn = $(this).find('.favorite-btn');
       if (favorites.includes(forumId)) {
-        favorites = favorites.filter(id => id !== forumId);
+        $favBtn.addClass('favorited')
+          .attr('aria-label', 'Retirer des favoris')
+          .text('★');
       } else {
-        favorites.push(forumId);
-      }
-      localStorage.setItem(favoritesKey, JSON.stringify(favorites));
-      updateFavoritesVisual();
-      updateGallery();
-    }
-  
-    // Gestion clic sur l'étoile
-    $('.gallery').on('click', '.favorite-btn', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      const forumId = $(this).closest('.forum-card').data('id');
-      toggleFavorite(forumId);
-    });
-  
-    // Gestion clavier pour accessibilité
-    $('.gallery').on('keydown', '.favorite-btn', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        const forumId = $(this).closest('.forum-card').data('id');
-        toggleFavorite(forumId);
+        $favBtn.removeClass('favorited')
+          .attr('aria-label', 'Ajouter aux favoris')
+          .text('☆');
       }
     });
-  
-    // Mise à jour de la galerie (filtrage, tri)
-    function updateGallery() {
-      const searchTerm = $('#search-forum').val().toLowerCase();
-      const selectedCat = $('#category-filter').val();
-      const sortBy = $('#sort-forums').val();
-      const showFavOnly = $('#filter-favorites').data('active') === true || $('#filter-favorites').data('active') === 'true';
-  
-      const $cards = $('.forum-card').get();
-      $cards.sort(function(a, b) {
-        if (sortBy === 'alpha') {
-          return $(a).data('title').localeCompare($(b).data('title'));
-        } else if (sortBy === 'recent') {
-          return new Date($(b).data('date')) - new Date($(a).data('date'));
-        }
-        return 0;
-      });
-  
-      $('.gallery').append($cards);
-  
-      let visible = 0;
-      $('.forum-card').each(function() {
-        const title = $(this).find('.forum-title').text().toLowerCase();
-        const desc = $(this).find('.forum-description').text().toLowerCase();
-        const cat = $(this).data('category');
-        const forumId = $(this).data('id');
-  
-        const matchSearch = title.includes(searchTerm) || desc.includes(searchTerm);
-        const matchCat = selectedCat === 'all' || cat === selectedCat;
-        const matchFav = !showFavOnly || favorites.includes(forumId);
-  
-        const match = matchSearch && matchCat && matchFav;
-  
-        $(this).toggle(match);
-        if (match) visible++;
-      });
-  
-      $('#no-result').toggle(visible === 0);
+  }
+
+  function updateBadges() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    $('.forum-card').each(function () {
+      const $card = $(this);
+      const dateStr = $card.data('date');
+      const forumDate = new Date(dateStr);
+      forumDate.setHours(0, 0, 0, 0);
+
+      const isComing = forumDate > now;
+      const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
+      const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
+
+      $card.removeClass('coming-soon new-forum');
+      $card.find('.badge-coming, .badge-new').remove();
+
+      if (isComing) {
+        $card.addClass('coming-soon')
+          .append('<div class="badge-coming">À venir</div>');
+      } else if (isNew) {
+        $card.addClass('new-forum')
+          .append('<div class="badge-new">Nouveau</div>');
+      }
+    });
+  }
+
+  function toggleFavorite(forumId) {
+    if (favorites.includes(forumId)) {
+      favorites = favorites.filter(id => id !== forumId);
+    } else {
+      favorites.push(forumId);
     }
-  
-    // Filtres et tri
-    $('#search-forum, #sort-forums, #category-filter').on('input change', updateGallery);
-  
-    $('#filter-favorites').on('click', function() {
-      const active = $(this).data('active') === true || $(this).data('active') === 'true';
-      $(this).data('active', !active);
-      $(this).text(active ? 'Mes favoris' : 'Tous les forums');
-      updateGallery();
-    });
-  
-    $('#reset-filters').on('click', function() {
-      $('#search-forum').val('');
-      $('#sort-forums').val('default');
-      $('#category-filter').val('all');
-      $('#filter-favorites').data('active', false).text('Mes favoris');
-      updateGallery();
-    });
-  
-    // Init
+    localStorage.setItem(favoritesKey, JSON.stringify(favorites));
     updateFavoritesVisual();
     updateGallery();
+  }
 
+  $gallery.on('click', '.favorite-btn', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const forumId = $(this).closest('.forum-card').data('id');
+    toggleFavorite(forumId);
+  });
+
+  $gallery.on('keydown', '.favorite-btn', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const forumId = $(this).closest('.forum-card').data('id');
+      toggleFavorite(forumId);
+    }
+  });
+
+  function updateGallery() {
+    const searchTerm = $('#search-forum').val() ? $('#search-forum').val().toLowerCase() : '';
+    const selectedCat = $('#category-filter').val() || 'all';
+    const sortBy = $('#sort-forums').val() || 'default';
+    const showFavOnly = $('#filter-favorites').data('active') === true || $('#filter-favorites').data('active') === 'true';
+
+    let cards;
+
+    if (sortBy === 'alpha') {
+      cards = $('.forum-card').get().sort((a, b) =>
+        $(a).data('title').localeCompare($(b).data('title'))
+      );
+    } else {
+      // Par défaut, on remet l'ordre initial (clone)
+      cards = initialClones.map(el => $(el).clone(true)[0]);
+    }
+
+    $gallery.empty().append(cards);
+
+    let visible = 0;
+    $('.forum-card').each(function () {
+      const title = $(this).find('.forum-title').text().toLowerCase();
+      const desc = $(this).find('.forum-description').text().toLowerCase();
+      const cat = $(this).data('category');
+      const forumId = $(this).data('id');
+
+      const matchSearch = title.includes(searchTerm) || desc.includes(searchTerm);
+      const matchCat = selectedCat === 'all' || cat === selectedCat;
+      const matchFav = !showFavOnly || favorites.includes(forumId);
+
+      const match = matchSearch && matchCat && matchFav;
+
+      $(this).toggle(match);
+      if (match) visible++;
+    });
+
+    $('#no-result').toggle(visible === 0);
+    updateFavoritesVisual();
+    updateBadges();
+  }
+
+  $('#search-forum, #sort-forums, #category-filter').on('input change', updateGallery);
+
+  $('#filter-favorites').on('click', function () {
+    const active = $(this).data('active') === true || $(this).data('active') === 'true';
+    $(this).data('active', !active);
+    $(this).text(active ? 'Mes favoris' : 'Tous les forums');
+    updateGallery();
+  });
+
+  $('#reset-filters').on('click', function () {
+    $('#search-forum').val('');
+    $('#sort-forums').val('default');
+    $('#category-filter').val('all');
+    $('#filter-favorites').data('active', false).text('Mes favoris');
+    updateGallery();
+  });
+
+  // Initialisation
+  updateFavoritesVisual();
+  updateGallery();
 });
+
 
 
 
