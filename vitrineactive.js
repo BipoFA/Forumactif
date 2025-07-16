@@ -79,7 +79,9 @@ $(function () {
       id: forumId,
       isComing,
       diffDays,
-      index
+      index,
+      // Ne tient PAS compte du localStorage ici pour isFavorite, on la calcule dans updateGallery
+      dataFav: $card.data('fav') === true || $card.data('fav') === 'true' || $card.data('fav') === 1,
     });
   });
 
@@ -124,10 +126,10 @@ $(function () {
   function applyBadges($card, forum) {
     $card.removeClass('coming-soon new-forum fav-highlight');
     $card.find('.badge-coming, .badge-new, .badge-fav').remove();
-  
+
     if (forum.isComing) {
       $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
-    } else if (forum.isFavorite) {
+    } else if (forum.isFavorite || forum.dataFav) { // dataFav pris en compte ici
       $card.addClass('fav-highlight').append('<div class="badge-fav">Coup de cœur</div>');
     } else if (forum.isNew) {
       $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
@@ -138,9 +140,9 @@ $(function () {
     const sortBy = $sortSelect.val();
     const selectedCategory = $categorySelect.val();
     const filterFavs = $favButton.data('active') === true || $favButton.data('active') === 'true';
-  
+
     let forums = initialForums.map(forum => {
-      const isFavorite = favorites.includes(forum.id);
+      const isFavorite = favorites.includes(forum.id) || forum.dataFav; // Si localStorage OU data-fav HTML
       const isNew = !isFavorite && !forum.isComing && forum.diffDays >= 0 && forum.diffDays <= 30;
       return {
         ...forum,
@@ -156,36 +158,33 @@ $(function () {
       }
       return true;
     });
-  
+
     if (sortBy === 'alpha') {
       forums.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === 'recent') {
       forums.sort((a, b) => b.date - a.date);
     } else {
+      // Ordre : Favoris (non à venir), Coup de coeur, Nouveau, Sans badge, À venir
       forums.sort((a, b) => {
-        function getPriority(forum) {
-          if (forum.isComing) return 3;
-          if (forum.isFavorite) return 0;
-          if (forum.isNew) return 1;
-          return 2;
+        function rank(f) {
+          if (f.isComing) return 4;
+          if (f.isFavorite || f.dataFav) return 0;  // Coup de coeur prioritaire sur nouveau
+          if (f.isNew) return 2;
+          return 3; // Sans badge
         }
-  
-        const priorityA = getPriority(a);
-        const priorityB = getPriority(b);
-  
-        if (priorityA !== priorityB) return priorityA - priorityB;
-  
-        return a.index - b.index;
+        const diff = rank(a) - rank(b);
+        if (diff !== 0) return diff;
+        return a.index - b.index; // Ordre initial
       });
     }
-  
+
     $gallery.empty();
-  
+
     forums.forEach(forum => {
       applyBadges(forum.element, forum);
       $gallery.append(forum.element.show());
     });
-  
+
     $('#no-result').toggle(forums.length === 0);
     updateFavoriteVisuals();
   }
@@ -210,6 +209,7 @@ $(function () {
   updateFavoriteVisuals();
   updateGallery();
 });
+
 
 
 
