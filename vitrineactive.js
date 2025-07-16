@@ -49,24 +49,31 @@ $(function() {
 $(function () {
   const $gallery = $('.gallery');
   const $sortSelect = $('#sort-forums');
+  const $categoryFilter = $('#category-filter');
 
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
   function updateGallery() {
     const sortBy = $sortSelect.val();
+    const selectedCat = $categoryFilter.val();
     const forums = [];
 
-    // 1. Nettoyer tous les badges de toutes les cartes AVANT le tri
+    // Nettoyer badges
     $('.forum-card').each(function () {
       const $card = $(this);
       $card.removeClass('coming-soon new-forum fav-highlight');
       $card.find('.badge-coming, .badge-new, .badge-fav').remove();
     });
 
-    // 2. Parcourir toutes les cartes (plus de filtre recherche)
     $('.forum-card').each(function () {
       const $card = $(this);
+      const cardCat = $card.data('category');
+      if (selectedCat !== 'all' && cardCat !== selectedCat) {
+        // Si filtre activé et catégorie ne correspond pas, on ignore cette carte
+        return;
+      }
+
       const title = $card.find('.forum-title').text().toLowerCase();
 
       const dateStr = $card.data('date');
@@ -78,7 +85,7 @@ $(function () {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
-      // 3. Ajouter les badges sur la carte
+      // Ajouter badges
       if (isComing) {
         $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
       } else if (isFav) {
@@ -97,14 +104,13 @@ $(function () {
       });
     });
 
-    // 4. Trier la liste selon la sélection
+    // Trier
     forums.sort((a, b) => {
       if (sortBy === 'alpha') {
         return a.title.localeCompare(b.title);
       } else if (sortBy === 'recent') {
         return b.date - a.date;
       } else {
-        // Tri par badges par défaut
         if (a.isFav && !b.isFav) return -1;
         if (!a.isFav && b.isFav) return 1;
         if (a.isNew && !b.isNew) return -1;
@@ -115,27 +121,29 @@ $(function () {
       }
     });
 
-    // 5. Vider la galerie et réinsérer les cartes triées
+    // Vider et remplir galerie
     $gallery.empty();
     forums.forEach(f => {
       $gallery.append(f.element.show());
     });
 
-    // 6. Cacher le message "aucun résultat" puisque plus de filtre recherche
-    $('#no-result').hide();
+    $('#no-result').toggle(forums.length === 0);
   }
 
-  // Événement uniquement sur le tri
+  // Événements
   $sortSelect.on('change', updateGallery);
+  $categoryFilter.on('change', updateGallery);
 
   $('#reset-filters').on('click', function () {
     $sortSelect.val('default');
+    $categoryFilter.val('all');
     updateGallery();
   });
 
   // Initialisation
   updateGallery();
 });
+
 
 
 
