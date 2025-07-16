@@ -13,42 +13,12 @@ $(function() {
 
 // Script permettant de gérer le mode dark (Bipo a mal à ses yeux)
 
-$(function() {
-  const themeKey = 'forumTheme';
-
-  function applyTheme(theme) {
-    if (theme === 'dark') {
-      $('body').addClass('dark-mode');
-      $('#theme-toggle').text('Mode clair');
-    } else {
-      $('body').removeClass('dark-mode');
-      $('#theme-toggle').text('Mode sombre');
-    }
-  }
-
-  // Charger le thème au démarrage
-  const savedTheme = localStorage.getItem(themeKey) || 'light';
-  applyTheme(savedTheme);
-
-  // Gestion du clic toggle
-  $('#theme-toggle').on('click', function() {
-    const currentTheme = $('body').hasClass('dark-mode') ? 'dark' : 'light';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    applyTheme(newTheme);
-    localStorage.setItem(themeKey, newTheme);
-  });
-});
-
-// Fonction recherche / tri / catégories / favoris ...
-
 $(function () {
   const favoritesKey = 'forumFavorites';
   let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
 
-  // ⚠️ On stocke l'ordre initial des cartes clonées
-  const initialClones = $('.forum-card').map(function () {
-    return $(this).clone(true)[0]; // true pour garder les handlers d'événements
-  }).get();
+  const $gallery = $('.gallery');
+  const initialOrder = $gallery.children('.forum-card').toArray(); // ordre initial DOM
 
   function updateFavoritesVisual() {
     $('.forum-card').each(function () {
@@ -98,26 +68,21 @@ $(function () {
     const sortBy = $('#sort-forums').val();
     const showFavOnly = $('#filter-favorites').data('active') === true || $('#filter-favorites').data('active') === 'true';
 
-    let $cards;
+    let cards;
 
     if (sortBy === 'alpha') {
-      $cards = $('.forum-card').get().sort((a, b) =>
+      cards = $('.forum-card').get().sort((a, b) =>
         $(a).data('title').localeCompare($(b).data('title'))
       );
     } else if (sortBy === 'recent') {
-      $cards = $('.forum-card').get().sort((a, b) =>
+      cards = $('.forum-card').get().sort((a, b) =>
         new Date($(b).data('date')) - new Date($(a).data('date'))
       );
-    } else if (sortBy === 'default') {
-      // 🔄 Réinjection des clones originaux
-      $('.gallery').empty().append(initialClones.map(el => $(el).clone(true)));
-      updateFavoritesVisual();
-      return; // On revient ici car updateGallery sera relancé
+    } else {
+      cards = initialOrder;
     }
 
-    if ($cards) {
-      $('.gallery').empty().append($cards);
-    }
+    $gallery.empty().append(cards);
 
     let visible = 0;
     $('.forum-card').each(function () {
