@@ -59,14 +59,20 @@ $(function () {
     const sortBy = $sortSelect.val();
     const forums = [];
 
-    // Prendre toutes les cartes
+    // 1. Nettoyer tous les badges de toutes les cartes AVANT la recherche/tris
+    $('.forum-card').each(function () {
+      const $card = $(this);
+      $card.removeClass('coming-soon new-forum fav-highlight');
+      $card.find('.badge-coming, .badge-new, .badge-fav').remove();
+    });
+
+    // 2. Filtrer les cartes correspondant à la recherche
     $('.forum-card').each(function () {
       const $card = $(this);
       const title = $card.find('.forum-title').text().toLowerCase();
 
       if (!title.includes(searchTerm)) {
-        $card.hide();
-        return;
+        return; // ne pas ajouter si ne correspond pas
       }
 
       const dateStr = $card.data('date');
@@ -78,10 +84,7 @@ $(function () {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
-      // Nettoyage complet badges
-      $card.removeClass('coming-soon new-forum fav-highlight');
-      $card.find('.badge-coming, .badge-new, .badge-fav').remove();
-
+      // 3. Ajouter les badges sur la carte filtrée
       if (isComing) {
         $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
       } else if (isFav) {
@@ -90,11 +93,9 @@ $(function () {
         $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
       }
 
-      $card.show();
-
       forums.push({
         element: $card,
-        title,
+        title: title,
         date: forumDate,
         isFav: isFav && !isComing,
         isNew,
@@ -102,6 +103,7 @@ $(function () {
       });
     });
 
+    // 4. Trier la liste selon la sélection
     forums.sort((a, b) => {
       if (sortBy === 'alpha') {
         return a.title.localeCompare(b.title);
@@ -118,13 +120,17 @@ $(function () {
       }
     });
 
+    // 5. Vider la galerie et réinsérer les cartes filtrées et triées
     $gallery.empty();
-    forums.forEach(f => $gallery.append(f.element));
+    forums.forEach(f => {
+      $gallery.append(f.element.show());
+    });
 
-    // Message aucun résultat
+    // 6. Afficher un message si aucun forum ne correspond
     $('#no-result').toggle(forums.length === 0);
   }
 
+  // Événements
   $searchInput.on('input', updateGallery);
   $sortSelect.on('change', updateGallery);
   $('#reset-filters').on('click', function () {
@@ -133,6 +139,7 @@ $(function () {
     updateGallery();
   });
 
+  // Initialisation
   updateGallery();
 });
 
