@@ -39,12 +39,14 @@ $(function() {
   });
 });
 
+// Fonction recherche / tri / catégories / favoris ...
+
 $(function() {
   const favoritesKey = 'forumFavorites';
   let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || [];
 
-  // Sauvegarde de l’ordre initial des forums
-  const initialOrder = $('.forum-card').toArray();
+  // On déclare ici, mais on initialise après
+  let initialOrder = [];
 
   function updateFavoritesVisual() {
     $('.forum-card').each(function() {
@@ -100,8 +102,8 @@ $(function() {
       $cards.sort((a, b) => $(a).data('title').localeCompare($(b).data('title')));
     } else if (sortBy === 'recent') {
       $cards.sort((a, b) => new Date($(b).data('date')) - new Date($(a).data('date')));
-    } else if (sortBy === 'default') {
-      $cards = initialOrder.slice(); 
+    } else if (sortBy === 'default' && initialOrder.length) {
+      $cards = initialOrder.slice();
     }
 
     $('.gallery').append($cards);
@@ -144,10 +146,14 @@ $(function() {
     updateGallery();
   });
 
-  // Init
+  // Initialisation
   updateFavoritesVisual();
   updateGallery();
+
+  // 💡 C’est ici qu’on sauvegarde l’ordre initial
+  initialOrder = $('.forum-card').toArray();
 });
+
 
 // Script permettant de gérer les badges (Nouveau, à venir, coup de coeur)
 
