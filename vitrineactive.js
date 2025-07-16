@@ -124,7 +124,7 @@ $(function () {
   function applyBadges($card, forum) {
     $card.removeClass('coming-soon new-forum fav-highlight');
     $card.find('.badge-coming, .badge-new, .badge-fav').remove();
-
+  
     if (forum.isComing) {
       $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
     } else if (forum.isFavorite) {
