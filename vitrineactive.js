@@ -61,7 +61,7 @@ $(function () {
 
   const initialForums = [];
 
-  $('.forum-card').each(function () {
+  $('.forum-card').each(function (index) {
     const $card = $(this);
     const dateStr = $card.data('date');
     const forumDate = new Date(dateStr);
@@ -71,7 +71,7 @@ $(function () {
     const isFav = favorites.includes(forumId);
     const isComing = forumDate > now;
     const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
-    const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
+    const isNew = !isComing && !isFav && diffDays >= 0 && diffDays <= 30;
 
     initialForums.push({
       element: $card,
@@ -81,7 +81,8 @@ $(function () {
       id: forumId,
       isFav: isFav && !isComing,
       isNew: isNew,
-      isComing: isComing
+      isComing: isComing,
+      index: index
     });
   });
 
@@ -151,21 +152,12 @@ $(function () {
       return true;
     });
 
-    // Tri
     if (sortBy === 'alpha') {
       filteredForums.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === 'recent') {
       filteredForums.sort((a, b) => b.date - a.date);
     } else {
-      filteredForums.sort((a, b) => {
-        if (favorites.includes(a.id) && !favorites.includes(b.id)) return -1;
-        if (!favorites.includes(a.id) && favorites.includes(b.id)) return 1;
-        if (a.isNew && !b.isNew) return -1;
-        if (!a.isNew && b.isNew) return 1;
-        if (a.isComing && !b.isComing) return 1;
-        if (!a.isComing && b.isComing) return -1;
-        return 0;
-      });
+      filteredForums.sort((a, b) => a.index - b.index); // ordre initial strict
     }
 
     $gallery.empty();
@@ -196,7 +188,6 @@ $(function () {
     updateGallery();
   });
 
-  // Init
   updateFavoriteVisuals();
   updateGallery();
 });
