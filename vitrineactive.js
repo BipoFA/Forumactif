@@ -163,18 +163,15 @@ $(function () {
       forums.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === 'recent') {
       forums.sort((a, b) => b.date - a.date);
+    } else if (sortBy === 'oldest') {
+      forums.sort((a, b) => a.date - b.date);
     } else {
-      // Ordre : Favoris (non à venir), Coup de coeur, Nouveau, Sans badge, À venir
+      // Tri par défaut : Coup de coeur > Nouveau > Sans badge > À venir, puis ordre initial
       forums.sort((a, b) => {
-        function rank(f) {
-          if (f.isComing) return 4;
-          if (f.isFavorite || f.dataFav) return 0;  // Coup de coeur prioritaire sur nouveau
-          if (f.isNew) return 2;
-          return 3; // Sans badge
-        }
-        const diff = rank(a) - rank(b);
-        if (diff !== 0) return diff;
-        return a.index - b.index; // Ordre initial
+        const aScore = a.isComing ? 4 : a.isFavorite ? 0 : a.isNew ? 2 : 3;
+        const bScore = b.isComing ? 4 : b.isFavorite ? 0 : b.isNew ? 2 : 3;
+        if (aScore !== bScore) return aScore - bScore;
+        return a.index - b.index;
       });
     }
 
