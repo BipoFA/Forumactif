@@ -54,38 +54,7 @@ $(function () {
 
   const $gallery = $('.gallery');
 
-  // On récupère au chargement l'ordre initial des éléments
-  // sous forme de tableau des IDs dans l'ordre initial
-  const initialOrder = $gallery.children('.forum-card').map(function () {
-    return $(this).data('id');
-  }).get();
-
-  // Récupérer les éléments dans l'ordre donné par un tableau d'IDs
-  function getCardsByOrder(orderArray) {
-    const cards = [];
-    orderArray.forEach(id => {
-      const card = $gallery.find(`.forum-card[data-id="${id}"]`)[0];
-      if (card) cards.push(card);
-    });
-    return cards;
-  }
-
-  function updateFavoritesVisual() {
-    $('.forum-card').each(function () {
-      const forumId = $(this).data('id');
-      const $favBtn = $(this).find('.favorite-btn');
-      if (favorites.includes(forumId)) {
-        $favBtn.addClass('favorited')
-          .attr('aria-label', 'Retirer des favoris')
-          .text('★');
-      } else {
-        $favBtn.removeClass('favorited')
-          .attr('aria-label', 'Ajouter aux favoris')
-          .text('☆');
-      }
-    });
-  }
-
+  // Met à jour les badges (À venir, Coup de cœur, Nouveau)
   function updateBadges() {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -117,6 +86,24 @@ $(function () {
     });
   }
 
+  // Met à jour visuellement les favoris (étoiles)
+  function updateFavoritesVisual() {
+    $('.forum-card').each(function () {
+      const forumId = $(this).data('id');
+      const $favBtn = $(this).find('.favorite-btn');
+      if (favorites.includes(forumId)) {
+        $favBtn.addClass('favorited')
+          .attr('aria-label', 'Retirer des favoris')
+          .text('★');
+      } else {
+        $favBtn.removeClass('favorited')
+          .attr('aria-label', 'Ajouter aux favoris')
+          .text('☆');
+      }
+    });
+  }
+
+  // Toggle favoris
   function toggleFavorite(forumId) {
     if (favorites.includes(forumId)) {
       favorites = favorites.filter(id => id !== forumId);
@@ -143,22 +130,60 @@ $(function () {
     }
   });
 
+  // Fonction de tri prioritaire : favoris > nouveau > à venir > date décroissante
+  function sortByPriority(cards) {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    return cards.sort((a, b) => {
+      const $a = $(a), $b = $(b);
+      const idA = $a.data('id'), idB = $b.data('id');
+
+      const dateA = new Date($a.data('date'));
+      dateA.setHours(0, 0, 0, 0);
+      const dateB = new Date($b.data('date'));
+      dateB.setHours(0, 0, 0, 0);
+
+      const isFavA = favorites.includes(idA);
+      const isFavB = favorites.includes(idB);
+
+      const diffA = (now - dateA) / (1000 * 60 * 60 * 24);
+      const diffB = (now - dateB) / (1000 * 60 * 60 * 24);
+
+      const isNewA = ! (dateA > now) && diffA >= 0 && diffA <= 30;
+      const isNewB = ! (dateB > now) && diffB >= 0 && diffB <= 30;
+
+      const isComingA = dateA > now;
+      const isComingB = dateB > now;
+
+      if (isFavA && !isFavB) return -1;
+      if (!isFavA && isFavB) return 1;
+
+      if (isNewA && !isNewB) return -1;
+      if (!isNewA && isNewB) return 1;
+
+      if (isComingA && !isComingB) return 1;
+      if (!isComingA && isComingB) return -1;
+
+      return dateB - dateA;
+    });
+  }
+
+  // Met à jour la galerie : tri, filtres, affichage
   function updateGallery() {
     const searchTerm = $('#search-forum').val() ? $('#search-forum').val().toLowerCase() : '';
     const selectedCat = $('#category-filter').val() || 'all';
     const sortBy = $('#sort-forums').val() || 'default';
     const showFavOnly = $('#filter-favorites').data('active') === true || $('#filter-favorites').data('active') === 'true';
 
-    let cards;
+    let cards = $('.forum-card').get();
 
     if (sortBy === 'alpha') {
-      // Récupérer toutes les cartes, trier par titre
-      cards = $('.forum-card').get().sort((a, b) =>
+      cards = cards.sort((a, b) =>
         $(a).data('title').localeCompare($(b).data('title'))
       );
     } else {
-      // Sinon remettre l'ordre initial avec les éléments actuels (pas clones)
-      cards = getCardsByOrder(initialOrder);
+      cards = sortByPriority(cards);
     }
 
     $gallery.empty().append(cards);
@@ -185,6 +210,7 @@ $(function () {
     updateBadges();
   }
 
+  // Évènements sur filtres / tri
   $('#search-forum, #sort-forums, #category-filter').on('input change', updateGallery);
 
   $('#filter-favorites').on('click', function () {
@@ -194,6 +220,7 @@ $(function () {
     updateGallery();
   });
 
+  // Bouton réinitialiser : reset filtres + tri (prioritaire)
   $('#reset-filters').on('click', function () {
     $('#search-forum').val('');
     $('#sort-forums').val('default');
