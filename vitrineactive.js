@@ -346,14 +346,3 @@ $(function () {
       });
     });    
 });
-
-$('#clear-localstorage').on('click', function () {
-  localStorage.clear();
-  alert('Le localStorage a été vidé.');
-  location.reload();
-});
-
-$('#bypass-cache').on('click', function () {
-  const baseUrl = location.href.split('?')[0];
-  location.href = baseUrl + '?cachebuster=' + Date.now();
-});
