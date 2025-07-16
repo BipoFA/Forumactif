@@ -47,9 +47,9 @@ $(function () {
 
   const $gallery = $('.gallery');
 
-  // 🧠 CLONE DE L'ORDRE INITIAL POUR TRI PAR DÉFAUT
+  // Clone des cartes pour ordre initial (clone avec événements)
   const initialClones = $gallery.children('.forum-card').map(function () {
-    return $(this).clone(true)[0]; // clone avec événements
+    return $(this).clone(true)[0];
   }).get();
 
   function updateFavoritesVisual() {
@@ -82,7 +82,7 @@ $(function () {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
-      // Nettoyage
+      // Nettoyage badges existants
       $card.removeClass('coming-soon new-forum');
       $card.find('.badge-coming, .badge-new').remove();
 
@@ -123,9 +123,9 @@ $(function () {
   });
 
   function updateGallery() {
-    const searchTerm = $('#search-forum').val().toLowerCase();
-    const selectedCat = $('#category-filter').val();
-    const sortBy = $('#sort-forums').val();
+    const searchTerm = $('#search-forum').val() ? $('#search-forum').val().toLowerCase() : '';
+    const selectedCat = $('#category-filter').val() || 'all';
+    const sortBy = $('#sort-forums').val() || 'default';
     const showFavOnly = $('#filter-favorites').data('active') === true || $('#filter-favorites').data('active') === 'true';
 
     let cards;
@@ -158,7 +158,7 @@ $(function () {
 
       cards = [...pastOrToday, ...future];
     } else {
-      // Tri par défaut = re-clonage
+      // Tri par défaut : on remet les clones clonés
       cards = initialClones.map(el => $(el).clone(true)[0]);
     }
 
