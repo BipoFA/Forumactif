@@ -53,7 +53,6 @@ $(function () {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  // Fonction pour trier et filtrer les forums
   function updateGallery() {
     const searchTerm = $searchInput.val().toLowerCase();
     const forums = [];
@@ -72,14 +71,28 @@ $(function () {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
-      // Si le titre ne correspond pas à la recherche, on ne garde pas
+      // Masquer si non pertinent
       if (!match) {
         $card.hide();
         return;
       }
 
-      // Affiche la carte
+      // Montrer la carte
       $card.show();
+
+      // Nettoyer les anciens badges
+      $card.removeClass('coming-soon new-forum fav-highlight');
+      $card.find('.badge-coming, .badge-new, .badge-fav').remove();
+
+      // Appliquer les badges
+      if (isComing) {
+        $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
+      } else if (isFav) {
+        $card.append('<div class="badge-fav">Coup de cœur</div>');
+        $card.addClass('fav-highlight');
+      } else if (isNew) {
+        $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
+      }
 
       forums.push({
         element: $card,
@@ -90,7 +103,7 @@ $(function () {
       });
     });
 
-    // Tri par badges : Coup de cœur > Nouveau > Sans badge > À venir
+    // Trier selon les badges
     forums.sort((a, b) => {
       if (a.isFav && !b.isFav) return -1;
       if (!a.isFav && b.isFav) return 1;
@@ -101,22 +114,22 @@ $(function () {
       return 0;
     });
 
-    // Réorganiser les cartes dans le DOM
+    // Réafficher les forums dans le bon ordre
     forums.forEach(f => {
       $gallery.append(f.element);
     });
   }
 
-  // Réinitialiser les filtres
+  // Réinitialiser
   $('#reset-filters').on('click', function () {
     $searchInput.val('');
     updateGallery();
   });
 
-  // Lancer la recherche en tapant
+  // Recherche live
   $searchInput.on('input', updateGallery);
 
-  // Lancer au chargement
+  // Initialisation
   updateGallery();
 });
 
