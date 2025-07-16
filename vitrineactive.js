@@ -90,9 +90,39 @@ $(function () {
         $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
       }
 
+      // Gestion des forums favoris
+
+      function toggleFavorite(forumId) {
+        if (favorites.includes(forumId)) {
+          favorites = favorites.filter(id => id !== forumId);
+        } else {
+          favorites.push(forumId);
+        }
+        localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+        updateFavoritesVisual();
+        updateGallery();
+      }
+    
+      $gallery.on('click', '.favorite-btn', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const forumId = $(this).closest('.forum-card').data('id');
+        toggleFavorite(forumId);
+      });
+    
+      $gallery.on('keydown', '.favorite-btn', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const forumId = $(this).closest('.forum-card').data('id');
+          toggleFavorite(forumId);
+        }
+      });
+    
+
       // Filtres
       const matchCat = selectedCategory === 'all' || category === selectedCategory;
       const matchFav = !showFavOnly || isFav;
+      const showFavOnly = $('#filter-favorites').data('active') === true || $('#filter-favorites').data('active') === 'true';
 
       if (matchCat && matchFav) {
         forums.push({
