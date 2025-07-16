@@ -235,7 +235,7 @@ $(function () {
           cursor: 'not-allowed',
           pointerEvents: 'none',
           filter: 'grayscale(1)'
-        }).attr('title', 'Forum déjà signalé récemment');
+        }).attr('title', 'Il faut être connecté pour faire un signalement !');
       }
     });
 
