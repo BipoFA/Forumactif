@@ -352,14 +352,14 @@
     vertical-align: middle;
     white-space: normal;
     font-family: Helvetica;
-    background-color: gold;
+    background-color: #e1b12c;
     color: #fff;
     text-transform: uppercase;
     text-decoration: none
 }
   
   #filter-favorites:hover {
-    background-color: orange
+    background-color: #c19f25
   }
   
   .gallery {
