@@ -346,3 +346,38 @@ $(function () {
       });
     });    
 });
+
+// Boutons haut et bas de page
+
+$(document).ready(function() {
+  const $btnTop = $('#scrollTopBtn');
+  const $btnBottom = $('#scrollBottomBtn');
+
+  $(window).on('scroll', function() {
+    const scrollY = $(this).scrollTop();
+    const windowHeight = $(this).height();
+    const bodyHeight = $(document).height();
+
+    // Bouton "haut" visible si scroll > 200px
+    if (scrollY > 200) {
+      $btnTop.fadeIn();
+    } else {
+      $btnTop.fadeOut();
+    }
+
+    // Bouton "bas" visible si pas tout en bas
+    if (scrollY + windowHeight < bodyHeight - 200) {
+      $btnBottom.fadeIn();
+    } else {
+      $btnBottom.fadeOut();
+    }
+  });
+
+  $btnTop.on('click', function() {
+    $('html, body').animate({scrollTop: 0}, 500);
+  });
+
+  $btnBottom.on('click', function() {
+    $('html, body').animate({scrollTop: $(document).height()}, 500);
+  });
+});
