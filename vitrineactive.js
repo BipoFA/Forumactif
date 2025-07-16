@@ -138,7 +138,7 @@ $(function () {
     const sortBy = $sortSelect.val();
     const selectedCategory = $categorySelect.val();
     const filterFavs = $favButton.data('active') === true || $favButton.data('active') === 'true';
-
+  
     let forums = initialForums.map(forum => {
       const isFavorite = favorites.includes(forum.id);
       const isNew = !isFavorite && !forum.isComing && forum.diffDays >= 0 && forum.diffDays <= 30;
@@ -156,35 +156,36 @@ $(function () {
       }
       return true;
     });
-
+  
     if (sortBy === 'alpha') {
       forums.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === 'recent') {
       forums.sort((a, b) => b.date - a.date);
     } else {
       forums.sort((a, b) => {
-        // Ordre : Favoris (non à venir) > Coup de coeur > Nouveau > Sans badge > À venir
-        const getScore = (forum) => {
-          if (favorites.includes(forum.id) && !forum.isComing) return 0; // Favori non à venir
-          if (forum.isFavorite) return 1; // Coup de cœur (favori tout court)
-          if (forum.isNew) return 2; // Nouveau
-          if (forum.isComing) return 4; // À venir
-          return 3; // Sans badge
-        };
-        const aScore = getScore(a);
-        const bScore = getScore(b);
-        if (aScore !== bScore) return aScore - bScore;
+        function getPriority(forum) {
+          if (forum.isComing) return 3;
+          if (forum.isFavorite) return 0;
+          if (forum.isNew) return 1;
+          return 2;
+        }
+  
+        const priorityA = getPriority(a);
+        const priorityB = getPriority(b);
+  
+        if (priorityA !== priorityB) return priorityA - priorityB;
+  
         return a.index - b.index;
       });
     }
-
+  
     $gallery.empty();
-
+  
     forums.forEach(forum => {
       applyBadges(forum.element, forum);
       $gallery.append(forum.element.show());
     });
-
+  
     $('#no-result').toggle(forums.length === 0);
     updateFavoriteVisuals();
   }
