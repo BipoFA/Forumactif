@@ -48,79 +48,135 @@ $(function() {
 
 $(function () {
   const $gallery = $('.gallery');
+  const $searchInput = $('#search-forum');
   const $sortSelect = $('#sort-forums');
   const $categorySelect = $('#category-filter');
   const $favButton = $('#filter-favorites');
-  const $resetButton = $('#reset-filters');
 
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  // Stocker l'ordre initial avec badges et infos
-  const initialForums = [];
+  // Charger les favoris depuis localStorage
+  const favoritesKey = 'forumFavorites';
+  let favorites = JSON.parse(localStorage.getItem(favoritesKey)) || {};
 
-  $('.forum-card').each(function () {
-    const $card = $(this);
-    const dateStr = $card.data('date');
-    const forumDate = new Date(dateStr);
-    forumDate.setHours(0, 0, 0, 0);
-
-    const isFav = $card.data('fav') === true || $card.data('fav') === 'true' || $card.data('fav') === 1;
-    const isComing = forumDate > now;
-    const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
-    const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
-
-    initialForums.push({
-      element: $card,
-      title: $card.data('title').toLowerCase(),
-      date: forumDate,
-      category: $card.data('category'),
-      isFav: isFav && !isComing,
-      isNew: isNew,
-      isComing: isComing
+  // Appliquer l'état favoris aux cards au chargement
+  function applyFavoritesState() {
+    $('.forum-card').each(function () {
+      const $card = $(this);
+      const id = $card.data('id');
+      const isFav = favorites[id] === true;
+      $card.data('fav', isFav);
+      // Mettre à jour l'affichage de l'étoile
+      const $star = $card.find('.favorite-btn');
+      if (isFav) {
+        $star.text('★').addClass('fav-active');
+      } else {
+        $star.text('☆').removeClass('fav-active');
+      }
     });
-  });
-
-  // Fonction pour afficher les badges correctement
-  function applyBadges($card, forum) {
-    $card.removeClass('coming-soon new-forum fav-highlight');
-    $card.find('.badge-coming, .badge-new, .badge-fav').remove();
-
-    if (forum.isComing) {
-      $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
-    } else if (forum.isFav) {
-      $card.addClass('fav-highlight').append('<div class="badge-fav">Coup de cœur</div>');
-    } else if (forum.isNew) {
-      $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
-    }
   }
 
-  // Fonction principale pour filtrer, trier et afficher
+  // Clic sur étoile pour toggle favori
+  $gallery.on('click', '.favorite-btn', function () {
+    const $star = $(this);
+    const $card = $star.closest('.forum-card');
+    const id = $card.data('id');
+    const isFav = $card.data('fav');
+
+    // Toggle
+    const newFav = !isFav;
+    $card.data('fav', newFav);
+
+    if (newFav) {
+      $star.text('★').addClass('fav-active');
+      favorites[id] = true;
+    } else {
+      $star.text('☆').removeClass('fav-active');
+      delete favorites[id];
+    }
+    // Sauvegarder
+    localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+
+    // Mettre à jour la galerie selon filtres actifs (notamment "Mes favoris")
+    updateGallery();
+  });
+
   function updateGallery() {
+    const searchTerm = $searchInput.val().toLowerCase();
     const sortBy = $sortSelect.val();
     const selectedCategory = $categorySelect.val();
-    const filterFavs = $favButton.data('active') === true || $favButton.data('active') === 'true';
+    const filterFav = $favButton.data('active') === 'true' || $favButton.data('active') === true;
 
-    let filteredForums = initialForums.filter(forum => {
-      // Filtre catégorie (all = tout afficher)
-      if (selectedCategory !== 'all' && forum.category !== selectedCategory) {
-        return false;
+    const forums = [];
+
+    // Nettoyer badges avant réaffichage
+    $('.forum-card').each(function () {
+      const $card = $(this);
+      $card.removeClass('coming-soon new-forum fav-highlight');
+      $card.find('.badge-coming, .badge-new, .badge-fav').remove();
+    });
+
+    $('.forum-card').each(function () {
+      const $card = $(this);
+      const title = $card.find('.forum-title').text().toLowerCase();
+
+      // Exclure card si elle ne correspond pas à la recherche
+      if (!title.includes(searchTerm)) {
+        $card.hide();
+        return;
       }
-      // Filtre favoris si activé
-      if (filterFavs && !forum.isFav) {
-        return false;
+
+      // Exclure si catégorie ne correspond pas (et pas "all")
+      if (selectedCategory !== 'all' && $card.data('category') !== selectedCategory) {
+        $card.hide();
+        return;
       }
-      return true;
+
+      // Exclure si on filtre sur favoris et que la card n’est pas favorite
+      if (filterFav && !$card.data('fav')) {
+        $card.hide();
+        return;
+      }
+
+      // Afficher la card
+      $card.show();
+
+      const dateStr = $card.data('date');
+      const forumDate = new Date(dateStr);
+      forumDate.setHours(0, 0, 0, 0);
+
+      const isFav = $card.data('fav') === true || $card.data('fav') === 'true' || $card.data('fav') === 1;
+      const isComing = forumDate > now;
+      const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
+      const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
+
+      // Ajouter badges sur la carte
+      if (isComing) {
+        $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
+      } else if (isFav) {
+        $card.addClass('fav-highlight').append('<div class="badge-fav">Coup de cœur</div>');
+      } else if (isNew) {
+        $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
+      }
+
+      forums.push({
+        element: $card,
+        title: title,
+        date: forumDate,
+        isFav: isFav && !isComing,
+        isNew,
+        isComing
+      });
     });
 
     // Tri selon sélection
-    if (sortBy === 'alpha') {
-      filteredForums.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortBy === 'recent') {
-      filteredForums.sort((a, b) => b.date - a.date);
-    } else {
-      // Tri initial par badge prioritaire : coup de coeur > nouveau > à venir > autre
-      filteredForums.sort((a, b) => {
+    forums.sort((a, b) => {
+      if (sortBy === 'alpha') {
+        return a.title.localeCompare(b.title);
+      } else if (sortBy === 'recent') {
+        return b.date - a.date;
+      } else {
         if (a.isFav && !b.isFav) return -1;
         if (!a.isFav && b.isFav) return 1;
         if (a.isNew && !b.isNew) return -1;
@@ -128,43 +184,41 @@ $(function () {
         if (a.isComing && !b.isComing) return 1;
         if (!a.isComing && b.isComing) return -1;
         return 0;
-      });
-    }
-
-    // Vider la galerie
-    $gallery.empty();
-
-    // Réafficher les cartes avec badges
-    filteredForums.forEach(forum => {
-      applyBadges(forum.element, forum);
-      $gallery.append(forum.element.show());
+      }
     });
 
-    // Message si aucun forum
-    $('#no-result').toggle(filteredForums.length === 0);
+    // Vider et réinsérer les cards dans l’ordre
+    $gallery.empty();
+    forums.forEach(f => {
+      $gallery.append(f.element);
+    });
+
+    // Message aucun résultat
+    $('#no-result').toggle(forums.length === 0);
   }
 
-  // Gestion clic bouton favoris
+  // Événements
+  $searchInput.on('input', updateGallery);
+  $sortSelect.on('change', updateGallery);
+  $categorySelect.on('change', updateGallery);
+
   $favButton.on('click', function () {
-    const active = $(this).data('active') === true || $(this).data('active') === 'true';
+    const active = $(this).data('active') === 'true' || $(this).data('active') === true;
     $(this).data('active', !active);
     $(this).toggleClass('active', !active);
     updateGallery();
   });
 
-  // Gestion événements filtres + tri
-  $sortSelect.on('change', updateGallery);
-  $categorySelect.on('change', updateGallery);
-
-  // Bouton reset : remettre tout à l’état initial
-  $resetButton.on('click', function () {
+  $('#reset-filters').on('click', function () {
+    $searchInput.val('');
     $sortSelect.val('default');
     $categorySelect.val('all');
     $favButton.data('active', false).removeClass('active');
     updateGallery();
   });
 
-  // Initialisation affichage
+  // Initialisation
+  applyFavoritesState();
   updateGallery();
 });
 
