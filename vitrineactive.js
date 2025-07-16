@@ -163,9 +163,16 @@ $(function () {
       forums.sort((a, b) => b.date - a.date);
     } else {
       forums.sort((a, b) => {
-        // Ordre : Favoris (non à venir), Coup de coeur, Nouveau, Sans badge, À venir
-        const aScore = a.isComing ? 4 : a.isFavorite ? 0 : a.isNew ? 2 : 3;
-        const bScore = b.isComing ? 4 : b.isFavorite ? 0 : b.isNew ? 2 : 3;
+        // Ordre : Favoris (non à venir) > Coup de coeur > Nouveau > Sans badge > À venir
+        const getScore = (forum) => {
+          if (favorites.includes(forum.id) && !forum.isComing) return 0; // Favori non à venir
+          if (forum.isFavorite) return 1; // Coup de cœur (favori tout court)
+          if (forum.isNew) return 2; // Nouveau
+          if (forum.isComing) return 4; // À venir
+          return 3; // Sans badge
+        };
+        const aScore = getScore(a);
+        const bScore = getScore(b);
         if (aScore !== bScore) return aScore - bScore;
         return a.index - b.index;
       });
