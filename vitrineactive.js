@@ -46,7 +46,7 @@ $(function() {
 
 // Script permettant de gérer les badges (Nouveau, à venir, coup de coeur)
 
-$(function() {
+$(function () {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
@@ -57,10 +57,12 @@ $(function() {
     const searchTerm = $searchInput.val().toLowerCase();
     const forums = [];
 
-    $container.find('.forum-card').each(function() {
+    // On parcourt tous les forums, même si la recherche est vide
+    $('.forum-card').each(function () {
       const $card = $(this);
       const title = $card.find('.forum-title').text().toLowerCase();
       const dateStr = $card.data('date');
+
       if (!dateStr) return;
 
       const forumDate = new Date(dateStr);
@@ -71,13 +73,18 @@ $(function() {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
+      // Définir si le forum correspond à la recherche
       const match = title.includes(searchTerm);
-      $card.toggle(match); // Affiche/cache selon la recherche
+
+      // Montrer ou cacher la carte
+      $card.toggle(match);
 
       if (match) {
+        // Réinitialiser les badges
         $card.removeClass('coming-soon new-forum fav-highlight');
         $card.find('.badge-coming, .badge-new, .badge-fav').remove();
 
+        // Appliquer le bon badge
         if (isComing) {
           $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
         } else if (isFav) {
@@ -97,6 +104,7 @@ $(function() {
       }
     });
 
+    // Appliquer le tri (badge uniquement)
     forums.sort((a, b) => {
       if (a.isFav && !b.isFav) return -1;
       if (!a.isFav && b.isFav) return 1;
@@ -107,17 +115,22 @@ $(function() {
       return b.date - a.date;
     });
 
+    // Affichage : vider et réafficher les forums visibles
     $container.empty();
-    forums.forEach(forum => {
-      $container.append(forum.element);
-    });
+    forums.forEach(f => $container.append(f.element));
   }
 
-  // Lancer le tri + filtrage au chargement
-  updateGallery();
+  // Mise à jour en tapant
+  $searchInput.on('input', updateGallery);
 
-  // Mettre à jour à chaque frappe dans la recherche
-  $('#search-forum').on('input', updateGallery);
+  // Réinitialisation
+  $('#reset-filters').on('click', function () {
+    $searchInput.val(''); // Vide le champ
+    updateGallery(); // Relance avec tous les forums
+  });
+
+  // Initialisation
+  updateGallery();
 });
 
 
