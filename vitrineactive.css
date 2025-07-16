@@ -589,6 +589,7 @@
   
   .forum-link-signaler {
     align-self: flex-start;
+    border: none;
     margin-top: 15px;
     padding: 6px 12px;
     background-color: #e9553c;
@@ -601,13 +602,13 @@
     min-width: 36px;
     display: flex;
     align-items: center;
-    all: unset;
+    font: inherit;
+    color: inherit;
     cursor: pointer
   }
   
   .forum-link-signaler:hover {
     opacity: 1;
-    border:none;
     background-color: #e97465
   }
   
