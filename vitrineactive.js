@@ -62,7 +62,9 @@ $(function () {
     $('.forum-card').each(function () {
       const $card = $(this);
       const title = $card.find('.forum-title').text().toLowerCase();
-      const match = title.includes(searchTerm);
+
+      // Recherche : si ça ne correspond pas, on ignore
+      if (!title.includes(searchTerm)) return;
 
       const dateStr = $card.data('date');
       const forumDate = new Date(dateStr);
@@ -73,12 +75,7 @@ $(function () {
       const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
       const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
 
-      if (!match) {
-        $card.hide();
-        return;
-      }
-
-      $card.show();
+      // Nettoyage et badges
       $card.removeClass('coming-soon new-forum fav-highlight');
       $card.find('.badge-coming, .badge-new, .badge-fav').remove();
 
@@ -101,14 +98,14 @@ $(function () {
       });
     });
 
-    // Appliquer le tri selon la sélection
+    // Tri
     forums.sort((a, b) => {
       if (sortBy === 'alpha') {
         return a.title.localeCompare(b.title);
       } else if (sortBy === 'recent') {
         return b.date - a.date;
       } else {
-        // Tri par badges (par défaut)
+        // Tri par badges
         if (a.isFav && !b.isFav) return -1;
         if (!a.isFav && b.isFav) return 1;
         if (a.isNew && !b.isNew) return -1;
@@ -119,28 +116,25 @@ $(function () {
       }
     });
 
-    // Réorganiser dans le DOM
+    // Vider et reconstruire la galerie
     $gallery.empty();
-    forums.forEach(f => $gallery.append(f.element));
+    forums.forEach(f => {
+      $gallery.append(f.element);
+    });
   }
 
-  // Recherche en direct
+  // Événements
   $searchInput.on('input', updateGallery);
-
-  // Tri sélectionné
   $sortSelect.on('change', updateGallery);
-
-  // Bouton réinitialiser
   $('#reset-filters').on('click', function () {
     $searchInput.val('');
     $sortSelect.val('default');
     updateGallery();
   });
 
-  // Lancement initial
+  // Initialisation
   updateGallery();
 });
-
 
 
 
