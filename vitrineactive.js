@@ -40,12 +40,6 @@ $(function() {
   });
 });
 
-
-
-
-
-
-
 // Script permettant de rechercher, trier, gérer les forums favoris
 
 $(function () {
@@ -54,39 +48,11 @@ $(function () {
 
   const $gallery = $('.gallery');
 
-  // Met à jour les badges (À venir, Coup de cœur, Nouveau)
-  function updateBadges() {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
+  // Sauvegarder l'ordre initial (clone des cartes)
+  const initialClones = $gallery.children('.forum-card').map(function () {
+    return $(this).clone(true)[0];
+  }).get();
 
-    $('.forum-card').each(function () {
-      const $card = $(this);
-      const dateStr = $card.data('date');
-      if (!dateStr) return;
-
-      const forumDate = new Date(dateStr);
-      forumDate.setHours(0, 0, 0, 0);
-
-      const isFav = favorites.includes($card.data('id'));
-      const isComing = forumDate > now;
-      const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
-      const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
-
-      $card.removeClass('coming-soon new-forum fav-highlight');
-      $card.find('.badge-coming, .badge-new, .badge-fav').remove();
-
-      if (isComing) {
-        $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
-      } else if (isFav) {
-        $card.append('<div class="badge-fav">Coup de cœur</div>');
-        $card.addClass('fav-highlight');
-      } else if (isNew) {
-        $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
-      }
-    });
-  }
-
-  // Met à jour visuellement les favoris (étoiles)
   function updateFavoritesVisual() {
     $('.forum-card').each(function () {
       const forumId = $(this).data('id');
@@ -103,7 +69,33 @@ $(function () {
     });
   }
 
-  // Toggle favoris
+  function updateBadges() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    $('.forum-card').each(function () {
+      const $card = $(this);
+      const dateStr = $card.data('date');
+      const forumDate = new Date(dateStr);
+      forumDate.setHours(0, 0, 0, 0);
+
+      const isComing = forumDate > now;
+      const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
+      const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
+
+      $card.removeClass('coming-soon new-forum');
+      $card.find('.badge-coming, .badge-new').remove();
+
+      if (isComing) {
+        $card.addClass('coming-soon')
+          .append('<div class="badge-coming">À venir</div>');
+      } else if (isNew) {
+        $card.addClass('new-forum')
+          .append('<div class="badge-new">Nouveau</div>');
+      }
+    });
+  }
+
   function toggleFavorite(forumId) {
     if (favorites.includes(forumId)) {
       favorites = favorites.filter(id => id !== forumId);
@@ -130,60 +122,21 @@ $(function () {
     }
   });
 
-  // Fonction de tri prioritaire : favoris > nouveau > à venir > date décroissante
-  function sortByPriority(cards) {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    return cards.sort((a, b) => {
-      const $a = $(a), $b = $(b);
-      const idA = $a.data('id'), idB = $b.data('id');
-
-      const dateA = new Date($a.data('date'));
-      dateA.setHours(0, 0, 0, 0);
-      const dateB = new Date($b.data('date'));
-      dateB.setHours(0, 0, 0, 0);
-
-      const isFavA = favorites.includes(idA);
-      const isFavB = favorites.includes(idB);
-
-      const diffA = (now - dateA) / (1000 * 60 * 60 * 24);
-      const diffB = (now - dateB) / (1000 * 60 * 60 * 24);
-
-      const isNewA = ! (dateA > now) && diffA >= 0 && diffA <= 30;
-      const isNewB = ! (dateB > now) && diffB >= 0 && diffB <= 30;
-
-      const isComingA = dateA > now;
-      const isComingB = dateB > now;
-
-      if (isFavA && !isFavB) return -1;
-      if (!isFavA && isFavB) return 1;
-
-      if (isNewA && !isNewB) return -1;
-      if (!isNewA && isNewB) return 1;
-
-      if (isComingA && !isComingB) return 1;
-      if (!isComingA && isComingB) return -1;
-
-      return dateB - dateA;
-    });
-  }
-
-  // Met à jour la galerie : tri, filtres, affichage
   function updateGallery() {
     const searchTerm = $('#search-forum').val() ? $('#search-forum').val().toLowerCase() : '';
     const selectedCat = $('#category-filter').val() || 'all';
     const sortBy = $('#sort-forums').val() || 'default';
     const showFavOnly = $('#filter-favorites').data('active') === true || $('#filter-favorites').data('active') === 'true';
 
-    let cards = $('.forum-card').get();
+    let cards;
 
     if (sortBy === 'alpha') {
-      cards = cards.sort((a, b) =>
+      cards = $('.forum-card').get().sort((a, b) =>
         $(a).data('title').localeCompare($(b).data('title'))
       );
     } else {
-      cards = sortByPriority(cards);
+      // Par défaut, on remet l'ordre initial (clone)
+      cards = initialClones.map(el => $(el).clone(true)[0]);
     }
 
     $gallery.empty().append(cards);
@@ -210,7 +163,6 @@ $(function () {
     updateBadges();
   }
 
-  // Évènements sur filtres / tri
   $('#search-forum, #sort-forums, #category-filter').on('input change', updateGallery);
 
   $('#filter-favorites').on('click', function () {
@@ -220,7 +172,6 @@ $(function () {
     updateGallery();
   });
 
-  // Bouton réinitialiser : reset filtres + tri (prioritaire)
   $('#reset-filters').on('click', function () {
     $('#search-forum').val('');
     $('#sort-forums').val('default');
@@ -231,9 +182,74 @@ $(function () {
 
   // Initialisation
   updateFavoritesVisual();
-  updateBadges();
   updateGallery();
 });
+
+
+// Script permettant de gérer les badges (Nouveau, à venir, coup de coeur)
+
+$(function() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+  
+    const $container = $('.gallery');
+    const forums = [];
+  
+    $container.find('.forum-card').each(function() {
+      const $card = $(this);
+      const dateStr = $card.data('date');
+      if (!dateStr) return;
+  
+      const forumDate = new Date(dateStr);
+      forumDate.setHours(0, 0, 0, 0);
+  
+      const isFav = $card.data('fav') === true || $card.data('fav') === 'true' || $card.data('fav') === 1;
+      const isComing = forumDate > now;
+      const diffDays = (now - forumDate) / (1000 * 60 * 60 * 24);
+      const isNew = !isComing && diffDays >= 0 && diffDays <= 30;
+  
+      // Nettoyage
+      $card.removeClass('coming-soon new-forum');
+      $card.find('.badge-coming, .badge-new, .badge-fav, .fav-highlight').remove();
+  
+      // Badge prioritaire
+      if (isComing) {
+        $card.addClass('coming-soon').append('<div class="badge-coming">À venir</div>');
+      } else if (isFav) {
+        $card.append('<div class="badge-fav">Coup de cœur</div>');
+        $card.addClass('fav-highlight');
+      } else if (isNew) {
+        $card.addClass('new-forum').append('<div class="badge-new">Nouveau</div>');
+      }
+  
+      forums.push({
+        element: $card,
+        isFav: isFav && !isComing, // Les favoris à venir ne sont plus prioritaires
+        isNew: isNew,
+        isComing: isComing,
+        date: forumDate
+      });
+    });
+  
+    // Tri personnalisé
+    forums.sort((a, b) => {
+      if (a.isFav && !b.isFav) return -1;
+      if (!a.isFav && b.isFav) return 1;
+  
+      if (a.isNew && !b.isNew) return -1;
+      if (!a.isNew && b.isNew) return 1;
+  
+      if (a.isComing && !b.isComing) return 1;
+      if (!a.isComing && b.isComing) return -1;
+  
+      return b.date - a.date;
+    });
+  
+    $container.empty();
+    forums.forEach(forum => {
+      $container.append(forum.element);
+    });
+  });
 
 
 
