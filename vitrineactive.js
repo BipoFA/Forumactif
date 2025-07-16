@@ -54,12 +54,12 @@ $(function () {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  // 1. On mémorise l'ordre initial (array de DOM elements)
+  // Mémoriser ordre initial
   const initialOrder = $('.forum-card').get();
 
   function updateGallery() {
     const sortBy = $sortSelect.val();
-    const selectedCat = $categoryFilter.val();
+    const selectedCat = $categoryFilter.val().toLowerCase();
     const forums = [];
 
     // Nettoyer badges
@@ -69,13 +69,13 @@ $(function () {
       $card.find('.badge-coming, .badge-new, .badge-fav').remove();
     });
 
-    // Parcourir toutes les cartes en ordre initial
+    // Parcourir dans ordre initial
     $(initialOrder).each(function () {
       const $card = $(this);
-      const cardCat = $card.data('category');
+      const cardCat = ($card.data('category') || '').toString().toLowerCase();
 
       if (selectedCat !== 'all' && cardCat !== selectedCat) {
-        return; // exclure si filtre catégorie ne correspond pas
+        return;
       }
 
       const title = $card.find('.forum-title').text().toLowerCase();
@@ -108,12 +108,28 @@ $(function () {
       });
     });
 
-    // Trier sauf si tri 'default' => on garde l'ordre initial (forums est dans l'ordre initial)
-    if (sortBy === 'alpha') {
-      forums.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortBy === 'recent') {
-      forums.sort((a, b) => b.date - a.date);
-    }
+    // Tri personnalisé
+    forums.sort((a, b) => {
+      // Priorité badges (ordre souhaité)
+      if (a.isFav && !b.isFav) return -1;
+      if (!a.isFav && b.isFav) return 1;
+
+      if (a.isNew && !b.isNew) return -1;
+      if (!a.isNew && b.isNew) return 1;
+
+      if (a.isComing && !b.isComing) return 1;
+      if (!a.isComing && b.isComing) return -1;
+
+      // Ensuite tri par sélection utilisateur
+      if (sortBy === 'alpha') {
+        return a.title.localeCompare(b.title);
+      } else if (sortBy === 'recent') {
+        return b.date - a.date;
+      }
+
+      // Sinon, garder ordre initial
+      return 0;
+    });
 
     // Vider et remplir galerie
     $gallery.empty();
@@ -137,6 +153,7 @@ $(function () {
   // Initialisation
   updateGallery();
 });
+
 
 
 
