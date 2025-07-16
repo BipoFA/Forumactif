@@ -342,14 +342,14 @@
     vertical-align: middle;
     white-space: normal;
     font-family: Helvetica;
-    background-color: #e1b12c;
+    background-color: gold;
     color: #fff;
     text-transform: uppercase;
     text-decoration: noneut
 }
   
   #filter-favorites:hover {
-    background-color: #ddd
+    background-color: orange
   }
   
   .gallery {
