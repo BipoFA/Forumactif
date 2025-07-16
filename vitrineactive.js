@@ -351,19 +351,20 @@ $(function () {
   const pseudo = typeof _userdata !== "undefined" ? _userdata.username : null;
 
   if (pseudo === 'Typlo' || pseudo === 'Bipo') {
-    const $container = $('<div id="debug-tools"></div>');
     const $clearBtn = $('<button id="clear-localstorage">🧹 Vider le localStorage</button>');
     const $cacheBtn = $('<button id="bypass-cache">🔁 Recharger sans cache</button>');
 
-    $container.append($clearBtn, $cacheBtn);
-    $('body').append($container);
+    // Ajout des boutons dans le body (tu peux changer l’endroit)
+    $('body').append($clearBtn, $cacheBtn);
 
+    // Action : vider le localStorage
     $clearBtn.on('click', function () {
       localStorage.clear();
       alert('Le localStorage a été vidé.');
       location.reload();
     });
 
+    // Action : recharger la page sans cache
     $cacheBtn.on('click', function () {
       const baseUrl = location.href.split('?')[0];
       location.href = baseUrl + '?cachebuster=' + Date.now();
