@@ -885,3 +885,30 @@
   #footer>div>div:nth-child(5)>div:nth-child(5)>p>a:hover {
     transform: scale(1.05) translateY(-5px)
   }
+
+  #debug-tools {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #debug-tools button {
+    padding: 6px 12px;
+    font-size: 13px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+  }
+
+  #debug-tools button:hover {
+    opacity: 1;
+    background: #555;
+  }
