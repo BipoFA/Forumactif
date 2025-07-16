@@ -600,7 +600,9 @@
     min-height: 36px;
     min-width: 36px;
     display: flex;
-    align-items: center
+    align-items: center;
+    all: unset;
+    cursor: pointer
   }
   
   .forum-link-signaler:hover {
