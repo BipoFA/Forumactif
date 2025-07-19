@@ -462,6 +462,40 @@
       opacity: .9
     }
   }
+
+  .forum-recommended {
+    font-size: 0.85em;
+    background: linear-gradient(90deg, #e91e63 0%, #39c 100%);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    margin: 0.5em 0;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(88, 101, 242, 0.4);
+    transition: transform 0.2s ease;
+  }
+  
+  .forum-recommended:hover {
+    transform: scale(1.05);
+  }
+  
+  .forum-recommended i {
+    margin-right: 6px;
+  }
+  
+  @keyframes neon-electric-soft {
+    0%, 100% {
+      box-shadow: 0 0 4px #eb459e55, 0 0 8px #5865f266;
+    }
+    50% {
+      box-shadow: 0 0 6px #5865f288, 0 0 12px #eb459e55;
+    }
+  }
+  
+  .forum-recommended.neon {
+    animation: neon-electric-soft 3s ease-in-out infinite;
+  }
   
   .badge-coming,
   .badge-fav,
