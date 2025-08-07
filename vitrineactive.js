@@ -316,7 +316,7 @@ $(function () {
                       `[quote]${contenu}[/quote]\n\n`;
     
       $.post('/post', {
-        't': '662',
+        't': '401522',
         'mode': 'reply',
         'tid': $('[name="tid"]:first').val(),
         'post': '1',
