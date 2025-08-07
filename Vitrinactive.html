@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" id="min-width" lang="fr" xml:lang="fr" xmlns:og="http://opengraphprotocol.org/schema/">
+  <head>
+    <title>Découvrer des forums Forumactif - Vitrine officielle</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="cleartype" content="on" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="shortcut icon" href="https://illiweb.com/fa/favicon/discussion.ico" />
+    <link rel="canonical" href="https://forum.forumactif.com/h14-" />
+    <meta name="description" content="Découvrez une sélection de forums Forumactif innovants ! Laissez-vous inspirer !" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Forumactif_fr" />
+    <meta name="twitter:title" content="Explorer les forums Forumactif !" />
+    <meta name="twitter:description" content="Découvrez une sélection de forums Forumactif innovants ! Laissez-vous inspirer !" />
+    <meta name="twitter:image" content="https://i38.servimg.com/u/f38/11/01/36/00/vitrin12.png" />
+    <!-- Open Graph -->
+    <meta property="og:title" content="Explorer les forums Forumactif !" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://i38.servimg.com/u/f38/11/01/36/00/vitrin12.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Découvrez une sélection de forums Forumactif innovants ! Laissez-vous inspirer !" />
+    <meta property="og:url" content="https://forum.forumactif.com/h14-" />
+    <!-- Polices et icônes -->
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i,700,700i" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://bipofa.github.io/Forumactif/vitrineactive.css" />
+    <!-- Script permettant de récupérer les variables de Forumactif -->
+    <script type="text/javascript" src="https://sd-1.archive-host.com/membres/up/137670929941788204/var_fa.js" defer></script>
+    <!-- Script permettant de gérer Jquery -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Script permettant de gérer l'envoi des formulaires -->
+    <script type="text/javascript" src="https://bipofa.github.io/Forumactif/form-fields-generator.js"></script>
+    <!-- Scripts JS -->
+    <script type="text/javascript" src="https://bipofa.github.io/Forumactif/vitrineactive.js"></script>
+  </head>
+  <body>
+    <!-- Header de la page HTML -->
+    <header class="page-header clearfix">
+      <a href="/" class="logo"><strong class="logo-part">Vitrine de Forum</strong>actif</a>
+      <div class="social">
+        <!-- Social -->
+        <span class="social_welcome">
+          <i class="fa fa-user"></i>
+          <span id="text_welcome_hours"></span>
+          <strong><span class="username-colored USERNAME"></span></strong> !
+        </span>
+        <button id="theme-toggle" type="button" aria-label="Changer thème">Mode sombre</button>
+      </div>
+    </header>
+    <div class="form-title_page clearfix">
+      <span class="title_page">Découvrez une sélection de forums Forumactif innovants.<br />laissez-vous inspirer !</span>
+    </div>
+    <!-- Gestion -->
+    <div id="forum-controls">
+      <div class="filters-wrapper">
+        <select id="sort-forums">
+          <option value="default">-- Trier par --</option>
+          <option value="alpha">Ordre alphabétique</option>
+          <option value="recent">Ajout le plus récent</option>
+          <option value="oldest">Ajout le plus ancien</option>
+        </select>
+        <select id="category-filter">
+          <option value="all">Tous</option>
+          <option value="Air">Air du temps et société</option>
+          <option value="Animaux">Animaux</option>
+          <option value="Art">Art, culture et loisirs</option>
+          <option value="Autos">Autos</option>
+          <option value="Cinéma">Cinéma, télévision</option>
+          <option value="Economie">Economie, droit, finance</option>
+          <option value="Rpg">Forums RPG</option>
+          <option value="Informatique">Informatique et Internet</option>
+          <option value="Jeux">Jeux</option>
+          <option value="Jeuxvideo">Jeux vidéo</option>
+          <option value="Motos">Motos</option>
+          <option value="Musique">Musique</option>
+          <option value="Nature">Nature et évasion</option>
+          <option value="Sciences">Sciences et savoirs</option>
+          <option value="Sports">Sports et passions</option>
+        </select>
+        <button id="filter-favorites" type="button" data-active="false"><i class="fa fa-star"></i> Mes favoris</button>
+        <button id="reset-filters" type="button"><i class="fa fa-eraser"></i> Réinitialiser</button>
+      </div>
+    </div>
+    <!-- Message si aucun résultat -->
+    <div id="no-result" style="display:none; text-align:center; color:#999; font-style:italic;">
+      Aucun forum ne correspond à votre recherche.
+    </div>
+    <div class="gallery">
+      <!-- Peek a Boo -->
+      <div class="forum-card" data-id="Peek a Boo" data-title="Peek a Boo" data-date="2025-10-07" data-category="Rpg" data-fav="false">
+        <img src="https://i38.servimg.com/u/f38/11/01/36/00/image543.png" alt="Aperçu du forum Peek A Boo" class="forum-image" />
+        <div class="forum-content">
+          <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+          <h2 class="forum-title">Peek a Boo</h2>
+          <p class="forum-description">La vie après la mort : découvrez un monde haut-en-couleur où l'ennui n'existe plus.</p>
+          <div class="forum-category">Forums RPG</div>
+          <div class="forum-links">
+            <a href="https://peekaboo-rpg.forumactif.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+            <a href="https://forum.forumactif.com/u148499" class="forum-link-profil" target="_blank" title="Voir le profil du fondateur"><i class="fa fa-user" aria-hidden="true"></i></a>
+            <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning"></i></button>
+          </div>
+        </div>
+      </div>
+      <!-- Blank Theme -->
+      <div class="forum-card" data-id="Blank Theme" data-title="Blank Theme" data-date="2025-10-07" data-category="Informatique" data-fav="false">
+        <img src="https://i38.servimg.com/u/f38/11/01/36/00/image542.png" alt="Aperçu du forum Blank Theme" class="forum-image" />
+        <div class="forum-content">
+          <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+          <h2 class="forum-title">Blank Theme</h2>
+          <p class="forum-description">Thème en libre-service pour Forumactif.</p>
+          <div class="forum-category">Informatique et Internet</div>
+          <div class="forum-links">
+            <a href="https://blankthemerpg.forumactif.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+            <a href="https://forum.forumactif.com/u167753" class="forum-link-profil" target="_blank" title="Voir le profil du fondateur"><i class="fa fa-user" aria-hidden="true"></i></a>
+            <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </div>
+      <!-- Seven Golden Rings -->
+      <div class="forum-card" data-id="Seven Golden Rings" data-title="Seven Golden Rings" data-date="2025-10-07" data-category="Rpg" data-fav="false">
+        <img src="https://i38.servimg.com/u/f38/11/01/36/00/image541.png" alt="Aperçu du forum Seven Golden Rings" class="forum-image" />
+        <div class="forum-content">
+          <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+          <h2 class="forum-title">Seven Golden Rings</h2>
+          <p class="forum-description">Forum rpg dark fantasy inspiré des jeux fromsoftware.</p>
+          <div class="forum-category">Forums RPG</div>
+          <div class="forum-links">
+            <a href="https://7goldenrings.forumactif.com/" class="forum-link" target="_blank" title="Visiter le forum" data-fav="false"><i class="fa fa-eye" aria-hidden="true"></i></a>
+            <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </div>
+      <!-- One Piece Requiem -->
+      <div class="forum-card" data-id="One Piece Requiem" data-title="One Piece Requiem" data-date="2024-03-07" data-category="Rpg" data-fav="false">
+        <img src="https://i38.servimg.com/u/f38/11/01/36/00/image544.png" alt="Aperçu du forum One Piece Requiem" class="forum-image" />
+        <div class="forum-content">
+          <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+          <h2 class="forum-title">One Piece Requiem</h2>
+          <p class="forum-description">One Piece Requiem, forum de jeu de rôle basé sur le monde de One Piece cent ans après. Créez votre personnage et redécouvrez l'univers de vos héros.</p>
+          <div class="forum-category">Forums RPG</div>
+          <div class="forum-links">
+            <a href="https://www.onepiece-requiem.net/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+            <a href="https://forum.forumactif.com/t409920-" class="forum-link-interview" target="_blank" title="Lire l'interview"><i class="fa fa-microphone" aria-hidden="true" ></i></a>
+            <a href="https://forum.forumactif.com/u156850" class="forum-link-profil" target="_blank" title="Voir le profil du fondateur"><i class="fa fa-user" aria-hidden="true"></i></a>
+            <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </div>
+      <!-- Le Monde de Dùralas -->
+      <div class="forum-card" data-id="forum-le-monde-de-dralas" data-title="Le Monde de Dùralas" data-date="2025-07-29" data-category="Rpg" data-fav="false">
+        <img src="https://i38.servimg.com/u/f38/11/01/36/00/image548.png" alt="Aperçu du forum Le Monde de Dùralas" class="forum-image" />
+        <div class="forum-content">
+          <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+          <h2 class="forum-title">Le Monde de Dùralas</h2>
+          <p class="forum-description">Dùralas est un forum RPG dans un monde fantastique. Vous avez le choix d'incarner 13 races différentes, et vous évoluez à l'aide de vitalité, vitesse, dégâts et d'expérience. Rejoignez nous !</p>
+          <div class="forum-category">Forums RPG</div>
+          <div class="forum-links">
+            <a href="https://www.lemondededuralas.org/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+            <a href="https://forum.forumactif.com/u58021" class="forum-link-profil" target="_blank" title="Voir le profil du fondateur"><i class="fa fa-user" aria-hidden="true"></i></a>
+            <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </div>
+    <!-- Dixily -->
+    <div class="forum-card" data-id="forum-dixily" data-title="Dixily" data-date="2023-10-28" data-category="Art" data-fav="false">
+      <img src="https://i38.servimg.com/u/f38/11/01/36/00/image560.png" alt="Aperçu du forum Dixily" class="forum-image" />
+      <div class="forum-content">
+          <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+          <h2 class="forum-title">Dixily</h2>
+          <p class="forum-description">Forum littéraire qui connecte auteur·rices, écrivain·es, lecteur·rices et auto-édité·es. Publication d'écrits, partage de lectures et échange avec d'autres.</p>
+          <div class="forum-category">Art, culture et loisirs</div>
+          <div class="forum-links">
+            <a href="https://www.dixily.com" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+            <a href="https://forum.forumactif.com/t409368-forumactif-mag-n14-a-vous-les-webmasters" class="forum-link-interview" target="_blank" title="Lire l'interview"><i class="fa fa-microphone" aria-hidden="true"></i></a>
+            <a href="https://forum.forumactif.com/u166192" class="forum-link-profil" target="_blank" title="Voir le profil du fondateur"><i class="fa fa-user" aria-hidden="true"></i></a>
+            <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>       
+          </div>
+        </div>
+      </div>
+      <!-- Epicode -->
+      <div class="forum-card" data-id="forum-epicode" data-title="Epicode" data-date="2025-08-07" data-category="Informatique" data-fav="true">
+        <img src="https://i38.servimg.com/u/f38/11/01/36/00/image561.png" alt="Aperçu du forum Epicode" class="forum-image" />
+        <div class="forum-content">
+            <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+            <h2 class="forum-title">Epicode</h2>
+            <p class="forum-description">Forum d'entraide et de libres services en codage et graphisme. Service de commandes et aides aux forums offert. Tutoriels, astuces, entraide et cours sont à votre disposition. HTML, CSS, Templates FA ...</p>
+            <div class="forum-recommended neon"><i class="fa fa-thumbs-up" aria-hidden="true"></i>Recommandé par <strong>Lixyr</strong></div>
+            <div class="forum-category">Informatique et Internet</div>
+            <div class="forum-links">
+                <a href="https://www.epicode-entraide.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </div>
+    <!-- epsilon -->
+    <div class="forum-card" data-id="forum-epsilon" data-title="epsilon" data-date="2025-08-07" data-category="Informatique" data-fav="false">
+      <img src="https://i38.servimg.com/u/f38/11/01/36/00/image562.png" alt="Aperçu du forum epsilon" class="forum-image" />
+      <div class="forum-content">
+          <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+          <h2 class="forum-title">epsilon</h2>
+          <p class="forum-description">Forum de libre-service de code.</p>
+          <div class="forum-category">Informatique et Internet</div>
+          <div class="forum-links">
+              <a href="https://epsilon-ls.forumactif.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+              <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+          </div>
+      </div>
+  </div>
+  <!-- RP Cendres -->
+  <div class="forum-card" data-id="forum-rp-cendres" data-title="RP Cendres" data-date="2025-08-07" data-category="Rpg" data-fav="true">
+    <img src="https://i38.servimg.com/u/f38/11/01/36/00/image563.png" alt="Aperçu du forum RP Cendres" class="forum-image" />
+    <div class="forum-content">
+        <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+        <h2 class="forum-title">RP Cendres</h2>
+        <p class="forum-description">Forum rpg fantasy  Cendres - Forum RPG Fantasy.</p>
+        <div class="forum-recommended neon"><i class="fa fa-thumbs-up" aria-hidden="true"></i>Recommandé par <strong>Bipo</strong></div>
+        <div class="forum-category">Forums RPG</div>
+        <div class="forum-links">
+            <a href="https://www.rp-cendres.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+            <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+        </div>
+    </div>
+</div>
+<!-- Ilukaan -->
+<div class="forum-card" data-id="forum-ilukaan" data-title="Ilukaan" data-date="2025-10-07" data-category="Rpg" data-fav="false">
+  <img src="https://i38.servimg.com/u/f38/11/01/36/00/image564.png" alt="Aperçu du forum Ilukaan" class="forum-image" />
+  <div class="forum-content">
+      <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+      <h2 class="forum-title">Ilukaan</h2>
+      <p class="forum-description">Forum RPG multifandom inspiré de l'univers d'Harry Potter. Venez incarner votre personnage préféré au sein d'une école sorcière de Nouvelle-Ecosse.</p>
+      <div class="forum-category">Forums RPG</div>
+      <div class="forum-links">
+          <a href="https://ilukaan.forumactif.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+
+          <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+      </div>
+  </div>
+</div>
+<!-- Astrebrume -->
+<div class="forum-card" data-id="forum-astrebrume" data-title="Astrebrume" data-date="2025-10-07" data-category="Rpg" data-fav="false">
+  <img src="https://i38.servimg.com/u/f38/11/01/36/00/image565.png" alt="Aperçu du forum Astrebrume" class="forum-image" />
+  <div class="forum-content">
+      <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+      <h2 class="forum-title">Astrebrume</h2>
+      <p class="forum-description">Astrebrume, un monde étrange où quelques cités survivent au milieu d'un océan de brume aux propriétés paranormales.</p>
+      <div class="forum-category">Forums RPG</div>
+      <div class="forum-links">
+          <a href="https://www.astrebrume.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+          <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+      </div>
+  </div>
+</div>
+<!-- L'annuaire de Forumactif -->
+<div class="forum-card" data-id="forum-lannuaire-de-forumactif" data-title="L'annuaire de Forumactif" data-date="2025-08-07" data-category="Informatique" data-fav="false">
+  <img src="https://i38.servimg.com/u/f38/11/01/36/00/image566.png" alt="Aperçu du forum L'annuaire de Forumactif" class="forum-image" />
+  <div class="forum-content">
+      <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+      <h2 class="forum-title">L'annuaire de Forumactif</h2>
+      <p class="forum-description">Vous cherchez à faire connaitre votre forum ? L'Annuaire des forums vous prodigue des conseils, astuces, et mets à votre disposition de nombreux services pour donner à votre forum toutes les chances de réussir.</p>
+      <div class="forum-category">Informatique et Internet</div>
+      <div class="forum-links">
+          <a href="https://www.lesforumsdeforumactif.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+          <a href="https://forum.forumactif.com/u108944" class="forum-link-profil" target="_blank" title="Voir le profil du fondateur"><i class="fa fa-user" aria-hidden="true"></i></a>
+          <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+      </div>
+  </div>
+</div>
+<!-- Never Utopia -->
+<div class="forum-card" data-id="forum-never-utopia" data-title="Never Utopia" data-date="2011-06-15" data-category="Informatique" data-fav="false">
+  <img src="https://i38.servimg.com/u/f38/11/01/36/00/image568.png" alt="Aperçu du forum Never Utopia" class="forum-image" />
+  <div class="forum-content">
+      <span class="favorite-btn" role="button" tabindex="0" aria-label="Ajouter aux favoris">☆</span>
+      <h2 class="forum-title">Never Utopia</h2>
+      <p class="forum-description">Forum proposant des tutoriels, astuces, libres services et commandes dans les domaines de l'infographie amateur, de l'intégration web (HTML et CSS) et du RPG.</p>
+      <div class="forum-category">Informatique et Internet</div>
+      <div class="forum-links">
+          <a href="https://www.never-utopia.com/" class="forum-link" target="_blank" title="Visiter le forum"><i class="fa fa-eye" aria-hidden="true"></i></a>
+          <a href="https://forum.forumactif.com/t306796-forumactif-mag-n9-interview-de-sparrow-style-le-secret-de-sa-reussite" class="forum-link-interview" target="_blank" title="Lire l'interview"><i class="fa fa-microphone" aria-hidden="true"></i></a>
+          <a href="https://forum.forumactif.com/u33724" class="forum-link-profil" target="_blank" title="Voir le profil du fondateur"><i class="fa fa-user" aria-hidden="true"></i></a>
+          <button type="button" class="forum-link-signaler" title="Signaler une erreur !"><i class="fa fa-warning" aria-hidden="true"></i></button>
+      </div>
+  </div>
+</div>
+
+
+    </div>
+    <!-- BEGIN Footer -->
+    <div id="footer">
+      <div class="content">
+        <div class="footer-link">
+          <div><a href="https://www.forumactif.com/creer-un-forum/modernbb" target="_blank"><span>Créer un forum</span></a></div>
+          <div></div>
+          <div><a href="https://www.forumactif.com/" target="_blank"><span>© <script>document.write(new Date().getFullYear());</script> - forumactif.com</span></a></div>
+        </div>
+      </div>
+    </div>
+    <button id="scrollTopBtn" title="Aller en haut" class="scroll-btn">
+      <i class="fa fa-arrow-up"></i>
+    </button>
+  
+    <button id="scrollBottomBtn" title="Aller en bas" class="scroll-btn">
+      <i class="fa fa-arrow-down"></i>
+    </button>
+  </body>
+</html>
+<!-- Script permettant de limiter les descriptions -->
+<script type="text/javascript"> 
+$(document).ready(function () {
+    $('.forum-description').each(function () {
+      const fullText = $(this).text().trim();
+      const maxLength = 100;
+      if (fullText.length > maxLength) {
+        const shortText = fullText.substring(0, maxLength) + '...';
+        const fullSpan = $('<span class="full-text" style="display:none;"></span>').text(fullText);
+        const shortSpan = $('<span class="short-text"></span>').text(shortText);
+        const toggleLink = $('<a href="#" class="toggle-description" style="margin-left:0.5rem;">Voir plus</a>');
+        $(this).empty().append(shortSpan).append(fullSpan).append(toggleLink);
+      }
+    });
+    $(document).on('click', '.toggle-description', function (e) {
+      e.preventDefault();
+      const $desc = $(this).closest('.forum-description');
+      $desc.find('.short-text, .full-text').toggle();
+      $(this).text($(this).text() === 'Voir plus' ? 'Voir moins' : 'Voir plus');
+    });
+  });
+</script>
