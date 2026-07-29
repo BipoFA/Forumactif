@@ -202,6 +202,7 @@ $(function () {
           pendingAllocation: null,
           pendingJournal: null,
           lastRegistryPostAt: null,
+          recoveryRequestSentAt: null,
           history: []
         };
       }
@@ -1180,6 +1181,20 @@ $(function () {
         $("#noelactif-balance").text(state.balance);
         $("#noelactif-spins").text(state.rotation);
 
+        if (state.recoveryRequestSentAt) {
+          $("#noelactif-request-recovery")
+            .prop("disabled", true)
+            .text("Demande déjà envoyée");
+          $("#noelactif-recovery-request-status").text(
+            "Ta demande a bien été transmise aux Lutins. Ils te communiqueront ton code de restauration."
+          );
+        } else {
+          $("#noelactif-request-recovery")
+            .prop("disabled", false)
+            .html('<i class="fa fa-envelope" aria-hidden="true"></i> Contacter Les Lutins');
+          $("#noelactif-recovery-request-status").text("");
+        }
+
         const alreadyPlayed = state.lastSpinDay === state.simulatedDay;
         const hasPendingSpin = state.pendingSpin && state.pendingSpin.day === state.simulatedDay;
         const eventFinished = state.simulatedDay > 25;
@@ -1471,6 +1486,14 @@ $(function () {
         const $button = $(this);
         const $status = $("#noelactif-recovery-request-status");
 
+        if (state.recoveryRequestSentAt) {
+          $button.prop("disabled", true).text("Demande déjà envoyée");
+          $status.text(
+            "Ta demande a déjà été transmise aux Lutins. Il n’est pas nécessaire de la renouveler."
+          );
+          return;
+        }
+
         if (
           window.location.hostname === CONFIG.remoteLog.hostname
           && !memberIsIdentified()
@@ -1491,6 +1514,8 @@ $(function () {
 
         publishRecoveryRequest()
           .done(function () {
+            state.recoveryRequestSentAt = Date.now();
+            saveState();
             $button.text("Demande envoyée");
             $status.text(
               "Ta demande a bien été transmise aux Lutins. Ils te communiqueront ton code de restauration."
