@@ -54,7 +54,7 @@ $(function () {
       };
 
       let state = loadState();
-      let currentRotation = state.rotation || 0;
+      let currentRotation = 0;
       let spinning = false;
       let resolvedMember = null;
       let memberRequest = null;
@@ -1436,7 +1436,14 @@ $(function () {
         const segmentAngle = 360 / CONFIG.wheel.length;
         const targetCenter = (result.index * segmentAngle) + (segmentAngle / 2);
         const extraTurns = 6 * 360;
-        currentRotation += extraTurns + (360 - targetCenter);
+        const normalizedRotation = ((currentRotation % 360) + 360) % 360;
+        const desiredRotation = (360 - targetCenter) % 360;
+        const adjustment = (
+          desiredRotation
+          - normalizedRotation
+          + 360
+        ) % 360;
+        currentRotation += extraTurns + adjustment;
 
         $("#noelactif-wheel").css("transform", "rotate(" + currentRotation + "deg)");
         $("#noelactif-status").text("La roue tourne…");
@@ -1715,7 +1722,16 @@ $(function () {
           state.pendingSpin = null;
           state.pendingAllocation = null;
           state.lastRegistryPostAt = null;
-          currentRotation = state.rotation || 0;
+          currentRotation = 0;
+          $("#noelactif-wheel")
+            .css("transition", "none")
+            .css("transform", "rotate(0deg)");
+          window.setTimeout(function () {
+            $("#noelactif-wheel").css(
+              "transition",
+              "transform 5.2s cubic-bezier(.12,.68,.16,1)"
+            );
+          }, 30);
           $("input[name='noelactif-prize']").prop("checked", false);
           saveState();
           render();
