@@ -20,11 +20,11 @@ $(function () {
         },
         recoverySignature: "noelactif-2026-restauration-v1",
         wheel: [
-          { label: "1 ticket — Petit paquet", tickets: 1, weight: 15 },
-          { label: "2 tickets — Sucre d’orge", tickets: 2, weight: 20 },
-          { label: "3 tickets — Cadeau surprise", tickets: 3, weight: 25 },
-          { label: "4 tickets — Hotte de Noël", tickets: 4, weight: 20 },
-          { label: "5 tickets — Étoile dorée", tickets: 5, weight: 15 },
+          { label: "1 ticket — Groumph en chocolat", tickets: 1, weight: 15 },
+          { label: "2 tickets — Hotte de papy Chacha", tickets: 2, weight: 20 },
+          { label: "3 tickets — Kardo surprise", tickets: 3, weight: 25 },
+          { label: "4 tickets — Hydromel de la mère Luzz", tickets: 4, weight: 20 },
+          { label: "5 tickets — Peluche Gizmo", tickets: 5, weight: 15 },
           { label: "10 tickets — Jackpot de Pinguino !", tickets: 10, weight: 5 }
         ],
         prizes: {
