@@ -190,6 +190,152 @@ $(function () {
         $("#noelactif-debug-panel").prop("hidden", !isDebugOwner());
       }
 
+      function initAtelierStory() {
+        const $messagesBox = $("#atelier .direct-chat-messages");
+        const $replay = $("#noelactif-story-replay");
+        const dateLabel = "Mardi 1 décembre 2026";
+        const story = [
+          {
+            name: "Les Lutins",
+            avatar: "lutins",
+            text: "Chef ! On vient de découvrir une immense roue au fond de l’atelier, juste derrière la réserve de cadeaux. Elle est couverte de lumières et distribue de mystérieux tickets !"
+          },
+          {
+            name: "Groumph",
+            avatar: "groumph",
+            right: true,
+            text: "Je précise que je n’ai touché à rien… Enfin, presque rien. J’ai seulement goûté le « Groumph en chocolat » pour vérifier sa qualité."
+          },
+          {
+            name: "Père Noël",
+            avatar: "pere-noel",
+            text: "<em>Ho ho ho !</em> Une roue, des tickets et du chocolat qui disparaît mystérieusement… Je crois reconnaître la signature de Pinguino !"
+          },
+          {
+            name: "Les Lutins",
+            avatar: "lutins",
+            right: true,
+            text: "Il a laissé un petit mot : « Une rotation par jour, des tickets à collectionner et de magnifiques cadeaux à gagner. » Il parle aussi d’une moto dans les petites lignes…"
+          },
+          {
+            name: "Père Noël",
+            avatar: "pere-noel",
+            text: "Pinguino a donc encore imaginé un nouveau jeu pour tenter de s’offrir la moto qu’il n’a pas reçue à Noël dernier !"
+          },
+          {
+            name: "Groumph",
+            avatar: "groumph",
+            right: true,
+            text: "La roue contient aussi une Hotte de papy Chacha, un Kardo surprise, de l’hydromel de la mère Luzz et même une peluche Gizmo ! J’espère que tout cela est comestible…"
+          },
+          {
+            name: "Les Lutins",
+            avatar: "lutins",
+            text: "Les membres de Forumactif pourront faire tourner la roue chaque jour et collectionner des tickets. Après Noël, ils pourront les déposer dans les Hottes du Père Noël pour participer aux différents tirages !"
+          },
+          {
+            name: "Père Noël",
+            avatar: "pere-noel",
+            right: true,
+            text: "Excellente idée ! Je déclare officiellement ouverte la grande lotterie de Noël et je charge Les Lutins de son organisation. Au travail : les membres de Forumactif arrivent !"
+          }
+        ];
+        let timers = [];
+        let started = false;
+
+        if (!$messagesBox.length) {
+          return;
+        }
+
+        $messagesBox.html(story.map(function (message, index) {
+          let avatar;
+          if (message.avatar === "groumph") {
+            avatar = '<span class="direct-chat-img noelactif-story-avatar" role="img" aria-label="Groumph">G</span>';
+          } else {
+            const imageUrl = message.avatar === "pere-noel"
+              ? "https://i.servimg.com/u/f38/11/01/36/00/image532.png"
+              : "https://i.servimg.com/u/f38/11/01/36/00/image533.png";
+            avatar = '<img class="direct-chat-img" src="' + imageUrl + '" alt="' + message.name + '" />';
+          }
+
+          return [
+            '<div class="direct-chat-msg',
+            message.right ? " right" : "",
+            " noelactif-story-message",
+            index === 0 ? " is-visible" : "",
+            '">',
+            '<div class="direct-chat-infos clearfix">',
+            '<span class="direct-chat-name float-left" style="color:#961613">',
+            message.name,
+            "</span>",
+            '<span class="direct-chat-timestamp float-right">',
+            dateLabel,
+            "</span>",
+            "</div>",
+            avatar,
+            '<div class="direct-chat-text">',
+            message.text,
+            "</div>",
+            "</div>"
+          ].join("");
+        }).join(""));
+
+        const $messages = $messagesBox.find(".noelactif-story-message");
+
+        function clearTimers() {
+          timers.forEach(function (timer) {
+            window.clearTimeout(timer);
+          });
+          timers = [];
+        }
+
+        function revealMessage(index) {
+          $messages.eq(index).addClass("is-visible");
+          $messagesBox.stop(true).animate(
+            { scrollTop: $messagesBox.get(0).scrollHeight },
+            320
+          );
+        }
+
+        function playStory() {
+          const reduceMotion = window.matchMedia
+            && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          started = true;
+          clearTimers();
+          $messages.removeClass("is-visible");
+          $messagesBox.stop(true).scrollTop(0);
+
+          if (reduceMotion) {
+            $messages.addClass("is-visible");
+            $messagesBox.scrollTop(0);
+            return;
+          }
+
+          $messages.each(function (index) {
+            timers.push(window.setTimeout(function () {
+              revealMessage(index);
+            }, 250 + (index * 2250)));
+          });
+        }
+
+        $replay.on("click", playStory);
+
+        if ("IntersectionObserver" in window) {
+          const observer = new IntersectionObserver(function (entries) {
+            if (!started && entries.some(function (entry) {
+              return entry.isIntersecting;
+            })) {
+              observer.disconnect();
+              playStory();
+            }
+          }, { threshold: 0.25 });
+          observer.observe($messagesBox.get(0));
+        } else {
+          playStory();
+        }
+      }
+
       function defaultState() {
         return {
           simulatedDay: 1,
@@ -1708,6 +1854,7 @@ $(function () {
           }
         });
 
+      initAtelierStory();
       render();
       if (window.location.hostname === CONFIG.remoteLog.hostname) {
         resolveForumMember().done(renderDebugPanel);
