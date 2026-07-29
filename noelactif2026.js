@@ -251,7 +251,7 @@ $(function () {
           let avatar;
           let imageUrl;
           if (message.avatar === "groumph") {
-            imageUrl = "https://i38.servimg.com/u/f38/11/01/36/00/groump10.png";
+            imageUrl = "https://i38.servimg.com/u/f38/11/01/36/00/groump11.png";
           } else if (message.avatar === "pere-noel") {
             imageUrl = "https://i.servimg.com/u/f38/11/01/36/00/image532.png";
           } else {
