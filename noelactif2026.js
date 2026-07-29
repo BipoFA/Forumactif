@@ -11,6 +11,8 @@ $(function () {
           forumUrl: "/f7-zone-de-tests",
           registryTopicId: 669,
           registryTopicUrl: "/t669-noelactif-2026-registre-des-hottes-du-pere-noel",
+          recoveryTopicId: 678,
+          recoveryTopicUrl: "/t678-noelactif-2026-registre-des-demandes-de-restauration",
           registryCooldownMs: 11000,
           enabled: true
         },
@@ -504,6 +506,38 @@ $(function () {
             return {
               mode: "registre central des hottes",
               topicId: CONFIG.remoteLog.registryTopicId
+            };
+          });
+      }
+
+      function makeRecoveryRequestMessage() {
+        const member = getMember();
+        return [
+          "[NOELACTIF 2026 — DEMANDE DE RESTAURATION]",
+          "",
+          "Membre : " + member.username,
+          "Identifiant : " + member.id,
+          "Date de la demande : " + new Date().toLocaleString("fr-FR"),
+          "",
+          "Le membre demande un code permettant de restaurer son solde et son historique."
+        ].join("\n");
+      }
+
+      function publishRecoveryRequest() {
+        if (!remoteLoggingIsAvailable()) {
+          return $.Deferred().resolve({ mode: "simulation locale", topicId: null }).promise();
+        }
+
+        return getPostingForm(
+          "/post?t=" + CONFIG.remoteLog.recoveryTopicId + "&mode=reply"
+        )
+          .then(function (formData) {
+            return submitForumPost(formData, "", makeRecoveryRequestMessage());
+          })
+          .then(function () {
+            return {
+              mode: "registre des demandes de restauration",
+              topicId: CONFIG.remoteLog.recoveryTopicId
             };
           });
       }
@@ -1430,6 +1464,43 @@ $(function () {
           })
           .always(function () {
             $button.prop("disabled", false);
+          });
+      });
+
+      $("#noelactif-request-recovery").on("click", function () {
+        const $button = $(this);
+        const $status = $("#noelactif-recovery-request-status");
+
+        if (
+          window.location.hostname === CONFIG.remoteLog.hostname
+          && !memberIsIdentified()
+        ) {
+          $status.text("Identification de ton compte Forumactif en cours…");
+          resolveForumMember()
+            .done(function () {
+              $button.trigger("click");
+            })
+            .fail(function () {
+              $status.text("Impossible d’identifier ton compte Forumactif.");
+            });
+          return;
+        }
+
+        $button.prop("disabled", true).text("Envoi de la demande…");
+        $status.text("Transmission de ta demande aux Lutins…");
+
+        publishRecoveryRequest()
+          .done(function () {
+            $button.text("Demande envoyée");
+            $status.text(
+              "Ta demande a bien été transmise aux Lutins. Ils te communiqueront ton code de restauration."
+            );
+          })
+          .fail(function (error) {
+            $button
+              .prop("disabled", false)
+              .html('<i class="fa fa-envelope" aria-hidden="true"></i> Contacter Les Lutins');
+            $status.text(String(error));
           });
       });
 
