@@ -31,22 +31,22 @@ $(function () {
         ],
         prizes: {
           gold: {
-            label: "Hotte d’or — tirage de 1 200 crédits + badge or",
+            label: "Hotte d’or — participation au tirage au sort pour gagner 1 200 crédits et le badge or Noëlactif 2026 à afficher dans son profil",
             tag: "[OR]",
             cost: 60
           },
           silver: {
-            label: "Hotte d’argent — tirage de 1 000 crédits + badge argent",
+            label: "Hotte d’argent — participation au tirage au sort pour gagner 1 000 crédits et le badge argent Noëlactif 2026 à afficher dans son profil",
             tag: "[ARGENT]",
             cost: 45
           },
           bronze: {
-            label: "Hotte de bronze — tirage de 800 crédits + badge bronze",
+            label: "Hotte de bronze — participation au tirage au sort pour gagner 800 crédits et le badge bronze Noëlactif 2026 à afficher dans son profil",
             tag: "[BRONZE]",
             cost: 30
           },
           badge: {
-            label: "Hotte des participants — badge Noëlactif 2026 garanti",
+            label: "Hotte souvenir — obtention du badge Noëlactif 2026 à afficher dans son profil",
             tag: "[PARTICIPANT]",
             cost: 1
           }
@@ -249,14 +249,15 @@ $(function () {
 
         $messagesBox.html(story.map(function (message, index) {
           let avatar;
+          let imageUrl;
           if (message.avatar === "groumph") {
-            avatar = '<span class="direct-chat-img noelactif-story-avatar" role="img" aria-label="Groumph">G</span>';
+            imageUrl = "https://i38.servimg.com/u/f38/11/01/36/00/groump10.png";
+          } else if (message.avatar === "pere-noel") {
+            imageUrl = "https://i.servimg.com/u/f38/11/01/36/00/image532.png";
           } else {
-            const imageUrl = message.avatar === "pere-noel"
-              ? "https://i.servimg.com/u/f38/11/01/36/00/image532.png"
-              : "https://i.servimg.com/u/f38/11/01/36/00/image533.png";
-            avatar = '<img class="direct-chat-img" src="' + imageUrl + '" alt="' + message.name + '" />';
+            imageUrl = "https://i.servimg.com/u/f38/11/01/36/00/image533.png";
           }
+          avatar = '<img class="direct-chat-img" src="' + imageUrl + '" alt="' + message.name + '" />';
 
           return [
             '<div class="direct-chat-msg',
@@ -1250,7 +1251,7 @@ $(function () {
         synchronizeRegistryCountdown(cooldownRemaining);
         schedulePendingJournalPublication();
 
-        $("#noelactif-allocation-balance").text(state.balance + " tickets");
+        $("#noelactif-allocation-balance").text(state.balance + " ticket(s)");
         $("#noelactif-allocation-total").text(cost);
 
         $section.toggleClass("is-locked", !isOpen);
