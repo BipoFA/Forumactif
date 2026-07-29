@@ -1124,11 +1124,11 @@ $(function () {
           );
         } else if (allocationWindowIsPast()) {
           $("#noelactif-allocation-state").text(
-            "Les hottes sont fermées depuis le 31 décembre 2026 à 23 h 59."
+            "Les hottes sont fermées depuis le 31 décembre 2026 à 23h59."
           );
         } else if (!isOpen) {
           $("#noelactif-allocation-state").text(
-            "Les hottes seront accessibles du 26 décembre 2026 à 00 h 01 au 31 décembre 2026 à 23 h 59."
+            "Les hottes seront accessibles du 26 décembre 2026 à 00h01 au 31 décembre 2026 à 23h59."
           );
         } else if (cost > state.balance) {
           $("#noelactif-allocation-state").text(
@@ -1148,7 +1148,7 @@ $(function () {
 
         const alreadyPlayed = state.lastSpinDay === state.simulatedDay;
         const hasPendingSpin = state.pendingSpin && state.pendingSpin.day === state.simulatedDay;
-        const eventFinished = state.simulatedDay > 24;
+        const eventFinished = state.simulatedDay > 25;
 
         $("#noelactif-spin")
           .prop("disabled", spinning || alreadyPlayed || eventFinished)
@@ -1167,9 +1167,9 @@ $(function () {
 
         if (eventFinished) {
           $("#noelactif-status").text(
-            state.simulatedDay === 25
-              ? "Les rotations sont terminées. Les hottes ouvriront demain."
-              : "Les 24 jours de participation sont terminés."
+            state.simulatedDay === 26
+              ? "Les rotations sont terminées. Les hottes sont désormais ouvertes."
+              : "Les 25 jours de participation sont terminés."
           );
         } else if (hasPendingSpin) {
           $("#noelactif-status").text("Le résultat est conservé : relance l’envoi vers Forumactif.");
@@ -1198,7 +1198,7 @@ $(function () {
       }
 
       function spinWheel() {
-        if (spinning || state.lastSpinDay === state.simulatedDay || state.simulatedDay > 24) {
+        if (spinning || state.lastSpinDay === state.simulatedDay || state.simulatedDay > 25) {
           return;
         }
 
