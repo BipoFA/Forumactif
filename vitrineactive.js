@@ -251,6 +251,7 @@ $(function () {
     }
 
     let forumSignale = null;
+    let forumTitre = null;
     let $boutonActif = null;
 
     // Désactiver bouton si signalé il y a moins de 5 jours
@@ -288,9 +289,10 @@ $(function () {
     
       const $card = $(this).closest('.forum-card');
       forumSignale = $card.data('id') || $card.data('title');
+      forumTitre = $card.data('title');
       $boutonActif = $(this);
     
-      $('#modal-forum-title').text(`Forum concerné : ${$card.data('title')}`);
+      $('#modal-forum-title').text(`Forum concerné : ${forumTitre}`);
       $('#modal-report-message').val('');
       $('#modal-overlay, #custom-report-modal').fadeIn(200);
     });
@@ -310,9 +312,8 @@ $(function () {
       }
     
       $('#modal-send-btn').text('En cours d\'envoi...');
-      const forumTitre = $card.data('title');
       const message = `Signalement pour le forum : [b]${forumTitre}[/b]\n\n` +
-                      `La (les) question(s) suivante(s) concernant son interview ont été posée(s) :\n\n` +
+                      `Modification(s) demandée(s):\n\n` +
                       `[quote]${contenu}[/quote]\n\n`;
     
       $.post('/post', {
