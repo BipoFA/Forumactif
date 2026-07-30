@@ -961,6 +961,33 @@ $(function () {
         return rotations;
       }
 
+      function forumUrlsFromJournalPage(html, memberId) {
+        const documentNode = new DOMParser().parseFromString(String(html || ""), "text/html");
+        let $posts = $(documentNode).find(".post");
+        if (!$posts.length) {
+          $posts = $(documentNode).find(".postbody");
+        }
+        const forumUrls = [];
+
+        $posts.each(function () {
+          const text = pageText($(this));
+          const idMatch = text.match(/Identifiant\s*:\s*(\d+)/i);
+          if (!idMatch || Number(idMatch[1]) !== Number(memberId)) {
+            return;
+          }
+
+          const matches = text.match(/Forum bénéficiaire\s*:\s*https?:\/\/[^\s]+/gi) || [];
+          matches.forEach(function (match) {
+            const forumUrl = match.replace(/^Forum bénéficiaire\s*:\s*/i, "").trim();
+            if (forumUrl) {
+              forumUrls.push(forumUrl);
+            }
+          });
+        });
+
+        return forumUrls;
+      }
+
       function recoveryHash(value) {
         const input = CONFIG.recoverySignature + "|" + value;
         let hash = 2166136261;
@@ -1031,8 +1058,13 @@ $(function () {
 
           return fetchTopic(0).then(function () {
             const uniqueRotations = {};
+            const recordedForumUrls = [];
             let rotationOrder = 0;
             allJournalPages.forEach(function (html) {
+              Array.prototype.push.apply(
+                recordedForumUrls,
+                forumUrlsFromJournalPage(html, memberId)
+              );
               rotationsFromJournalPage(html, memberId).forEach(function (entry) {
                 const signature = [
                   entry.day,
@@ -1111,9 +1143,11 @@ $(function () {
             restoredState.rotation = history.length;
             restoredState.lastSpinDay = lastDay;
             restoredState.topicId = topics[0].id;
-            restoredState.forumUrl = history.slice().reverse().reduce(function (forumUrl, entry) {
-              return forumUrl || entry.forumUrl || "";
-            }, "");
+            restoredState.forumUrl = recordedForumUrls.length
+              ? recordedForumUrls[recordedForumUrls.length - 1]
+              : history.slice().reverse().reduce(function (forumUrl, entry) {
+                return forumUrl || entry.forumUrl || "";
+              }, "");
             restoredState.forumUrlDeclaredAt = restoredState.forumUrl
               ? new Date().toISOString()
               : null;
