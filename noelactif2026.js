@@ -25,7 +25,11 @@ $(function () {
           { username: "chattigre", id: 175350 },
           { username: "Lixyr", id: 108944 },
           { username: "Skouliki", id: 174625 },
-          { username: "Tony*", id: 141293 }
+          { username: "Tony*", id: 141293 },
+          { username: "Lutins", id: 177295 }
+        ],
+        shopTesters: [
+          { username: "Lutins", id: 177295 }
         ],
         recoverySignature: "noelactif-2026-restauration-v1",
         wheel: [
@@ -192,6 +196,18 @@ $(function () {
         return CONFIG.debugOwners.some(function (owner) {
           return member.id === owner.id
             && String(member.username).toLowerCase() === owner.username.toLowerCase();
+        });
+      }
+
+      function hasEarlyShopAccess() {
+        if (!CONFIG.testMode) {
+          return false;
+        }
+
+        const member = getMember();
+        return CONFIG.shopTesters.some(function (tester) {
+          return member.id === tester.id
+            && String(member.username).toLowerCase() === tester.username.toLowerCase();
         });
       }
 
@@ -691,6 +707,10 @@ $(function () {
       }
 
       function allocationWindowIsOpen() {
+        if (hasEarlyShopAccess()) {
+          return true;
+        }
+
         if (CONFIG.testMode) {
           return state.simulatedDay >= 26 && state.simulatedDay <= 31;
         }
@@ -702,6 +722,10 @@ $(function () {
       }
 
       function allocationWindowIsPast() {
+        if (hasEarlyShopAccess()) {
+          return false;
+        }
+
         if (CONFIG.testMode) {
           return state.simulatedDay > 31;
         }
@@ -1785,7 +1809,7 @@ $(function () {
 
           $("#noelactif-status").text(
             remoteLoggingIsAvailable()
-              ? "Enregistrement du résultat dans la zone privée…"
+              ? "Enregistrement du résultat dans ton journal…"
               : "Simulation de l’envoi privé…"
           );
 
@@ -2301,6 +2325,9 @@ $(function () {
       initAtelierStory();
       render();
       if (window.location.hostname === CONFIG.remoteLog.hostname) {
-        resolveForumMember().done(renderDebugPanel);
+        resolveForumMember().done(function () {
+          renderDebugPanel();
+          render();
+        });
       }
     });
