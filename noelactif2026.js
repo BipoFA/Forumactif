@@ -352,6 +352,7 @@ $(function () {
           pendingJournal: null,
           lastRegistryPostAt: null,
           recoveryRequestSentAt: null,
+          manualAdjustments: [],
           history: []
         };
       }
@@ -365,6 +366,9 @@ $(function () {
 
           if (!Array.isArray(saved.allocations)) {
             saved.allocations = saved.allocation ? [saved.allocation] : [];
+          }
+          if (!Array.isArray(saved.manualAdjustments)) {
+            saved.manualAdjustments = [];
           }
 
           return saved;
@@ -904,7 +908,8 @@ $(function () {
             if (topicMatch && isJournal && isMember) {
               topics[topicMatch[1]] = {
                 id: Number(topicMatch[1]),
-                url: href
+                url: href,
+                title: title
               };
             }
           });
@@ -988,6 +993,109 @@ $(function () {
         return forumUrls;
       }
 
+      function manualAdjustmentsFromJournalPage(html, memberId) {
+        const documentNode = new DOMParser().parseFromString(String(html || ""), "text/html");
+        let $posts = $(documentNode).find(".post");
+        if (!$posts.length) {
+          $posts = $(documentNode).find(".postbody");
+        }
+        const adjustments = [];
+
+        $posts.each(function () {
+          const text = pageText($(this));
+          if (text.indexOf("[NOELACTIF 2026 — AJOUT MANUEL DE TICKETS]") === -1) {
+            return;
+          }
+
+          const idMatch = text.match(/Identifiant\s*:\s*(\d+)/i);
+          const ticketsMatch = text.match(/Tickets ajoutés\s*:\s*(\d+)/i);
+          const dateMatch = text.match(/Date de l’ajout\s*:\s*([^\n]+)/i);
+          const reasonMatch = text.match(/Motif\s*:\s*([^\n]+)/i);
+          if (
+            !idMatch
+            || Number(idMatch[1]) !== Number(memberId)
+            || !ticketsMatch
+            || Number(ticketsMatch[1]) < 1
+          ) {
+            return;
+          }
+
+          adjustments.push({
+            tickets: Number(ticketsMatch[1]),
+            timestamp: dateMatch ? dateMatch[1].trim() : "",
+            addedAt: dateMatch ? parseForumDateTime(dateMatch[1]) : null,
+            reason: reasonMatch ? reasonMatch[1].trim() : ""
+          });
+        });
+
+        return adjustments;
+      }
+
+      function memberNameFromJournalTitle(title) {
+        const match = String(title || "").match(
+          /Journal\s*—\s*(.*?)\s*—\s*ID\s+\d+/i
+        );
+        return match && match[1].trim() ? match[1].trim() : "Membre";
+      }
+
+      function makeManualTicketMessage(memberId, username, tickets, reason) {
+        const admin = getMember();
+        return [
+          "[NOELACTIF 2026 — AJOUT MANUEL DE TICKETS]",
+          "",
+          "Membre : " + username,
+          "Identifiant : " + memberId,
+          "Tickets ajoutés : " + tickets,
+          "Motif : " + reason,
+          "Ajout effectué par : " + admin.username + " — ID " + admin.id,
+          "Date de l’ajout : " + new Date().toLocaleString("fr-FR")
+        ].join("\n");
+      }
+
+      function publishManualTicketAdjustment(memberId, tickets, reason) {
+        const forumMatcher = function (url) {
+          return new RegExp("^/f" + CONFIG.remoteLog.forumId + "(?:p\\d+)?(?:-|$)", "i")
+            .test(url.pathname);
+        };
+
+        return fetchPaginatedPages(CONFIG.remoteLog.forumUrl, forumMatcher)
+          .then(function (forumPages) {
+            const topics = journalTopicsForMember(forumPages, memberId)
+              .sort(function (a, b) {
+                return b.id - a.id;
+              });
+            if (!topics.length) {
+              return $.Deferred().reject(
+                "Aucun journal Noëlactif trouvé pour l’ID " + memberId
+                + ". Aucun ticket n’a été ajouté."
+              ).promise();
+            }
+
+            const topic = topics[0];
+            const username = memberNameFromJournalTitle(topic.title);
+            const message = makeManualTicketMessage(
+              memberId,
+              username,
+              tickets,
+              reason
+            );
+
+            return getPostingForm("/post?t=" + topic.id + "&mode=reply")
+              .then(function (formData) {
+                return submitForumPost(formData, "", message);
+              })
+              .then(function () {
+                return {
+                  memberId: memberId,
+                  username: username,
+                  tickets: tickets,
+                  topicId: topic.id,
+                  message: message
+                };
+              });
+          });
+      }
+
       function recoveryHash(value) {
         const input = CONFIG.recoverySignature + "|" + value;
         let hash = 2166136261;
@@ -1058,6 +1166,7 @@ $(function () {
 
           return fetchTopic(0).then(function () {
             const uniqueRotations = {};
+            const uniqueAdjustments = {};
             const recordedForumUrls = [];
             let rotationOrder = 0;
             allJournalPages.forEach(function (html) {
@@ -1079,6 +1188,16 @@ $(function () {
                     order: rotationOrder
                   };
                   rotationOrder += 1;
+                }
+              });
+              manualAdjustmentsFromJournalPage(html, memberId).forEach(function (entry) {
+                const signature = [
+                  entry.tickets,
+                  entry.timestamp,
+                  entry.reason
+                ].join("|");
+                if (!uniqueAdjustments[signature]) {
+                  uniqueAdjustments[signature] = entry;
                 }
               });
             });
@@ -1114,6 +1233,12 @@ $(function () {
             const won = history.reduce(function (total, entry) {
               return total + entry.tickets;
             }, 0);
+            const manualAdjustments = Object.keys(uniqueAdjustments).map(function (signature) {
+              return uniqueAdjustments[signature];
+            });
+            const manuallyAdded = manualAdjustments.reduce(function (total, entry) {
+              return total + entry.tickets;
+            }, 0);
             const deposited = allocationCost(keys);
             const datedDeposits = memberDeposits.filter(function (entry) {
               return entry.depositAt !== null && entry.remainingBalance !== null;
@@ -1131,14 +1256,23 @@ $(function () {
                   : total;
               }, 0)
               : null;
+            const manualAdditionsAfterLastDeposit = lastDeposit
+              ? manualAdjustments.reduce(function (total, entry) {
+                return entry.addedAt !== null && entry.addedAt > lastDeposit.depositAt
+                  ? total + entry.tickets
+                  : total;
+              }, 0)
+              : null;
             const lastDay = history[history.length - 1].day;
             const restoredState = defaultState();
             restoredState.simulatedDay = lastDay;
             restoredState.balance = Math.max(
               0,
               lastDeposit
-                ? lastDeposit.remainingBalance + gainsAfterLastDeposit
-                : won - deposited
+                ? lastDeposit.remainingBalance
+                  + gainsAfterLastDeposit
+                  + manualAdditionsAfterLastDeposit
+                : won + manuallyAdded - deposited
             );
             restoredState.rotation = history.length;
             restoredState.lastSpinDay = lastDay;
@@ -1161,6 +1295,7 @@ $(function () {
                 topicId: topics[0].id
               });
             });
+            restoredState.manualAdjustments = manualAdjustments;
             if (keys.length) {
               restoredState.allocations = [{
                 keys: keys,
@@ -1182,6 +1317,7 @@ $(function () {
               username: history[0].member,
               rotations: history.length,
               won: won,
+              manuallyAdded: manuallyAdded,
               deposited: deposited,
               balance: restoredState.balance,
               hottes: keys.length
@@ -1728,6 +1864,73 @@ $(function () {
           });
       });
 
+      $("#noelactif-add-manual-tickets").on("click", function () {
+        if (!isDebugOwner()) {
+          return;
+        }
+
+        const memberId = Number($("#noelactif-manual-member-id").val());
+        const tickets = Number($("#noelactif-manual-ticket-count").val());
+        const reason = String($("#noelactif-manual-ticket-reason").val() || "").trim();
+        const $button = $(this);
+        const $status = $("#noelactif-manual-ticket-status");
+
+        if (!Number.isInteger(memberId) || memberId < 1) {
+          $status.text("Renseigne un identifiant numérique valide.");
+          return;
+        }
+        if (!Number.isInteger(tickets) || tickets < 1) {
+          $status.text("Le nombre de tickets doit être un entier strictement positif.");
+          return;
+        }
+        if (!reason) {
+          $status.text("Le motif de cet ajout est obligatoire.");
+          return;
+        }
+        if (!window.confirm(
+          "Confirmer l’ajout manuel de "
+          + tickets
+          + " ticket(s) au membre ID "
+          + memberId
+          + " ?\n\nMotif : "
+          + reason
+          + "\n\nUne trace réelle sera publiée dans son journal privé."
+        )) {
+          return;
+        }
+
+        $button.prop("disabled", true);
+        $status.text("Recherche du journal et publication de l’ajout en cours…");
+
+        publishManualTicketAdjustment(memberId, tickets, reason)
+          .done(function (result) {
+            $("#noelactif-recovery-member-id").val(memberId);
+            $("#noelactif-private-log").text(
+              result.message
+              + "\n\nStatut : AJOUT MANUEL ENREGISTRÉ"
+              + "\nSujet Forumactif : t"
+              + result.topicId
+            );
+            $("#noelactif-manual-member-id").val("");
+            $("#noelactif-manual-ticket-count").val("");
+            $("#noelactif-manual-ticket-reason").val("");
+            $status.text(
+              result.tickets
+              + " ticket(s) ont été ajoutés à "
+              + result.username
+              + " dans le journal t"
+              + result.topicId
+              + ". Tu peux maintenant générer son nouveau code de restauration."
+            );
+          })
+          .fail(function (error) {
+            $status.text(String(error));
+          })
+          .always(function () {
+            $button.prop("disabled", false);
+          });
+      });
+
       $("#noelactif-generate-recovery").on("click", function () {
         if (!isDebugOwner()) {
           return;
@@ -1758,6 +1961,8 @@ $(function () {
               + " rotation(s), "
               + result.won
               + " ticket(s) gagnés, "
+              + result.manuallyAdded
+              + " ticket(s) ajoutés manuellement, "
               + result.deposited
               + " déjà déposés dans "
               + result.hottes
