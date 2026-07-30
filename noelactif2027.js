@@ -33,17 +33,13 @@ $(function () {
       drawTopicUrl: "/t684-noelactif-2027tirages-du-loto"
     },
 
+    /*
+     * Comptes autorisés sur le forum de test xoumi.forumactif.com.
+     * Les identifiants du Forum des Forums seront renseignés lors
+     * du passage sur l'environnement définitif.
+     */
     administrators: [
-      { username: "Bipo", id: 112158 },
-      { username: "Luzz", id: 50306 },
-      { username: "Pinguino", id: 1 },
-      { username: "Chacha", id: 110116 },
-      { username: "Walt", id: 166230 },
-      { username: "chattigre", id: 175350 },
-      { username: "Lixyr", id: 108944 },
-      { username: "Skouliki", id: 174625 },
-      { username: "Tony*", id: 141293 },
-      { username: "Lutins", id: 177295 }
+      { username: "Typlo", id: 1 }
     ]
   };
 
@@ -53,6 +49,7 @@ $(function () {
   const NUMBERS_PER_CARD = 15;
 
   let resolvedMember = null;
+  let memberRequest = null;
   let state = null;
   let draws = [];
   let publicationInProgress = false;
@@ -120,6 +117,102 @@ $(function () {
     }
 
     return resolvedMember;
+  }
+
+  function extractForumVariable(
+    html,
+    variableName
+  ) {
+    const pattern = new RegExp(
+      "(?:&#123;|\\{)" +
+        variableName +
+        "(?:&#125;|\\})</strong>&nbsp;:&nbsp;(.*?)&nbsp;<span",
+      "i"
+    );
+
+    const match = String(
+      html || ""
+    ).match(pattern);
+
+    return match
+      ? match[1].trim()
+      : "";
+  }
+
+  function resolveForumMember() {
+    const current = getMember();
+
+    if (
+      window.location.hostname !==
+        CONFIG.remoteLog.hostname ||
+      current.id > 0
+    ) {
+      return $.Deferred()
+        .resolve(current)
+        .promise();
+    }
+
+    if (memberRequest) {
+      return memberRequest;
+    }
+
+    memberRequest = $.get(
+      "/popup_help.forum?l=miscvars"
+    )
+      .then(function (html) {
+        const usernameHtml =
+          extractForumVariable(
+            html,
+            "USERNAME"
+          );
+
+        const userLinkHtml =
+          extractForumVariable(
+            html,
+            "USERLINK"
+          );
+
+        const $username = $("<div>").html(
+          usernameHtml
+        );
+
+        const $userLink = $("<div>").html(
+          userLinkHtml
+        );
+
+        const username = String(
+          $username.text() ||
+            $(".USERNAME").first().text() ||
+            ""
+        ).trim();
+
+        const profileHref = String(
+          $userLink.find("a").attr("href") ||
+            $userLink.text() ||
+            ""
+        ).trim();
+
+        resolvedMember =
+          memberFromProfileHref(
+            username,
+            profileHref
+          );
+
+        if (resolvedMember.id <= 0) {
+          return $.Deferred()
+            .reject(
+              "L’identifiant numérique du membre reste introuvable."
+            )
+            .promise();
+        }
+
+        return resolvedMember;
+      })
+      .always(function () {
+        memberRequest = null;
+      });
+
+    return memberRequest;
   }
 
   function memberIsAdministrator() {
@@ -1919,31 +2012,52 @@ $(function () {
    * ============================================================
    */
 
-  const member = getMember();
+  $("#noeloto-card-status").text(
+    "Identification du membre connecté…"
+  );
 
-  if (!member || member.id <= 0) {
-    $("#noeloto-card-status").text(
-      "Impossible d’identifier le membre connecté."
-    );
+  resolveForumMember()
+    .then(function (member) {
+      if (!member || member.id <= 0) {
+        return $.Deferred()
+          .reject(
+            "Impossible d’identifier le membre connecté."
+          )
+          .promise();
+      }
 
-    return;
-  }
+      state = loadState();
+      saveState();
+      render();
+      loadDraws();
 
-  state = loadState();
-  saveState();
-  render();
-  loadDraws();
+      $("#noeloto-card-status").text("");
 
-  /*
-   * Outil temporaire de test accessible depuis la console.
-   */
-  window.Noelactif2027 = {
-    getState: function () {
-      return JSON.parse(
-        JSON.stringify(state)
+      /*
+       * Outil temporaire de test accessible depuis la console.
+       */
+      window.Noelactif2027 = {
+        getState: function () {
+          return JSON.parse(
+            JSON.stringify(state)
+          );
+        },
+        getMember: function () {
+          return $.extend(
+            {},
+            getMember()
+          );
+        },
+        validateGrid: validateGrid,
+        generateGrid: generateGrid
+      };
+    })
+    .catch(function (error) {
+      $("#noeloto-card-status").text(
+        String(
+          error ||
+            "Impossible d’identifier le membre connecté."
+        )
       );
-    },
-    validateGrid: validateGrid,
-    generateGrid: generateGrid
-  };
+    });
 });
