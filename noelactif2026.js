@@ -2,7 +2,7 @@ $(function () {
       "use strict";
 
       const CONFIG = {
-        storageKey: "noelactif2026_forum_test_v1",
+        storageKey: "noelactif2026_forum_test_v2",
         testMode: true,
         rulesUrl: "#",
         remoteLog: {
@@ -492,29 +492,78 @@ $(function () {
       }
 
       function extractTopicId(html, xhr) {
-        const sources = [
-          xhr && xhr.responseURL ? xhr.responseURL : "",
-          html || ""
-        ];
-
-        for (let index = 0; index < sources.length; index += 1) {
-          const prettyUrl = sources[index].match(
+        function topicIdFromAddress(address) {
+          const source = String(address || "");
+          const prettyUrl = source.match(
             /\/t(\d+)(?:p\d+)?(?:-|\/|#|\?|&|["']|$)/i
           );
           if (prettyUrl) {
             return Number(prettyUrl[1]);
           }
 
-          const classicUrl = sources[index].match(/[?&]t=(\d+)/i);
+          const classicUrl = source.match(/[?&]t=(\d+)/i);
           if (classicUrl) {
             return Number(classicUrl[1]);
           }
 
-          const topicField = sources[index].match(
-            /(?:topic_id|topicId|topic-id)[^0-9]{0,20}(\d+)/i
-          );
-          if (topicField) {
-            return Number(topicField[1]);
+          return null;
+        }
+
+        /*
+         * L'adresse finale de la requête est la source la plus fiable. Il ne
+         * faut surtout pas rechercher le premier lien /t... dans tout le HTML :
+         * les menus Forumactif contiennent d'autres sujets (FAQ, annonces...).
+         */
+        const responseTopicId = topicIdFromAddress(
+          xhr && xhr.responseURL ? xhr.responseURL : ""
+        );
+        if (responseTopicId) {
+          return responseTopicId;
+        }
+
+        const parsed = new DOMParser().parseFromString(html || "", "text/html");
+        const trustedAddresses = [];
+
+        parsed.querySelectorAll("meta[http-equiv='refresh']").forEach(function (meta) {
+          const content = meta.getAttribute("content") || "";
+          const refreshUrl = content.match(/url\s*=\s*['"]?([^'";\s]+)/i);
+          if (refreshUrl) {
+            trustedAddresses.push(refreshUrl[1]);
+          }
+        });
+
+        parsed.querySelectorAll("link[rel='canonical']").forEach(function (link) {
+          trustedAddresses.push(link.getAttribute("href") || "");
+        });
+
+        parsed.querySelectorAll("script").forEach(function (script) {
+          const code = script.textContent || "";
+          const redirectPatterns = [
+            /(?:window\.)?location(?:\.href)?\s*=\s*['"]([^'"]+)['"]/ig,
+            /(?:window\.)?location\.replace\(\s*['"]([^'"]+)['"]/ig
+          ];
+
+          redirectPatterns.forEach(function (pattern) {
+            let match;
+            while ((match = pattern.exec(code)) !== null) {
+              trustedAddresses.push(match[1]);
+            }
+          });
+        });
+
+        parsed.querySelectorAll("a[href]").forEach(function (link) {
+          const label = (link.textContent || "").replace(/\s+/g, " ").trim();
+          if (
+            /voir (?:votre|le) message|cliquez ici.*message|retourner au sujet/i.test(label)
+          ) {
+            trustedAddresses.push(link.getAttribute("href") || "");
+          }
+        });
+
+        for (let index = 0; index < trustedAddresses.length; index += 1) {
+          const trustedTopicId = topicIdFromAddress(trustedAddresses[index]);
+          if (trustedTopicId) {
+            return trustedTopicId;
           }
         }
 
@@ -590,10 +639,15 @@ $(function () {
             return submitForumPost(formData, subject, makePrivateMessage(entry));
           })
           .then(function (result) {
-            if (result.topicId) {
-              state.topicId = result.topicId;
-              saveState();
+            if (!result.topicId) {
+              return $.Deferred().reject(
+                "Le journal a peut-être été créé, mais Forumactif n’a pas renvoyé son identifiant. "
+                + "La rotation reste en attente afin d’éviter toute publication dans un autre sujet."
+              ).promise();
             }
+
+            state.topicId = result.topicId;
+            saveState();
             return {
               mode: isFallback ? "nouveau sujet de secours" : "nouveau journal",
               topicId: result.topicId
