@@ -7,8 +7,12 @@ $(function () {
         rulesUrl: "#",
         remoteLog: {
           hostname: "forum.forumactif.com",
-          forumId: 110,
-          forumUrl: "/f110-signalements-d-archives",
+          privateForumId: 110,
+          privateForumUrl: "/f110-signalements-d-archives",
+          publicForumId: 110,
+          publicForumUrl: "/f110-signalements-d-archives",
+          rotationTopicId: 413345,
+          rotationTopicUrl: "/t413345-noelactif-2026-participation-des-membres",
           registryTopicId: 413332,
           registryTopicUrl: "/t413332-noelactif-2026-registre-des-hottes-du-pere-noel",
           recoveryTopicId: 413333,
@@ -72,6 +76,9 @@ $(function () {
       let registryCountdownTimer = null;
       let pendingJournalTimer = null;
       let journalPublicationInProgress = false;
+      let centrallyCheckedSpinDay = null;
+      let centrallyBlockedSpinDay = null;
+      let centralSyncInProgress = false;
 
       function memberFromProfileHref(username, profileHref) {
         const href = String(profileHref || "");
@@ -491,6 +498,390 @@ $(function () {
         ].join("\n");
       }
 
+      function rotationRegistryMatcher(url) {
+        return (
+          new RegExp(
+            "^/t"
+            + CONFIG.remoteLog.rotationTopicId
+            + "(?:p\\d+)?(?:-|$)",
+            "i"
+          ).test(url.pathname)
+          || (
+            url.searchParams.get("t") === String(CONFIG.remoteLog.rotationTopicId)
+            && url.pathname.indexOf("/viewtopic") !== -1
+          )
+        );
+      }
+
+      function makeRotationToken() {
+        return [
+          getMember().id,
+          state.simulatedDay,
+          Date.now(),
+          Math.random().toString(36).slice(2, 12)
+        ].join("-");
+      }
+
+      function makeRotationRegistryMessage(entry, token) {
+        const member = getMember();
+        return [
+          "[NOELACTIF 2026 — ROTATION CENTRALE]",
+          "",
+          "Membre : " + member.username,
+          "Identifiant : " + member.id,
+          "Jour de participation : " + entry.day + " décembre 2026",
+          "Date de participation : " + entry.dateLabel,
+          "Horodatage : " + entry.timestamp,
+          "Résultat : " + entry.label,
+          "Tickets remportés : " + entry.tickets,
+          "Jeton technique : " + token
+        ].join("\n");
+      }
+
+      function rotationEntriesFromPage(html) {
+        const documentNode = new DOMParser().parseFromString(
+          String(html || ""),
+          "text/html"
+        );
+        let $posts = $(documentNode).find(".post");
+        if (!$posts.length) {
+          $posts = $(documentNode).find(".postbody");
+        }
+
+        const entries = [];
+        $posts.each(function (order) {
+          const text = pageText($(this));
+          if (text.indexOf("[NOELACTIF 2026 — ROTATION CENTRALE]") === -1) {
+            return;
+          }
+
+          const idMatch = text.match(/Identifiant\s*:\s*(\d+)/i);
+          const memberMatch = text.match(/Membre\s*:\s*([^\n]+)/i);
+          const dayMatch = text.match(
+            /Jour de participation\s*:\s*(\d+)\s+décembre 2026/i
+          );
+          const resultMatch = text.match(/Résultat\s*:\s*([^\n]+)/i);
+          const ticketsMatch = text.match(/Tickets remportés\s*:\s*(\d+)/i);
+          const timestampMatch = text.match(/Horodatage\s*:\s*([^\n]+)/i);
+          const tokenMatch = text.match(/Jeton technique\s*:\s*([^\s]+)/i);
+          const postIdSource = String(
+            $(this).attr("id")
+            || $(this).find("[id^='p'], a[name^='p']").first().attr("id")
+            || $(this).find("a[name^='p']").first().attr("name")
+            || ""
+          );
+          const postIdMatch = postIdSource.match(/p?(\d+)/i);
+
+          if (!idMatch || !dayMatch || !resultMatch || !ticketsMatch) {
+            return;
+          }
+
+          entries.push({
+            id: Number(idMatch[1]),
+            username: memberMatch ? memberMatch[1].trim() : "Membre",
+            day: Number(dayMatch[1]),
+            label: resultMatch[1].trim(),
+            tickets: Number(ticketsMatch[1]),
+            timestamp: timestampMatch ? timestampMatch[1].trim() : "",
+            token: tokenMatch ? tokenMatch[1].trim() : "",
+            postId: postIdMatch ? Number(postIdMatch[1]) : Number.MAX_SAFE_INTEGER,
+            order: order
+          });
+        });
+
+        return entries;
+      }
+
+      function fetchRotationRegistryPages() {
+        return fetchPaginatedPages(
+          CONFIG.remoteLog.rotationTopicUrl,
+          rotationRegistryMatcher
+        );
+      }
+
+      function centralRotationsFor(memberId, day) {
+        if (!remoteLoggingIsAvailable()) {
+          return $.Deferred().resolve([]).promise();
+        }
+
+        return fetchRotationRegistryPages().then(function (pages) {
+          const entries = [];
+          pages.forEach(function (html, pageOrder) {
+            rotationEntriesFromPage(html).forEach(function (entry) {
+              if (
+                entry.id === Number(memberId)
+                && entry.day === Number(day)
+              ) {
+                entry.pageOrder = pageOrder;
+                entries.push(entry);
+              }
+            });
+          });
+
+          return entries.sort(function (a, b) {
+            if (a.postId !== b.postId) {
+              return a.postId - b.postId;
+            }
+            if (a.pageOrder !== b.pageOrder) {
+              return a.pageOrder - b.pageOrder;
+            }
+            return a.order - b.order;
+          });
+        });
+      }
+
+      function canonicalCentralRotationsFor(memberId) {
+        if (!remoteLoggingIsAvailable()) {
+          return $.Deferred().resolve([]).promise();
+        }
+
+        return fetchRotationRegistryPages().then(function (pages) {
+          const entries = [];
+          pages.forEach(function (html, pageOrder) {
+            rotationEntriesFromPage(html).forEach(function (entry) {
+              if (entry.id === Number(memberId)) {
+                entry.pageOrder = pageOrder;
+                entries.push(entry);
+              }
+            });
+          });
+
+          entries.sort(function (a, b) {
+            if (a.postId !== b.postId) {
+              return a.postId - b.postId;
+            }
+            if (a.pageOrder !== b.pageOrder) {
+              return a.pageOrder - b.pageOrder;
+            }
+            return a.order - b.order;
+          });
+
+          const canonicalByDay = {};
+          entries.forEach(function (entry) {
+            if (!canonicalByDay[entry.day]) {
+              canonicalByDay[entry.day] = entry;
+            }
+          });
+
+          return Object.keys(canonicalByDay)
+            .map(function (day) {
+              return canonicalByDay[day];
+            })
+            .sort(function (a, b) {
+              return a.day - b.day;
+            });
+        });
+      }
+
+      function synchronizeParticipationFromCentral() {
+        if (
+          centralSyncInProgress
+          || !remoteLoggingIsAvailable()
+          || !memberIsIdentified()
+        ) {
+          return $.Deferred().resolve({
+            imported: 0,
+            unchanged: true
+          }).promise();
+        }
+
+        centralSyncInProgress = true;
+        const member = getMember();
+        const $status = $("#noelactif-status");
+        render();
+        $status.text("Synchronisation avec le registre des Lutins…");
+
+        return $.when(
+          canonicalCentralRotationsFor(member.id),
+          fetchRegistryPages()
+        ).then(function (centralEntries, registryPages) {
+          const localByDay = {};
+          (state.history || []).forEach(function (entry) {
+            if (!localByDay[Number(entry.day)]) {
+              localByDay[Number(entry.day)] = entry;
+            }
+          });
+
+          let imported = 0;
+          centralEntries.forEach(function (entry) {
+            if (!localByDay[entry.day]) {
+              imported += 1;
+            }
+            localByDay[entry.day] = {
+              day: entry.day,
+              rotation: 0,
+              label: entry.label,
+              tickets: entry.tickets,
+              balance: 0,
+              dateLabel: String(entry.day).padStart(2, "0") + "/12/2026",
+              timestamp: entry.timestamp,
+              publicationMode: "registre central synchronisé",
+              topicId: CONFIG.remoteLog.rotationTopicId
+            };
+          });
+
+          const mergedHistory = Object.keys(localByDay)
+            .map(function (day) {
+              return localByDay[day];
+            })
+            .sort(function (a, b) {
+              return Number(a.day) - Number(b.day);
+            });
+
+          let cumulativeBalance = 0;
+          mergedHistory.forEach(function (entry, index) {
+            cumulativeBalance += Number(entry.tickets) || 0;
+            entry.rotation = index + 1;
+            entry.balance = cumulativeBalance;
+          });
+
+          const depositedKeys = {};
+          const memberDeposits = [];
+          registryPages.forEach(function (html) {
+            registryEntriesFromPage(html).forEach(function (entry) {
+              if (entry.id === Number(member.id)) {
+                memberDeposits.push(entry);
+                Object.keys(entry.tags).forEach(function (key) {
+                  if (entry.tags[key]) {
+                    depositedKeys[key] = true;
+                  }
+                });
+              }
+            });
+          });
+
+          const keys = Object.keys(depositedKeys);
+          const previousValidatedKeys = validatedPrizeKeys();
+          const newDepositFound = keys.some(function (key) {
+            return previousValidatedKeys.indexOf(key) === -1;
+          });
+          const shouldRecalculate = imported > 0 || newDepositFound;
+
+          if (shouldRecalculate) {
+            const manualAdjustments = state.manualAdjustments || [];
+            const manuallyAdded = manualAdjustments.reduce(function (total, entry) {
+              return total + (Number(entry.tickets) || 0);
+            }, 0);
+            const won = mergedHistory.reduce(function (total, entry) {
+              return total + (Number(entry.tickets) || 0);
+            }, 0);
+            const datedDeposits = memberDeposits.filter(function (entry) {
+              return entry.depositAt !== null && entry.remainingBalance !== null;
+            }).sort(function (a, b) {
+              return a.depositAt - b.depositAt;
+            });
+            const lastDeposit = datedDeposits.length
+              ? datedDeposits[datedDeposits.length - 1]
+              : null;
+            const gainsAfterLastDeposit = lastDeposit
+              ? mergedHistory.reduce(function (total, entry) {
+                const rotationAt = parseForumDateTime(entry.timestamp);
+                return rotationAt !== null && rotationAt > lastDeposit.depositAt
+                  ? total + (Number(entry.tickets) || 0)
+                  : total;
+              }, 0)
+              : null;
+            const manualAfterLastDeposit = lastDeposit
+              ? manualAdjustments.reduce(function (total, entry) {
+                return entry.addedAt !== null && entry.addedAt > lastDeposit.depositAt
+                  ? total + (Number(entry.tickets) || 0)
+                  : total;
+              }, 0)
+              : null;
+
+            state.balance = Math.max(
+              0,
+              lastDeposit
+                ? lastDeposit.remainingBalance
+                  + gainsAfterLastDeposit
+                  + manualAfterLastDeposit
+                : won + manuallyAdded - allocationCost(keys)
+            );
+          }
+
+          state.history = mergedHistory;
+          state.rotation = mergedHistory.length;
+          if (centralEntries.length) {
+            const latestDay = centralEntries[centralEntries.length - 1].day;
+            state.lastSpinDay = latestDay;
+            if (CONFIG.testMode) {
+              state.simulatedDay = Math.max(state.simulatedDay, latestDay);
+            }
+            if (latestDay === state.simulatedDay) {
+              centrallyBlockedSpinDay = latestDay;
+            }
+          }
+
+          if (keys.length) {
+            state.allocations = [{
+              keys: keys,
+              cost: allocationCost(keys),
+              submittedAt: new Date().toISOString(),
+              publicationMode: "registre des hottes synchronisé",
+              topicId: CONFIG.remoteLog.registryTopicId
+            }];
+          }
+
+          saveState();
+          return {
+            imported: imported,
+            rotations: mergedHistory.length,
+            balance: state.balance,
+            updated: shouldRecalculate,
+            unchanged: !shouldRecalculate
+          };
+        }).always(function () {
+          centralSyncInProgress = false;
+        });
+      }
+
+      function publishCentralRotation(entry) {
+        if (!remoteLoggingIsAvailable()) {
+          return $.Deferred().resolve({
+            accepted: true,
+            mode: "simulation locale",
+            topicId: null
+          }).promise();
+        }
+
+        const token = makeRotationToken();
+        return getPostingForm(
+          "/post?t=" + CONFIG.remoteLog.rotationTopicId + "&mode=reply"
+        )
+          .then(function (formData) {
+            return submitForumPost(
+              formData,
+              "",
+              makeRotationRegistryMessage(entry, token)
+            );
+          })
+          .then(function () {
+            state.lastRegistryPostAt = Date.now();
+            saveState();
+            const deferred = $.Deferred();
+            window.setTimeout(function () {
+              centralRotationsFor(getMember().id, entry.day)
+                .done(deferred.resolve)
+                .fail(deferred.reject);
+            }, 1500);
+            return deferred.promise();
+          })
+          .then(function (entries) {
+            if (!entries.length) {
+              return $.Deferred().reject(
+                "La rotation a été publiée, mais sa vérification dans le registre central a échoué."
+              ).promise();
+            }
+
+            return {
+              accepted: entries[0].token === token,
+              canonical: entries[0],
+              topicId: CONFIG.remoteLog.rotationTopicId,
+              mode: "registre central des rotations"
+            };
+          });
+      }
+
       function detectForumError(html) {
         const text = $("<div>").html(html).text().replace(/\s+/g, " ").toLowerCase();
         const knownErrors = [
@@ -650,7 +1041,7 @@ $(function () {
           + member.id
           + (isFallback ? " — secours jour " + entry.day : "");
 
-        return getPostingForm("/post?f=" + CONFIG.remoteLog.forumId + "&mode=newtopic")
+        return getPostingForm("/post?f=" + CONFIG.remoteLog.privateForumId + "&mode=newtopic")
           .then(function (formData) {
             return submitForumPost(formData, subject, makePrivateMessage(entry));
           })
@@ -1157,11 +1548,11 @@ $(function () {
 
       function publishManualTicketAdjustment(memberId, tickets, reason) {
         const forumMatcher = function (url) {
-          return new RegExp("^/f" + CONFIG.remoteLog.forumId + "(?:p\\d+)?(?:-|$)", "i")
+          return new RegExp("^/f" + CONFIG.remoteLog.privateForumId + "(?:p\\d+)?(?:-|$)", "i")
             .test(url.pathname);
         };
 
-        return fetchPaginatedPages(CONFIG.remoteLog.forumUrl, forumMatcher)
+        return fetchPaginatedPages(CONFIG.remoteLog.privateForumUrl, forumMatcher)
           .then(function (forumPages) {
             const topics = journalTopicsForMember(forumPages, memberId)
               .sort(function (a, b) {
@@ -1234,22 +1625,19 @@ $(function () {
 
       function buildRecoveryForMember(memberId) {
         const forumMatcher = function (url) {
-          return new RegExp("^/f" + CONFIG.remoteLog.forumId + "(?:p\\d+)?(?:-|$)", "i")
+          return new RegExp("^/f" + CONFIG.remoteLog.privateForumId + "(?:p\\d+)?(?:-|$)", "i")
             .test(url.pathname);
         };
 
         return $.when(
-          fetchPaginatedPages(CONFIG.remoteLog.forumUrl, forumMatcher),
-          fetchRegistryPages()
-        ).then(function (forumResult, registryResult) {
+          fetchPaginatedPages(CONFIG.remoteLog.privateForumUrl, forumMatcher),
+          fetchRegistryPages(),
+          fetchRotationRegistryPages()
+        ).then(function (forumResult, registryResult, rotationResult) {
           const forumPages = forumResult;
           const registryPages = registryResult;
+          const rotationPages = rotationResult;
           const topics = journalTopicsForMember(forumPages, memberId);
-          if (!topics.length) {
-            return $.Deferred().reject(
-              "Aucun journal Noëlactif trouvé pour l’ID " + memberId + "."
-            ).promise();
-          }
 
           const allJournalPages = [];
           function fetchTopic(index) {
@@ -1305,16 +1693,60 @@ $(function () {
               });
             });
 
-            const history = Object.keys(uniqueRotations).map(function (signature) {
+            const journalHistory = Object.keys(uniqueRotations).map(function (signature) {
               return uniqueRotations[signature];
             }).sort(function (a, b) {
               return (a.entry.day - b.entry.day) || (a.order - b.order);
             }).map(function (item) {
               return item.entry;
             });
+
+            const centralByDay = {};
+            rotationPages.forEach(function (html) {
+              rotationEntriesFromPage(html).forEach(function (entry) {
+                if (entry.id !== Number(memberId)) {
+                  return;
+                }
+                const current = centralByDay[entry.day];
+                if (
+                  !current
+                  || entry.postId < current.postId
+                  || (
+                    entry.postId === current.postId
+                    && entry.order < current.order
+                  )
+                ) {
+                  centralByDay[entry.day] = entry;
+                }
+              });
+            });
+
+            const centralHistory = Object.keys(centralByDay)
+              .map(function (day) {
+                const entry = centralByDay[day];
+                return {
+                  member: entry.username,
+                  forumUrl: "",
+                  day: entry.day,
+                  rotation: 0,
+                  label: entry.label,
+                  tickets: entry.tickets,
+                  timestamp: entry.timestamp,
+                  dateLabel: String(entry.day).padStart(2, "0") + "/12/2026"
+                };
+              })
+              .sort(function (a, b) {
+                return a.day - b.day;
+              });
+
+            const history = centralHistory.length
+              ? centralHistory
+              : journalHistory;
             if (!history.length) {
               return $.Deferred().reject(
-                "Le journal existe, mais aucune rotation exploitable n’a été trouvée."
+                "Aucune rotation exploitable n’a été trouvée pour l’ID "
+                + memberId
+                + "."
               ).promise();
             }
 
@@ -1379,7 +1811,7 @@ $(function () {
             );
             restoredState.rotation = history.length;
             restoredState.lastSpinDay = lastDay;
-            restoredState.topicId = topics[0].id;
+            restoredState.topicId = topics.length ? topics[0].id : null;
             restoredState.forumUrl = recordedForumUrls.length
               ? recordedForumUrls[recordedForumUrls.length - 1]
               : history.slice().reverse().reduce(function (forumUrl, entry) {
@@ -1394,8 +1826,10 @@ $(function () {
                 balance: history.slice(0, index + 1).reduce(function (total, item) {
                   return total + item.tickets;
                 }, 0),
-                publicationMode: "journal restauré",
-                topicId: topics[0].id
+                publicationMode: centralHistory.length
+                  ? "registre des rotations restauré"
+                  : "journal restauré",
+                topicId: topics.length ? topics[0].id : null
               });
             });
             restoredState.manualAdjustments = manualAdjustments;
@@ -1544,26 +1978,56 @@ $(function () {
           pendingJournalTimer = null;
           journalPublicationInProgress = true;
 
-          replyToJournal(null, state.pendingJournal.message)
-            .done(function () {
+          const pending = state.pendingJournal;
+          if (pending.kind === "rotation") {
+            $("#noelactif-status").text(
+              "Enregistrement du résultat dans ton journal…"
+            );
+          }
+          const publication = pending.kind === "rotation"
+            ? publishPrivateLog(pending.entry)
+            : replyToJournal(null, pending.message);
+
+          publication
+            .done(function (result) {
               const message = state.pendingJournal.message;
+              const kind = state.pendingJournal.kind;
               state.pendingJournal = null;
               saveState();
               $("#noelactif-private-log").text(
                 message
-                + "\n\nStatut : DÉPÔT AJOUTÉ AU JOURNAL PRIVÉ"
-                + (state.topicId ? "\nSujet Forumactif : t" + state.topicId : "")
+                + (
+                  kind === "rotation"
+                    ? "\n\nStatut : ROTATION AJOUTÉE AU JOURNAL PRIVÉ"
+                    : "\n\nStatut : DÉPÔT AJOUTÉ AU JOURNAL PRIVÉ"
+                )
+                + (
+                  result && result.topicId
+                    ? "\nSujet Forumactif : t" + result.topicId
+                    : state.topicId
+                      ? "\nSujet Forumactif : t" + state.topicId
+                      : ""
+                )
               );
-              renderAllocation();
+              render();
             })
             .fail(function (error) {
+              const kind = state.pendingJournal.kind;
               state.pendingJournal = null;
               saveState();
-              renderAllocation();
-              $("#noelactif-allocation-state").text(
-                "Le dépôt est bien enregistré dans le registre central, mais sa copie dans le journal privé a échoué : "
-                + String(error)
-              );
+              render();
+              if (kind === "rotation") {
+                $("#noelactif-status").text(
+                  "La rotation est bien enregistrée dans le registre central, "
+                  + "mais sa copie dans ton journal a échoué : "
+                  + String(error)
+                );
+              } else {
+                $("#noelactif-allocation-state").text(
+                  "Le dépôt est bien enregistré dans le registre central, mais sa copie dans le journal privé a échoué : "
+                  + String(error)
+                );
+              }
             })
             .always(function () {
               journalPublicationInProgress = false;
@@ -1580,6 +2044,8 @@ $(function () {
         const allValidated = validated.length === Object.keys(CONFIG.prizes).length;
         const cooldownRemaining = registryCooldownRemaining();
         const cooldownSeconds = Math.ceil(cooldownRemaining / 1000);
+        const pendingAllocationJournal = state.pendingJournal
+          && state.pendingJournal.kind !== "rotation";
 
         synchronizeRegistryCountdown(cooldownRemaining);
         schedulePendingJournalPublication();
@@ -1602,16 +2068,16 @@ $(function () {
           || !keys.length
           || cost > state.balance
           || cooldownRemaining > 0
-          || Boolean(state.pendingJournal)
+          || Boolean(pendingAllocationJournal)
         );
 
-        if (state.pendingJournal && cooldownRemaining > 0 && isOpen) {
+        if (pendingAllocationJournal && cooldownRemaining > 0 && isOpen) {
           $("#noelactif-allocation-state").text(
             "Le dépôt est enregistré dans le registre central. Copie dans ton journal privé dans "
             + cooldownSeconds
             + (cooldownSeconds > 1 ? " secondes." : " seconde.")
           );
-        } else if (state.pendingJournal && isOpen) {
+        } else if (pendingAllocationJournal && isOpen) {
           $("#noelactif-allocation-state").text(
             "Publication du dépôt dans ton journal privé…"
           );
@@ -1685,12 +2151,20 @@ $(function () {
           $("#noelactif-recovery-request-status").text("");
         }
 
-        const alreadyPlayed = state.lastSpinDay === state.simulatedDay;
+        const alreadyPlayed = state.lastSpinDay === state.simulatedDay
+          || centrallyBlockedSpinDay === state.simulatedDay;
         const hasPendingSpin = state.pendingSpin && state.pendingSpin.day === state.simulatedDay;
         const eventFinished = state.simulatedDay > 25;
 
         $("#noelactif-spin")
-          .prop("disabled", spinning || alreadyPlayed || eventFinished || !state.forumUrl)
+          .prop(
+            "disabled",
+            spinning
+            || centralSyncInProgress
+            || alreadyPlayed
+            || eventFinished
+            || !state.forumUrl
+          )
           .text(
             eventFinished
               ? "Événement terminé"
@@ -1712,6 +2186,11 @@ $(function () {
           );
         } else if (hasPendingSpin) {
           $("#noelactif-status").text("Le résultat est conservé : relance l’envoi vers Forumactif.");
+        } else if (centrallyBlockedSpinDay === state.simulatedDay) {
+          $("#noelactif-status").text(
+            "Une rotation a déjà été enregistrée aujourd’hui pour ton compte, "
+            + "peut-être depuis un autre appareil ou un autre navigateur."
+          );
         } else if (alreadyPlayed) {
           $("#noelactif-status").text("Reviens demain pour une nouvelle rotation.");
         } else {
@@ -1737,7 +2216,12 @@ $(function () {
       }
 
       function spinWheel() {
-        if (spinning || state.lastSpinDay === state.simulatedDay || state.simulatedDay > 25) {
+        if (
+          spinning
+          || centralSyncInProgress
+          || state.lastSpinDay === state.simulatedDay
+          || state.simulatedDay > 25
+        ) {
           return;
         }
 
@@ -1761,6 +2245,43 @@ $(function () {
               $("#noelactif-status").text(
                 "Impossible d’identifier le membre : " + String(error)
               );
+            });
+          return;
+        }
+
+        if (
+          remoteLoggingIsAvailable()
+          && centrallyCheckedSpinDay !== state.simulatedDay
+        ) {
+          spinning = true;
+          render();
+          $("#noelactif-status").text(
+            "Vérification de ta participation du jour…"
+          );
+
+          centralRotationsFor(getMember().id, state.simulatedDay)
+            .done(function (entries) {
+              if (entries.length) {
+                centrallyBlockedSpinDay = state.simulatedDay;
+                return;
+              }
+
+              centrallyCheckedSpinDay = state.simulatedDay;
+              spinning = false;
+              spinWheel();
+            })
+            .fail(function (error) {
+              $("#noelactif-status").text(
+                "Impossible de vérifier le registre des rotations : "
+                + String(error)
+                + " La roue reste bloquée par sécurité."
+              );
+            })
+            .always(function () {
+              if (centrallyCheckedSpinDay !== state.simulatedDay) {
+                spinning = false;
+                render();
+              }
             });
           return;
         }
@@ -1809,12 +2330,29 @@ $(function () {
 
           $("#noelactif-status").text(
             remoteLoggingIsAvailable()
-              ? "Enregistrement du résultat dans ton journal…"
+              ? "Enregistrement de la rotation dans le registre central…"
               : "Simulation de l’envoi privé…"
           );
 
-          publishPrivateLog(entry)
+          publishCentralRotation(entry)
             .done(function (publication) {
+              if (!publication.accepted) {
+                centrallyCheckedSpinDay = null;
+                state.pendingSpin = null;
+                saveState();
+                $("#noelactif-result").hide();
+                $("#noelactif-private-log").text(
+                  "ROTATION REFUSÉE\n\n"
+                  + "Une autre rotation a été enregistrée avant celle-ci pour ce compte "
+                  + "et cette journée. Aucun ticket supplémentaire n’a été crédité."
+                );
+                $("#noelactif-status").text(
+                  "Une autre rotation a été enregistrée avant celle-ci. "
+                  + "Cette tentative n’est pas comptabilisée."
+                );
+                return;
+              }
+
               state.balance = entry.balance;
               state.rotation = entry.rotation;
               state.lastSpinDay = state.simulatedDay;
@@ -1824,23 +2362,43 @@ $(function () {
                 publicationMode: publication.mode,
                 topicId: publication.topicId
               });
+              state.pendingJournal = remoteLoggingIsAvailable()
+                ? {
+                  kind: "rotation",
+                  entry: entry,
+                  message: makePrivateMessage(entry),
+                  dueAt: state.lastRegistryPostAt
+                    + CONFIG.remoteLog.registryCooldownMs
+                }
+                : null;
               saveState();
 
               $("#noelactif-result-text").text(result.label);
               $("#noelactif-result").fadeIn(250);
               $("#noelactif-private-log").text(
                 makePrivateMessage(entry)
-                + "\n\nStatut : "
-                + publication.mode.toUpperCase()
-                + (publication.topicId ? "\nSujet Forumactif : t" + publication.topicId : "")
+                + "\n\nStatut : ROTATION ENREGISTRÉE DANS LE REGISTRE CENTRAL"
+                + (
+                  publication.topicId
+                    ? "\nRegistre Forumactif : t" + publication.topicId
+                    : ""
+                )
+                + (
+                  state.pendingJournal
+                    ? "\nCopie dans le journal privé après le délai Forumactif."
+                    : ""
+                )
               );
+              schedulePendingJournalPublication();
             })
             .fail(function (error) {
+              centrallyCheckedSpinDay = null;
               $("#noelactif-private-log").text(
                 makePrivateMessage(entry)
                 + "\n\nÉCHEC DE LA PUBLICATION\n"
                 + String(error)
-                + "\n\nLe résultat reste en attente et sera réutilisé au prochain essai."
+                + "\n\nLe résultat reste en attente et sera réutilisé au prochain essai. "
+                + "Aucun ticket n’a été crédité."
               );
             })
             .always(function () {
@@ -2304,6 +2862,8 @@ $(function () {
         localStorage.removeItem(CONFIG.storageKey);
         state = defaultState();
         currentRotation = 0;
+        centrallyCheckedSpinDay = null;
+        centrallyBlockedSpinDay = null;
         $("#noelactif-wheel").css("transition", "none").css("transform", "rotate(0deg)");
         window.setTimeout(function () {
           $("#noelactif-wheel").css("transition", "transform 5.2s cubic-bezier(.12,.68,.16,1)");
@@ -2327,7 +2887,27 @@ $(function () {
       if (window.location.hostname === CONFIG.remoteLog.hostname) {
         resolveForumMember().done(function () {
           renderDebugPanel();
-          render();
+          synchronizeParticipationFromCentral()
+            .done(function (result) {
+              render();
+              if (result.updated) {
+                $("#noelactif-status").text(
+                  "Ta participation a été synchronisée avec le registre des Lutins : "
+                  + result.imported
+                  + " rotation(s) récupérée(s), "
+                  + result.balance
+                  + " ticket(s) disponibles."
+                );
+              }
+            })
+            .fail(function (error) {
+              render();
+              $("#noelactif-status").text(
+                "La synchronisation automatique est momentanément indisponible : "
+                + String(error)
+                + " Une vérification sera tout de même effectuée avant la rotation."
+              );
+            });
         });
       }
     });
