@@ -498,7 +498,9 @@ $(function () {
         ];
 
         for (let index = 0; index < sources.length; index += 1) {
-          const prettyUrl = sources[index].match(/\/t(\d+)(?:-|\/|#|\?|["'])/i);
+          const prettyUrl = sources[index].match(
+            /\/t(\d+)(?:p\d+)?(?:-|\/|#|\?|&|["']|$)/i
+          );
           if (prettyUrl) {
             return Number(prettyUrl[1]);
           }
@@ -506,6 +508,13 @@ $(function () {
           const classicUrl = sources[index].match(/[?&]t=(\d+)/i);
           if (classicUrl) {
             return Number(classicUrl[1]);
+          }
+
+          const topicField = sources[index].match(
+            /(?:topic_id|topicId|topic-id)[^0-9]{0,20}(\d+)/i
+          );
+          if (topicField) {
+            return Number(topicField[1]);
           }
         }
 
