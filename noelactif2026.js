@@ -343,6 +343,8 @@ $(function () {
           balance: 0,
           rotation: 0,
           lastSpinDay: null,
+          forumUrl: "",
+          forumUrlDeclaredAt: null,
           topicId: null,
           pendingSpin: null,
           allocations: [],
@@ -375,6 +377,53 @@ $(function () {
         localStorage.setItem(CONFIG.storageKey, JSON.stringify(state));
       }
 
+      function normalizeForumUrl(value) {
+        let candidate = String(value || "").trim();
+        if (!candidate) {
+          throw new Error("Indique l’adresse du forum qui recevra les crédits.");
+        }
+        if (!/^https?:\/\//i.test(candidate)) {
+          candidate = "https://" + candidate;
+        }
+
+        let parsed;
+        try {
+          parsed = new URL(candidate);
+        } catch (error) {
+          throw new Error("Cette adresse ne semble pas valide.");
+        }
+
+        if (
+          (parsed.protocol !== "https:" && parsed.protocol !== "http:")
+          || !parsed.hostname
+          || parsed.username
+          || parsed.password
+        ) {
+          throw new Error("Saisis une adresse de forum complète et valide.");
+        }
+
+        return parsed.origin + "/";
+      }
+
+      function openForumModal(isEditing) {
+        $("#noelactif-forum-url").val(state.forumUrl || "");
+        $("#noelactif-forum-error").text("");
+        $("#noelactif-cancel-forum").prop("hidden", !isEditing || !state.forumUrl);
+        $("#noelactif-forum-overlay").attr("aria-hidden", "false");
+        $("body").addClass("noelactif-forum-modal-open");
+        window.setTimeout(function () {
+          $("#noelactif-forum-url").trigger("focus");
+        }, 50);
+      }
+
+      function closeForumModal() {
+        if (!state.forumUrl) {
+          return;
+        }
+        $("body").removeClass("noelactif-forum-modal-open");
+        $("#noelactif-forum-overlay").attr("aria-hidden", "true");
+      }
+
       function weightedDraw() {
         const totalWeight = CONFIG.wheel.reduce((sum, item) => sum + item.weight, 0);
         let cursor = Math.random() * totalWeight;
@@ -396,6 +445,7 @@ $(function () {
           "",
           "Membre : " + member.username,
           "Identifiant : " + member.id,
+          "Forum bénéficiaire : " + state.forumUrl,
           "Jour de participation : " + entry.day + " décembre 2026",
           "Horodatage : " + entry.timestamp,
           "Résultat : " + entry.label,
@@ -617,6 +667,7 @@ $(function () {
           "",
           "Membre : " + member.username,
           "Identifiant : " + member.id,
+          "Forum bénéficiaire : " + state.forumUrl,
           "Date du dépôt : " + new Date().toLocaleString("fr-FR"),
           "Solde avant le dépôt : " + state.balance + " tickets",
           "",
@@ -665,6 +716,7 @@ $(function () {
           "",
           "Membre : " + member.username,
           "Identifiant : " + member.id,
+          "Forum bénéficiaire : " + (state.forumUrl || "Non renseigné"),
           "Date de la demande : " + new Date().toLocaleString("fr-FR"),
           "",
           "Le membre demande un code permettant de restaurer son solde et son historique."
@@ -880,6 +932,7 @@ $(function () {
           const memberMatch = text.match(/Membre\s*:\s*([^\n]+)/i);
           const dayMatch = text.match(/Jour de participation\s*:\s*(\d+)\s+décembre 2026/i);
           const timestampMatch = text.match(/Horodatage\s*:\s*([^\n]+)/i);
+          const forumUrlMatch = text.match(/Forum bénéficiaire\s*:\s*(https?:\/\/[^\s]+)/i);
           const resultMatch = text.match(/Résultat\s*:\s*([^\n]+)/i);
           const ticketsMatch = text.match(/Tickets remportés\s*:\s*(\d+)/i);
           const rotationMatch = text.match(/Numéro de rotation\s*:\s*(\d+)/i);
@@ -896,6 +949,7 @@ $(function () {
 
           rotations.push({
             member: memberMatch ? memberMatch[1].trim() : "Membre",
+            forumUrl: forumUrlMatch ? forumUrlMatch[1].trim() : "",
             day: Number(dayMatch[1]),
             rotation: rotationMatch ? Number(rotationMatch[1]) : 0,
             label: resultMatch[1].trim(),
@@ -1057,6 +1111,12 @@ $(function () {
             restoredState.rotation = history.length;
             restoredState.lastSpinDay = lastDay;
             restoredState.topicId = topics[0].id;
+            restoredState.forumUrl = history.slice().reverse().reduce(function (forumUrl, entry) {
+              return forumUrl || entry.forumUrl || "";
+            }, "");
+            restoredState.forumUrlDeclaredAt = restoredState.forumUrl
+              ? new Date().toISOString()
+              : null;
             restoredState.history = history.map(function (entry, index) {
               return $.extend({}, entry, {
                 rotation: index + 1,
@@ -1328,6 +1388,16 @@ $(function () {
         $("#noelactif-balance").text(state.balance);
         $("#noelactif-spins").text(state.rotation);
 
+        if (state.forumUrl) {
+          $("#noelactif-beneficiary").prop("hidden", false);
+          $("#noelactif-beneficiary-link")
+            .attr("href", state.forumUrl)
+            .text(state.forumUrl);
+        } else {
+          $("#noelactif-beneficiary").prop("hidden", true);
+          openForumModal(false);
+        }
+
         if (state.recoveryRequestSentAt) {
           $("#noelactif-request-recovery")
             .prop("disabled", true)
@@ -1347,7 +1417,7 @@ $(function () {
         const eventFinished = state.simulatedDay > 25;
 
         $("#noelactif-spin")
-          .prop("disabled", spinning || alreadyPlayed || eventFinished)
+          .prop("disabled", spinning || alreadyPlayed || eventFinished || !state.forumUrl)
           .text(
             eventFinished
               ? "Événement terminé"
@@ -1395,6 +1465,11 @@ $(function () {
 
       function spinWheel() {
         if (spinning || state.lastSpinDay === state.simulatedDay || state.simulatedDay > 25) {
+          return;
+        }
+
+        if (!state.forumUrl) {
+          openForumModal(false);
           return;
         }
 
@@ -1503,6 +1578,35 @@ $(function () {
       }
 
       $("#noelactif-spin").on("click", spinWheel);
+
+      $("#noelactif-edit-forum").on("click", function () {
+        openForumModal(true);
+      });
+
+      $("#noelactif-cancel-forum").on("click", closeForumModal);
+
+      $("#noelactif-save-forum").on("click", function () {
+        try {
+          const forumUrl = normalizeForumUrl($("#noelactif-forum-url").val());
+          state.forumUrl = forumUrl;
+          state.forumUrlDeclaredAt = new Date().toISOString();
+          saveState();
+          closeForumModal();
+          render();
+          $("#noelactif-status").text(
+            "L’adresse du forum bénéficiaire est enregistrée. Elle sera ajoutée à ton journal de participation."
+          );
+        } catch (error) {
+          $("#noelactif-forum-error").text(error.message || String(error));
+        }
+      });
+
+      $("#noelactif-forum-url").on("keydown", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          $("#noelactif-save-forum").trigger("click");
+        }
+      });
 
       $("#noelactif-next-day").on("click", function () {
         if (!isDebugOwner()) {
@@ -1752,6 +1856,11 @@ $(function () {
 
       $("#noelactif-submit-allocation").on("click", function () {
         if (!allocationWindowIsOpen()) {
+          return;
+        }
+
+        if (!state.forumUrl) {
+          openForumModal(false);
           return;
         }
 
