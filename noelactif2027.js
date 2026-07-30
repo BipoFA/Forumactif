@@ -21,11 +21,16 @@ $(function () {
      * Les registres seront activés lorsque les sujets 2027 existeront.
      */
     remoteLog: {
-      enabled: false,
-      hostname: "forum.forumactif.com",
-      forumId: null,
-      cardRegistryTopicId: null,
-      recoveryTopicId: null
+      enabled: true,
+      hostname: "xoumi.forumactif.com",
+      privateForumId: 7,
+      privateForumUrl: "/f7-zone-de-tests",
+      recoveryTopicId: 683,
+      recoveryTopicUrl: "/t683-noelactif-2027-demande-de-restauration",
+      drawForumId: 10,
+      drawForumUrl: "/f10-salle-de-pause",
+      drawTopicId: 684,
+      drawTopicUrl: "/t684-noelactif-2027tirages-du-loto"
     },
 
     administrators: [
@@ -49,6 +54,8 @@ $(function () {
 
   let resolvedMember = null;
   let state = null;
+  let draws = [];
+  let publicationInProgress = false;
 
   /*
    * ============================================================
@@ -124,6 +131,261 @@ $(function () {
         administrator.username.toLowerCase() ===
           member.username.toLowerCase()
       );
+    });
+  }
+
+  function remoteLoggingIsAvailable() {
+    const member = getMember();
+
+    return (
+      CONFIG.remoteLog.enabled &&
+      window.location.hostname ===
+        CONFIG.remoteLog.hostname &&
+      member.id > 0
+    );
+  }
+
+  /*
+   * ============================================================
+   * Publication dans les sujets Forumactif
+   * ============================================================
+   */
+
+  function detectForumError(html) {
+    const text = $("<div>")
+      .html(html)
+      .text()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+
+    const knownErrors = [
+      "vous n'êtes pas autorisé",
+      "vous n’êtes pas autorisé",
+      "désolé, mais seuls les",
+      "le mode du sujet spécifié n'existe pas",
+      "le sujet ou message que vous recherchez n'existe pas",
+      "vous ne pouvez pas répondre"
+    ];
+
+    return (
+      knownErrors.find(function (message) {
+        return text.indexOf(message) !== -1;
+      }) || null
+    );
+  }
+
+  function topicIdFromAddress(address) {
+    const source = String(address || "");
+    const prettyUrl = source.match(
+      /\/t(\d+)(?:p\d+)?(?:-|\/|#|\?|&|["']|$)/i
+    );
+
+    if (prettyUrl) {
+      return Number(prettyUrl[1]);
+    }
+
+    const classicUrl = source.match(
+      /[?&]t=(\d+)/i
+    );
+
+    return classicUrl
+      ? Number(classicUrl[1])
+      : null;
+  }
+
+  function extractTopicId(html, xhr) {
+    const responseTopicId =
+      topicIdFromAddress(
+        xhr && xhr.responseURL
+          ? xhr.responseURL
+          : ""
+      );
+
+    if (responseTopicId) {
+      return responseTopicId;
+    }
+
+    const parsed = new DOMParser().parseFromString(
+      html || "",
+      "text/html"
+    );
+
+    const trustedAddresses = [];
+
+    parsed
+      .querySelectorAll(
+        "meta[http-equiv='refresh']"
+      )
+      .forEach(function (meta) {
+        const content =
+          meta.getAttribute("content") || "";
+
+        const refreshUrl = content.match(
+          /url\s*=\s*['"]?([^'";\s]+)/i
+        );
+
+        if (refreshUrl) {
+          trustedAddresses.push(
+            refreshUrl[1]
+          );
+        }
+      });
+
+    parsed
+      .querySelectorAll(
+        "link[rel='canonical']"
+      )
+      .forEach(function (link) {
+        trustedAddresses.push(
+          link.getAttribute("href") || ""
+        );
+      });
+
+    parsed
+      .querySelectorAll("a[href]")
+      .forEach(function (link) {
+        const label = String(
+          link.textContent || ""
+        )
+          .replace(/\s+/g, " ")
+          .trim();
+
+        if (
+          /voir (?:votre|le) message|retourner au sujet/i.test(
+            label
+          )
+        ) {
+          trustedAddresses.push(
+            link.getAttribute("href") || ""
+          );
+        }
+      });
+
+    for (
+      let index = 0;
+      index < trustedAddresses.length;
+      index += 1
+    ) {
+      const topicId = topicIdFromAddress(
+        trustedAddresses[index]
+      );
+
+      if (topicId) {
+        return topicId;
+      }
+    }
+
+    return null;
+  }
+
+  function getPostingForm(url) {
+    return $.ajax({
+      url: url,
+      method: "GET",
+      cache: false
+    }).then(function (html) {
+      const error = detectForumError(html);
+
+      if (error) {
+        return $.Deferred()
+          .reject(
+            "Forumactif refuse l’accès au formulaire : " +
+              error
+          )
+          .promise();
+      }
+
+      const parsed =
+        new DOMParser().parseFromString(
+          html,
+          "text/html"
+        );
+
+      const form = parsed.querySelector(
+        "form#post, form[name='post']"
+      );
+
+      if (!form) {
+        return $.Deferred()
+          .reject(
+            "Le formulaire de publication Forumactif est introuvable."
+          )
+          .promise();
+      }
+
+      return {
+        action:
+          form.getAttribute("action") ||
+          "/post",
+        fields: $(form).serializeArray()
+      };
+    });
+  }
+
+  function setField(fields, name, value) {
+    const filtered = fields.filter(
+      function (field) {
+        return field.name !== name;
+      }
+    );
+
+    filtered.push({
+      name: name,
+      value: value
+    });
+
+    return filtered;
+  }
+
+  function submitForumPost(
+    formData,
+    subject,
+    message
+  ) {
+    let fields = formData.fields;
+
+    fields = setField(
+      fields,
+      "subject",
+      subject || ""
+    );
+
+    fields = setField(
+      fields,
+      "message",
+      message
+    );
+
+    fields = setField(
+      fields,
+      "post",
+      "Envoyer"
+    );
+
+    return $.ajax({
+      url: formData.action,
+      method: "POST",
+      data: $.param(fields),
+      cache: false
+    }).then(function (html, textStatus, xhr) {
+      const error = detectForumError(html);
+
+      if (error) {
+        return $.Deferred()
+          .reject(
+            "Forumactif a refusé la publication : " +
+              error
+          )
+          .promise();
+      }
+
+      return {
+        html: html,
+        topicId: extractTopicId(
+          html,
+          xhr
+        )
+      };
     });
   }
 
@@ -553,6 +815,8 @@ $(function () {
       imported2026Tickets: inheritedTickets,
       ticketBalance: inheritedTickets,
       cards: [],
+      journalTopicId: null,
+      recoveryRequestSentAt: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -573,6 +837,18 @@ $(function () {
       !Array.isArray(candidate.cards) ||
       candidate.cards.length >
         CONFIG.maximumCards
+    ) {
+      return false;
+    }
+
+    if (
+      candidate.journalTopicId !== null &&
+      (
+        !Number.isInteger(
+          Number(candidate.journalTopicId)
+        ) ||
+        Number(candidate.journalTopicId) < 1
+      )
     ) {
       return false;
     }
@@ -618,6 +894,22 @@ $(function () {
       const saved = JSON.parse(
         localStorage.getItem(CONFIG.storageKey)
       );
+
+      if (
+        saved &&
+        typeof saved.journalTopicId ===
+          "undefined"
+      ) {
+        saved.journalTopicId = null;
+      }
+
+      if (
+        saved &&
+        typeof saved.recoveryRequestSentAt ===
+          "undefined"
+      ) {
+        saved.recoveryRequestSentAt = null;
+      }
 
       if (storedStateIsValid(saved)) {
         return saved;
@@ -744,7 +1036,8 @@ $(function () {
       } else {
         $button.prop(
           "disabled",
-          !previousCardExists ||
+          publicationInProgress ||
+            !previousCardExists ||
             !canAfford
         );
 
@@ -814,7 +1107,13 @@ $(function () {
 
   function render() {
     renderCards();
+    renderDraws();
     renderAdministration();
+
+    $("#noeloto-request-recovery").prop(
+      "disabled",
+      Boolean(state.recoveryRequestSentAt)
+    );
   }
 
   /*
@@ -823,7 +1122,130 @@ $(function () {
    * ============================================================
    */
 
+  function serializedGrid(grid) {
+    return grid
+      .map(function (row) {
+        return row
+          .map(function (value) {
+            return value === null
+              ? "0"
+              : String(value);
+          })
+          .join("-");
+      })
+      .join(" / ");
+  }
+
+  function makeCardMessage(entry) {
+    const member = getMember();
+
+    return [
+      "[NOËLOTO 2027 — ATTRIBUTION D’UN CARTON]",
+      "",
+      "Membre : " + member.username,
+      "Identifiant : " + member.id,
+      "Carton : " + entry.card.id,
+      "Numéro du carton : " + entry.card.number,
+      "Coût : " + entry.cost + " ticket(s)",
+      "Solde avant attribution : " +
+        entry.balanceBefore +
+        " ticket(s)",
+      "Solde après attribution : " +
+        entry.balanceAfter +
+        " ticket(s)",
+      "Grille : " +
+        serializedGrid(entry.card.grid),
+      "Horodatage : " + entry.timestamp
+    ].join("\n");
+  }
+
+  function createJournalTopic(entry) {
+    const member = getMember();
+    const subject =
+      "[Noëloto 2027] Journal — " +
+      member.username +
+      " — ID " +
+      member.id;
+
+    return getPostingForm(
+      "/post?f=" +
+        CONFIG.remoteLog.privateForumId +
+        "&mode=newtopic"
+    )
+      .then(function (formData) {
+        return submitForumPost(
+          formData,
+          subject,
+          makeCardMessage(entry)
+        );
+      })
+      .then(function (result) {
+        if (!result.topicId) {
+          return $.Deferred()
+            .reject(
+              "Le journal a peut-être été créé, mais Forumactif n’a pas renvoyé son identifiant."
+            )
+            .promise();
+        }
+
+        state.journalTopicId =
+          result.topicId;
+
+        saveState();
+
+        return {
+          mode: "nouveau journal",
+          topicId: result.topicId
+        };
+      });
+  }
+
+  function replyToJournal(message) {
+    return getPostingForm(
+      "/post?t=" +
+        state.journalTopicId +
+        "&mode=reply"
+    )
+      .then(function (formData) {
+        return submitForumPost(
+          formData,
+          "",
+          message
+        );
+      })
+      .then(function () {
+        return {
+          mode: "réponse au journal",
+          topicId:
+            state.journalTopicId
+        };
+      });
+  }
+
+  function publishCardEntry(entry) {
+    if (!remoteLoggingIsAvailable()) {
+      return $.Deferred()
+        .resolve({
+          mode: "simulation locale",
+          topicId: null
+        })
+        .promise();
+    }
+
+    if (!state.journalTopicId) {
+      return createJournalTopic(entry);
+    }
+
+    return replyToJournal(
+      makeCardMessage(entry)
+    );
+  }
+
   function obtainCard(cardNumber) {
+    if (publicationInProgress) {
+      return;
+    }
+
     if (
       cardNumber !== state.cards.length + 1 ||
       cardNumber < 1 ||
@@ -861,22 +1283,54 @@ $(function () {
     }
 
     const card = generateCard(cardNumber);
+    const entry = {
+      card: card,
+      cost: cost,
+      balanceBefore:
+        state.ticketBalance,
+      balanceAfter:
+        state.ticketBalance - cost,
+      timestamp:
+        new Date().toISOString()
+    };
 
-    state.cards.push(card);
-    state.ticketBalance -= cost;
-    saveState();
-    render();
+    publicationInProgress = true;
+    updateCardSlots();
 
     $("#noeloto-card-status").text(
-      "Ton carton nº " +
-        cardNumber +
-        " a bien été attribué."
+      "Enregistrement du carton dans ton journal privé…"
     );
 
-    /*
-     * L'enregistrement dans le sujet privé sera ajouté ici
-     * lorsque ses identifiants seront connus.
-     */
+    publishCardEntry(entry)
+      .then(function (publication) {
+        state.cards.push(card);
+        state.ticketBalance -= cost;
+        saveState();
+        render();
+
+        $("#noeloto-card-status").text(
+          "Ton carton nº " +
+            cardNumber +
+            " a bien été attribué" +
+            (
+              publication.topicId
+                ? " et enregistré dans le journal t" +
+                  publication.topicId +
+                  "."
+                : "."
+            )
+        );
+      })
+      .catch(function (error) {
+        $("#noeloto-card-status").text(
+          "Le carton n’a pas été attribué : " +
+            error
+        );
+      })
+      .always(function () {
+        publicationInProgress = false;
+        updateCardSlots();
+      });
   }
 
   /*
@@ -938,6 +1392,329 @@ $(function () {
 
   /*
    * ============================================================
+   * Demandes de restauration
+   * ============================================================
+   */
+
+  function makeRecoveryRequestMessage() {
+    const member = getMember();
+
+    return [
+      "[NOËLOTO 2027 — DEMANDE DE RESTAURATION]",
+      "",
+      "Membre : " + member.username,
+      "Identifiant : " + member.id,
+      "Journal connu : " +
+        (
+          state.journalTopicId
+            ? "t" + state.journalTopicId
+            : "Aucun"
+        ),
+      "Cartons visibles localement : " +
+        state.cards.length,
+      "Horodatage : " +
+        new Date().toISOString()
+    ].join("\n");
+  }
+
+  function publishRecoveryRequest() {
+    return getPostingForm(
+      "/post?t=" +
+        CONFIG.remoteLog.recoveryTopicId +
+        "&mode=reply"
+    ).then(function (formData) {
+      return submitForumPost(
+        formData,
+        "",
+        makeRecoveryRequestMessage()
+      );
+    });
+  }
+
+  /*
+   * ============================================================
+   * Registre public des tirages
+   * ============================================================
+   */
+
+  function parseDrawsFromTopic(html) {
+    const parsed =
+      new DOMParser().parseFromString(
+        html,
+        "text/html"
+      );
+
+    const found = [];
+
+    parsed
+      .querySelectorAll(
+        ".postbody, .post .content, .content"
+      )
+      .forEach(function (post) {
+        const text = String(
+          post.textContent || ""
+        ).replace(/\u00a0/g, " ");
+
+        if (
+          text.indexOf(
+            "[NOËLOTO 2027 — TIRAGE]"
+          ) === -1
+        ) {
+          return;
+        }
+
+        const orderMatch = text.match(
+          /Ordre\s*:\s*(\d+)/i
+        );
+
+        const numberMatch = text.match(
+          /Numéro\s*:\s*(\d+)/i
+        );
+
+        const dateMatch = text.match(
+          /Horodatage\s*:\s*([^\n\r]+)/i
+        );
+
+        if (
+          !orderMatch ||
+          !numberMatch
+        ) {
+          return;
+        }
+
+        const number =
+          Number(numberMatch[1]);
+
+        if (
+          number < 1 ||
+          number > 90
+        ) {
+          return;
+        }
+
+        found.push({
+          order: Number(orderMatch[1]),
+          number: number,
+          timestamp: dateMatch
+            ? dateMatch[1].trim()
+            : ""
+        });
+      });
+
+    const uniqueNumbers = new Set();
+
+    return found
+      .sort(function (a, b) {
+        return a.order - b.order;
+      })
+      .filter(function (draw) {
+        if (
+          uniqueNumbers.has(draw.number)
+        ) {
+          return false;
+        }
+
+        uniqueNumbers.add(draw.number);
+        return true;
+      });
+  }
+
+  function renderDraws() {
+    const drawnNumbers = new Set(
+      draws.map(function (draw) {
+        return draw.number;
+      })
+    );
+
+    $("#noeloto-draw-count").text(
+      draws.length
+    );
+
+    $(".noeloto-board-number")
+      .removeClass("is-drawn")
+      .filter(function () {
+        return drawnNumbers.has(
+          Number(
+            $(this).attr("data-number")
+          )
+        );
+      })
+      .addClass("is-drawn");
+
+    $(".noeloto-player-card__grid td[data-number]")
+      .removeClass("is-drawn")
+      .filter(function () {
+        return drawnNumbers.has(
+          Number(
+            $(this).attr("data-number")
+          )
+        );
+      })
+      .addClass("is-drawn");
+
+    const $history =
+      $("#noeloto-draw-history");
+
+    $history.empty();
+
+    if (!draws.length) {
+      $("<li>")
+        .text(
+          "Aucun numéro n’a encore été tiré."
+        )
+        .appendTo($history);
+
+      $("#noeloto-current-ball").text("?");
+      $("#noeloto-last-draw-date").text(
+        "aucun tirage pour le moment"
+      );
+      $("#noeloto-replay-draw").prop(
+        "disabled",
+        true
+      );
+
+      return;
+    }
+
+    draws
+      .slice()
+      .reverse()
+      .forEach(function (draw) {
+        $("<li>")
+          .text(
+            "Tirage nº " +
+              draw.order +
+              " — boule " +
+              draw.number +
+              (
+                draw.timestamp
+                  ? " — " +
+                    draw.timestamp
+                  : ""
+              )
+          )
+          .appendTo($history);
+      });
+
+    const lastDraw =
+      draws[draws.length - 1];
+
+    $("#noeloto-current-ball").text(
+      lastDraw.number
+    );
+
+    $("#noeloto-last-draw-date").text(
+      lastDraw.timestamp ||
+        "tirage nº " +
+          lastDraw.order
+    );
+
+    $("#noeloto-replay-draw").prop(
+      "disabled",
+      false
+    );
+  }
+
+  function loadDraws() {
+    return $.ajax({
+      url:
+        CONFIG.remoteLog.drawTopicUrl +
+        "?change_version=prosilver",
+      method: "GET",
+      cache: false
+    })
+      .then(function (html) {
+        draws = parseDrawsFromTopic(
+          html
+        );
+
+        renderDraws();
+        return draws;
+      })
+      .catch(function () {
+        $("#noeloto-last-draw-date").text(
+          "registre des tirages inaccessible"
+        );
+      });
+  }
+
+  function makeDrawMessage(draw) {
+    const member = getMember();
+
+    return [
+      "[NOËLOTO 2027 — TIRAGE]",
+      "",
+      "Ordre : " + draw.order,
+      "Numéro : " + draw.number,
+      "Effectué par : " +
+        member.username +
+        " — ID " +
+        member.id,
+      "Horodatage : " +
+        draw.timestamp
+    ].join("\n");
+  }
+
+  function publishNewDraw() {
+    const drawnNumbers = new Set(
+      draws.map(function (draw) {
+        return draw.number;
+      })
+    );
+
+    const availableNumbers = [];
+
+    for (
+      let number = 1;
+      number <= 90;
+      number += 1
+    ) {
+      if (!drawnNumbers.has(number)) {
+        availableNumbers.push(number);
+      }
+    }
+
+    if (!availableNumbers.length) {
+      return $.Deferred()
+        .reject(
+          "Les 90 boules ont déjà été tirées."
+        )
+        .promise();
+    }
+
+    const draw = {
+      order: draws.length + 1,
+      number:
+        availableNumbers[
+          randomInt(
+            availableNumbers.length
+          )
+        ],
+      timestamp:
+        new Date().toISOString()
+    };
+
+    return getPostingForm(
+      "/post?t=" +
+        CONFIG.remoteLog.drawTopicId +
+        "&mode=reply"
+    )
+      .then(function (formData) {
+        return submitForumPost(
+          formData,
+          "",
+          makeDrawMessage(draw)
+        );
+      })
+      .then(function () {
+        draws.push(draw);
+        renderDraws();
+        return draw;
+      });
+  }
+
+  /*
+   * ============================================================
    * Événements
    * ============================================================
    */
@@ -966,13 +1743,53 @@ $(function () {
   $("#noeloto-request-recovery").on(
     "click",
     function () {
-      if (!CONFIG.remoteLog.enabled) {
+      if (!remoteLoggingIsAvailable()) {
         $("#noeloto-recovery-request-status").text(
-          "Le registre de restauration sera activé lorsque le sujet 2027 sera créé."
+          "La demande ne peut être envoyée que depuis le forum de test."
         );
 
         return;
       }
+
+      if (state.recoveryRequestSentAt) {
+        $("#noeloto-recovery-request-status").text(
+          "Une demande de restauration a déjà été envoyée."
+        );
+
+        return;
+      }
+
+      $("#noeloto-request-recovery").prop(
+        "disabled",
+        true
+      );
+
+      $("#noeloto-recovery-request-status").text(
+        "Envoi de la demande aux Lutins…"
+      );
+
+      publishRecoveryRequest()
+        .then(function () {
+          state.recoveryRequestSentAt =
+            new Date().toISOString();
+
+          saveState();
+
+          $("#noeloto-recovery-request-status").text(
+            "Ta demande de restauration a bien été envoyée."
+          );
+        })
+        .catch(function (error) {
+          $("#noeloto-recovery-request-status").text(
+            "La demande n’a pas pu être envoyée : " +
+              error
+          );
+
+          $("#noeloto-request-recovery").prop(
+            "disabled",
+            false
+          );
+        });
     }
   );
 
@@ -1037,9 +1854,37 @@ $(function () {
   $("#noeloto-admin-draw").on(
     "click",
     function () {
+      if (!memberIsAdministrator()) {
+        return;
+      }
+
+      $("#noeloto-admin-draw")
+        .prop("disabled", true);
+
       $("#noeloto-admin-draw-status").text(
-        "Le registre central des tirages n’est pas encore configuré."
+        "Tirage et publication de la nouvelle boule…"
       );
+
+      publishNewDraw()
+        .then(function (draw) {
+          $("#noeloto-admin-draw-status").text(
+            "La boule " +
+              draw.number +
+              " a été publiée comme tirage nº " +
+              draw.order +
+              "."
+          );
+        })
+        .catch(function (error) {
+          $("#noeloto-admin-draw-status").text(
+            "Le tirage a échoué : " +
+              error
+          );
+        })
+        .always(function () {
+          $("#noeloto-admin-draw")
+            .prop("disabled", false);
+        });
     }
   );
 
@@ -1047,8 +1892,24 @@ $(function () {
     "click",
     function () {
       $("#noeloto-registry-status").text(
-        "Les identifiants des registres 2027 doivent encore être renseignés."
+        "Chargement du registre public des tirages…"
       );
+
+      loadDraws()
+        .then(function (loadedDraws) {
+          $("#noeloto-registry-output").val(
+            JSON.stringify(
+              loadedDraws,
+              null,
+              2
+            )
+          );
+
+          $("#noeloto-registry-status").text(
+            loadedDraws.length +
+              " tirage(s) valide(s) trouvé(s)."
+          );
+        });
     }
   );
 
@@ -1071,6 +1932,7 @@ $(function () {
   state = loadState();
   saveState();
   render();
+  loadDraws();
 
   /*
    * Outil temporaire de test accessible depuis la console.
