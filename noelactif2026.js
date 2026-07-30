@@ -524,9 +524,38 @@ $(function () {
 
       function makeRotationRegistryMessage(entry, token) {
         const member = getMember();
+        const displayDay = Number(entry.day) === 1
+          ? "1[sup]er[/sup]"
+          : String(entry.day);
         return [
-          "[NOELACTIF 2026 — ROTATION CENTRALE]",
+          "[table style=\"width:100%; max-width:650px; min-height:380px; margin:auto; border:2px solid #c9953e; border-radius:8px; background-image:url(https://i38.servimg.com/u/f38/11/01/36/00/call_a10.png); background-position:center; background-size:cover; background-repeat:no-repeat;\"]",
+          "[tr][td style=\"padding:14px 25px 8px; color:#ffe4a3;\"]",
+          "[center][size=18] [b]UN NOUVEAU PASSAGE DANS L’ATELIER ![/b] [/size][/center]",
+          "[/td][/tr]",
+          "[tr][td style=\"padding:20px 70px 28px; color:#392313;\"]",
+          "[center][size=16][color=#176238][b]"
+            + member.username
+            + "[/b][/color] vient de faire tourner la grande roue de Noël ![/size]",
           "",
+          "La roue s’est arrêtée sur…",
+          "",
+          "[size=18][color=#961613][b] "
+            + entry.label
+            + " [/b][/color][/size]",
+          "",
+          "[color=#176238][b]"
+            + entry.tickets
+            + " ticket(s)[/b][/color] viennent rejoindre son carnet de Noël !",
+          "",
+          "[size=12][color=#8a6a43][i]Les Lutins ont soigneusement consigné son passage dans le grand registre de l’atelier.[/i][/color][/size][/center]",
+          "",
+          "[hr]",
+          "[center][size=10][color=#8a6a43]Passage enregistré le "
+            + displayDay
+            + " décembre 2026.[/color][/size][/center]",
+          "",
+          "[size=1][color=#fff4d2]",
+          "[NOELACTIF 2026 — ROTATION CENTRALE]",
           "Membre : " + member.username,
           "Identifiant : " + member.id,
           "Jour de participation : " + entry.day + " décembre 2026",
@@ -534,7 +563,9 @@ $(function () {
           "Horodatage : " + entry.timestamp,
           "Résultat : " + entry.label,
           "Tickets remportés : " + entry.tickets,
-          "Jeton technique : " + token
+          "Jeton technique : " + token,
+          "[/color][/size]",
+          "[/td][/tr][/table]"
         ].join("\n");
       }
 
