@@ -50,7 +50,7 @@ $(function () {
           3: "https://i.servimg.com/u/f38/11/01/36/00/kardo-10.png",
           4: "https://i.servimg.com/u/f38/11/01/36/00/hydrom10.png",
           5: "https://i.servimg.com/u/f38/11/01/36/00/peluch10.png",
-          10: "https://i.servimg.com/u/f38/11/01/36/00/jackpo10.png"
+          10: "https://i38.servimg.com/u/f38/11/01/36/00/jackpo11.png"
         },
         prizes: {
           gold: {
