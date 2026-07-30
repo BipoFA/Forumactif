@@ -541,23 +541,18 @@ $(function () {
           "[tr][td style=\"height:88px; padding:0 55px; color:#ffe4a3; vertical-align:middle;\"]",
           "[center][size=18] [b]UN NOUVEAU PASSAGE DANS L’ATELIER ![/b] [/size][/center]",
           "[/td][/tr]",
-          "[tr][td style=\"height:210px; padding:0 68px; color:#392313; vertical-align:middle;\"]",
+          "[tr][td style=\"height:225px; padding:0 68px; color:#392313; vertical-align:middle;\"]",
           "[center][size=16][color=#176238][b]"
             + member.username
-            + "[/b][/color] vient de faire tourner la grande roue de Noël ![/size][/center]",
-          "[table style=\"width:100%; height:142px; margin:auto;\"][tr]",
-          "[td style=\"width:67%; padding:0 8px 0 0; color:#392313; vertical-align:middle;\"]",
-          "[center]La roue s’est arrêtée sur…",
+            + "[/b][/color] vient de faire tourner la grande roue de Noël ![/size]",
+          "La roue s’est arrêtée sur…",
           "[size=18][color=#961613][b] "
             + entry.label
-            + " [/b][/color][/size][/center]",
-          "[/td]",
-          "[td style=\"width:33%; padding:0; vertical-align:middle;\"]",
-          "[center][img(125px,125px)]" + rewardImage + "[/img][/center]",
-          "[/td][/tr][/table]",
-          "[center][size=12][color=#8a6a43][i]Les Lutins ont soigneusement consigné son passage dans le grand registre de l’atelier.[/i][/color][/size][/center]",
+            + " [/b][/color][/size]",
+          "[img(105px,105px)]" + rewardImage + "[/img]",
+          "[size=12][color=#8a6a43][i]Les Lutins ont soigneusement consigné son passage dans le grand registre de l’atelier.[/i][/color][/size][/center]",
           "[/td][/tr]",
-          "[tr][td style=\"height:82px; padding:8px 75px 32px; color:#8a6a43; vertical-align:top;\"]",
+          "[tr][td style=\"height:67px; padding:6px 75px 28px; color:#8a6a43; vertical-align:top;\"]",
           "[center][size=10][color=#8a6a43]Passage enregistré le "
             + displayDay
             + " décembre 2026.[/color][/size][/center]",
