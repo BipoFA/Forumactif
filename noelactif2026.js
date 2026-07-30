@@ -2,24 +2,31 @@ $(function () {
       "use strict";
 
       const CONFIG = {
-        storageKey: "noelactif2026_prototype_v2",
+        storageKey: "noelactif2026_forum_test_v1",
         testMode: true,
         rulesUrl: "#",
         remoteLog: {
-          hostname: "xoumi.forumactif.com",
-          forumId: 7,
-          forumUrl: "/f7-zone-de-tests",
-          registryTopicId: 669,
-          registryTopicUrl: "/t669-noelactif-2026-registre-des-hottes-du-pere-noel",
-          recoveryTopicId: 678,
-          recoveryTopicUrl: "/t678-noelactif-2026-registre-des-demandes-de-restauration",
+          hostname: "forum.forumactif.com",
+          forumId: 110,
+          forumUrl: "/f110-signalements-d-archives",
+          registryTopicId: 413332,
+          registryTopicUrl: "/t413332-noelactif-2026-registre-des-hottes-du-pere-noel",
+          recoveryTopicId: 413333,
+          recoveryTopicUrl: "/t413333-noelactif-2026-registre-des-demandes-de-restauration",
           registryCooldownMs: 11000,
           enabled: true
         },
-        debugOwner: {
-          username: "Typlo",
-          id: 1
-        },
+        debugOwners: [
+          { username: "Bipo", id: 112158 },
+          { username: "Luzz", id: 50306 },
+          { username: "Pinguino", id: 1 },
+          { username: "Chacha", id: 110116 },
+          { username: "Walt", id: 166230 },
+          { username: "chattigre", id: 175350 },
+          { username: "Lixyr", id: 108944 },
+          { username: "Skouliki", id: 174625 },
+          { username: "Tony*", id: 141293 }
+        ],
         recoverySignature: "noelactif-2026-restauration-v1",
         wheel: [
           { label: "1 ticket — Groumph en chocolat", tickets: 1, weight: 15 },
@@ -182,12 +189,21 @@ $(function () {
 
       function isDebugOwner() {
         const member = getMember();
-        return member.id === CONFIG.debugOwner.id
-          && String(member.username).toLowerCase() === CONFIG.debugOwner.username.toLowerCase();
+        return CONFIG.debugOwners.some(function (owner) {
+          return member.id === owner.id
+            && String(member.username).toLowerCase() === owner.username.toLowerCase();
+        });
       }
 
       function renderDebugPanel() {
-        $("#noelactif-debug-panel").prop("hidden", !isDebugOwner());
+        const authorized = isDebugOwner();
+        $("#noelactif-debug-panel").prop("hidden", !authorized);
+        if (authorized) {
+          $(".noelactif-admin-details > .noelactif-note").text(
+            "Espace technique réservé à l’équipe de test autorisée. "
+            + "Les actions effectuées ici peuvent publier une trace réelle sur le forum."
+          );
+        }
       }
 
       function initAtelierStory() {
@@ -1854,7 +1870,7 @@ $(function () {
           })
           .fail(function () {
             $("#noelactif-registry-status").text(
-              "Impossible de lire le registre. Vérifie que Typlo est connecté et peut consulter le sujet t"
+              "Impossible de lire le registre. Vérifie que ton compte est autorisé et peut consulter le sujet t"
               + CONFIG.remoteLog.registryTopicId
               + "."
             );
