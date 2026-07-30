@@ -44,6 +44,14 @@ $(function () {
           { label: "5 tickets — Peluche Gizmo", tickets: 5, weight: 15 },
           { label: "10 tickets — Jackpot de Pinguino !", tickets: 10, weight: 5 }
         ],
+        rewardImages: {
+          1: "https://i.servimg.com/u/f38/11/01/36/00/groump12.png",
+          2: "https://i.servimg.com/u/f38/11/01/36/00/hotte-10.png",
+          3: "https://i.servimg.com/u/f38/11/01/36/00/kardo-10.png",
+          4: "https://i.servimg.com/u/f38/11/01/36/00/hydrom10.png",
+          5: "https://i.servimg.com/u/f38/11/01/36/00/peluch10.png",
+          10: "https://i.servimg.com/u/f38/11/01/36/00/jackpo10.png"
+        },
         prizes: {
           gold: {
             label: "Hotte d’or — participation au tirage au sort pour gagner 1 200 crédits et le badge or Noëlactif 2026 à afficher dans son profil",
@@ -524,6 +532,7 @@ $(function () {
 
       function makeRotationRegistryMessage(entry, token) {
         const member = getMember();
+        const rewardImage = CONFIG.rewardImages[Number(entry.tickets)] || "";
         const displayDay = Number(entry.day) === 1
           ? "1[sup]er[/sup]"
           : String(entry.day);
@@ -532,24 +541,23 @@ $(function () {
           "[tr][td style=\"height:88px; padding:0 55px; color:#ffe4a3; vertical-align:middle;\"]",
           "[center][size=18] [b]UN NOUVEAU PASSAGE DANS L’ATELIER ![/b] [/size][/center]",
           "[/td][/tr]",
-          "[tr][td style=\"height:225px; padding:0 75px; color:#392313; vertical-align:middle;\"]",
+          "[tr][td style=\"height:210px; padding:0 68px; color:#392313; vertical-align:middle;\"]",
           "[center][size=16][color=#176238][b]"
             + member.username
-            + "[/b][/color] vient de faire tourner la grande roue de Noël ![/size]",
-          "",
-          "La roue s’est arrêtée sur…",
-          "",
+            + "[/b][/color] vient de faire tourner la grande roue de Noël ![/size][/center]",
+          "[table style=\"width:100%; height:142px; margin:auto;\"][tr]",
+          "[td style=\"width:67%; padding:0 8px 0 0; color:#392313; vertical-align:middle;\"]",
+          "[center]La roue s’est arrêtée sur…",
           "[size=18][color=#961613][b] "
             + entry.label
-            + " [/b][/color][/size]",
-          "",
-          "[color=#176238][b]"
-            + entry.tickets
-            + " ticket(s)[/b][/color] vienne(nt) rejoindre son carnet de Noël !",
-          "",
-          "[size=12][color=#8a6a43][i]Les Lutins ont soigneusement consigné son passage dans le grand registre de l’atelier.[/i][/color][/size][/center]",
+            + " [/b][/color][/size][/center]",
+          "[/td]",
+          "[td style=\"width:33%; padding:0; vertical-align:middle;\"]",
+          "[center][img(125px,125px)]" + rewardImage + "[/img][/center]",
+          "[/td][/tr][/table]",
+          "[center][size=12][color=#8a6a43][i]Les Lutins ont soigneusement consigné son passage dans le grand registre de l’atelier.[/i][/color][/size][/center]",
           "[/td][/tr]",
-          "[tr][td style=\"height:67px; padding:0 75px 12px; color:#8a6a43; vertical-align:middle;\"]",
+          "[tr][td style=\"height:82px; padding:8px 75px 32px; color:#8a6a43; vertical-align:top;\"]",
           "[center][size=10][color=#8a6a43]Passage enregistré le "
             + displayDay
             + " décembre 2026.[/color][/size][/center]",
