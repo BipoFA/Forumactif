@@ -76,6 +76,11 @@ $(function () {
         }
       };
 
+      Object.keys(CONFIG.rewardImages).forEach(function (tickets) {
+        const image = new Image();
+        image.src = CONFIG.rewardImages[tickets];
+      });
+
       let state = loadState();
       let currentRotation = 0;
       let spinning = false;
@@ -2408,6 +2413,17 @@ $(function () {
               saveState();
 
               $("#noelactif-result-text").text(result.label);
+              const resultImage = CONFIG.rewardImages[Number(result.tickets)] || "";
+              $("#noelactif-result-image")
+                .off("error.noelactif")
+                .on("error.noelactif", function () {
+                  $(this).hide();
+                })
+                .attr({
+                  src: resultImage,
+                  alt: result.label
+                })
+                .toggle(Boolean(resultImage));
               $("#noelactif-result").fadeIn(250);
               $("#noelactif-private-log").text(
                 makePrivateMessage(entry)
