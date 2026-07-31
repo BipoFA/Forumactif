@@ -30,7 +30,6 @@ $(function () {
           { username: "Lixyr", id: 108944 },
           { username: "Skouliki", id: 174625 },
           { username: "Tony*", id: 141293 },
-          { username: "Typlo", id: 1 },
           { username: "Lutins", id: 177295 }
         ],
         shopTesters: [
@@ -93,6 +92,7 @@ $(function () {
       let centrallyCheckedSpinDay = null;
       let centrallyBlockedSpinDay = null;
       let centralSyncInProgress = false;
+      let centralRewardTickets = [];
 
       function memberFromProfileHref(username, profileHref) {
         const href = String(profileHref || "");
@@ -495,6 +495,80 @@ $(function () {
         return { ...CONFIG.wheel[0], index: 0 };
       }
 
+      function collectionTicketsFromEntries(entries) {
+        const knownTickets = CONFIG.wheel.map(function (item) {
+          return Number(item.tickets);
+        });
+        const collected = {};
+
+        (entries || []).forEach(function (entry) {
+          const tickets = Number(entry.tickets);
+          if (knownTickets.indexOf(tickets) !== -1) {
+            collected[tickets] = true;
+          }
+        });
+
+        return Object.keys(collected).map(Number).sort(function (a, b) {
+          return a - b;
+        });
+      }
+
+      function currentCollectionTickets() {
+        return collectionTicketsFromEntries(
+          (state.history || []).concat(
+            centralRewardTickets.map(function (tickets) {
+              return { tickets: tickets };
+            })
+          )
+        );
+      }
+
+      function completesAlbumWith(tickets) {
+        const collected = currentCollectionTickets();
+        const reward = Number(tickets);
+        return collected.length === CONFIG.wheel.length - 1
+          && collected.indexOf(reward) === -1;
+      }
+
+      function renderAlbum() {
+        const collected = currentCollectionTickets();
+        const $album = $("#noelactif-album");
+
+        if (!$album.children().length) {
+          CONFIG.wheel.forEach(function (item) {
+            $("<img>", {
+              "class": "noelactif-album-item",
+              "data-tickets": item.tickets,
+              src: CONFIG.rewardImages[item.tickets],
+              alt: item.label,
+              title: item.label + " — à découvrir"
+            }).appendTo($album);
+          });
+        }
+
+        $album.find(".noelactif-album-item").each(function () {
+          const $item = $(this);
+          const tickets = Number($item.attr("data-tickets"));
+          const isCollected = collected.indexOf(tickets) !== -1;
+          const wheelItem = CONFIG.wheel.find(function (item) {
+            return Number(item.tickets) === tickets;
+          });
+
+          $item
+            .toggleClass("is-collected", isCollected)
+            .attr("title", wheelItem.label + (
+              isCollected ? " — collectionnée" : " — à découvrir"
+            ));
+        });
+
+        $("#noelactif-album-count").text(
+          collected.length
+          + " récompense(s)"
+          + " sur "
+          + CONFIG.wheel.length
+        );
+      }
+
       function makePrivateMessage(entry) {
         const member = getMember();
         return [
@@ -539,6 +613,17 @@ $(function () {
       function makeRotationRegistryMessage(entry, token) {
         const member = getMember();
         const rewardImage = CONFIG.rewardImages[Number(entry.tickets)] || "";
+        const albumCelebration = entry.completesAlbum
+          ? [
+            "",
+            "[table style=\"width:100%; max-width:650px; margin:8px auto; border:2px solid #d6a238; border-radius:8px; background:#6f2519;\"]",
+            "[tr][td style=\"padding:14px 24px; color:#ffe4a3; text-align:center;\"]",
+            "[center][size=18] [b]ALBUM DE NOËL COMPLÉTÉ ![/b] [/size]",
+            "[color=#fff4d2][b]" + member.username + "[/b] vient de réunir les six récompenses de la grande lotterie de Noël ![/color]",
+            "[size=12][color=#f3cf83][i]Les Lutins lui décernent officiellement le titre de grand collectionneur de l’atelier.[/i][/color][/size][/center]",
+            "[/td][/tr][/table]"
+          ]
+          : [];
         const displayDay = Number(entry.day) === 1
           ? "1[sup]er[/sup]"
           : String(entry.day);
@@ -562,7 +647,8 @@ $(function () {
           "[center][size=10][color=#8a6a43]Passage enregistré le "
             + displayDay
             + " décembre 2026.[/color][/size][/center]",
-          "[/td][/tr][/table]",
+          "[/td][/tr][/table]"
+        ].concat(albumCelebration, [
           "",
           "[table style=\"display:none; width:0; height:0; margin:0; padding:0;\"][tr][td style=\"display:none; color:#fff4d2; font-size:1px; line-height:0;\"]",
           "[NOELACTIF 2026 — ROTATION CENTRALE]",
@@ -573,9 +659,10 @@ $(function () {
           "Horodatage : " + entry.timestamp,
           "Résultat : " + entry.label,
           "Tickets remportés : " + entry.tickets,
+          "Album complété : " + (entry.completesAlbum ? "OUI" : "NON"),
           "Jeton technique : " + token,
           "[/td][/tr][/table]"
-        ].join("\n");
+        ]).join("\n");
       }
 
       function rotationEntriesFromPage(html) {
@@ -735,6 +822,7 @@ $(function () {
           canonicalCentralRotationsFor(member.id),
           fetchRegistryPages()
         ).then(function (centralEntries, registryPages) {
+          centralRewardTickets = collectionTicketsFromEntries(centralEntries);
           const localByDay = {};
           (state.history || []).forEach(function (entry) {
             if (!localByDay[Number(entry.day)]) {
@@ -2166,6 +2254,7 @@ $(function () {
         renderDebugPanel();
         $("#noelactif-balance").text(state.balance);
         $("#noelactif-spins").text(state.rotation);
+        renderAlbum();
 
         if (state.forumUrl) {
           $("#noelactif-beneficiary").prop("hidden", false);
@@ -2187,7 +2276,7 @@ $(function () {
         } else {
           $("#noelactif-request-recovery")
             .prop("disabled", false)
-            .html('<i class="fa fa-envelope" aria-hidden="true"></i> Contacter Les Lutins');
+            .html('<i class="fa fa-envelope" aria-hidden="true"></i> Contacter les Lutins');
           $("#noelactif-recovery-request-status").text("");
         }
 
@@ -2299,9 +2388,12 @@ $(function () {
             "Vérification de ta participation du jour…"
           );
 
-          centralRotationsFor(getMember().id, state.simulatedDay)
+          canonicalCentralRotationsFor(getMember().id)
             .done(function (entries) {
-              if (entries.length) {
+              centralRewardTickets = collectionTicketsFromEntries(entries);
+              if (entries.some(function (entry) {
+                return entry.day === Number(state.simulatedDay);
+              })) {
                 centrallyBlockedSpinDay = state.simulatedDay;
                 return;
               }
@@ -2365,7 +2457,8 @@ $(function () {
             tickets: result.tickets,
             balance: state.balance + result.tickets,
             dateLabel: String(state.simulatedDay).padStart(2, "0") + "/12/2026",
-            timestamp: new Date().toLocaleString("fr-FR")
+            timestamp: new Date().toLocaleString("fr-FR"),
+            completesAlbum: completesAlbumWith(result.tickets)
           };
 
           $("#noelactif-status").text(
@@ -2733,7 +2826,7 @@ $(function () {
           .fail(function (error) {
             $button
               .prop("disabled", false)
-              .html('<i class="fa fa-envelope" aria-hidden="true"></i> Contacter Les Lutins');
+              .html('<i class="fa fa-envelope" aria-hidden="true"></i> Contacter les Lutins');
             $status.text(String(error));
           });
       });
@@ -2915,6 +3008,7 @@ $(function () {
         currentRotation = 0;
         centrallyCheckedSpinDay = null;
         centrallyBlockedSpinDay = null;
+        centralRewardTickets = [];
         $("#noelactif-wheel").css("transition", "none").css("transform", "rotate(0deg)");
         window.setTimeout(function () {
           $("#noelactif-wheel").css("transition", "transform 5.2s cubic-bezier(.12,.68,.16,1)");

@@ -507,7 +507,7 @@ p.help-text a{color:#fbd79d}
 
     .noelactif-stats {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin-bottom: 22px;
     }
@@ -523,10 +523,61 @@ p.help-text a{color:#fbd79d}
     .noelactif-stat strong {
       display: block;
       color: var(--na-red-dark);
-      font-size: 1.65rem;
+      font-size: 2rem;
     }
 
     .noelactif-stat span { color: var(--na-muted); font-size: .78rem; }
+
+    .noelactif-stat--album {
+      padding: 10px 7px 8px;
+    }
+
+    .noelactif-album-title {
+      display: block;
+      margin-bottom: 6px;
+      color: #6f2f1d !important;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: .88rem !important;
+      font-weight: 700;
+    }
+
+    .noelactif-album-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 34px);
+      justify-content: center;
+      gap: 4px;
+      min-height: 72px;
+    }
+
+    .noelactif-album-item {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      padding: 2px;
+      object-fit: contain;
+      border: 1px solid rgba(104, 55, 24, .36);
+      border-radius: 8px;
+      background: rgba(111, 47, 29, .18);
+      filter: sepia(1) saturate(1.6) hue-rotate(342deg) brightness(.48) contrast(1.08);
+      opacity: .42;
+      transition: filter .35s ease, opacity .35s ease, transform .35s ease, box-shadow .35s ease;
+    }
+
+    .noelactif-album-item.is-collected {
+      border-color: #d7a940;
+      background: rgba(255, 246, 205, .82);
+      filter: none;
+      opacity: 1;
+      transform: translateY(-1px);
+      box-shadow: 0 0 8px rgba(224, 165, 48, .72);
+    }
+
+    .noelactif-album-count {
+      display: block;
+      margin-top: 5px;
+      color: #74573c !important;
+      font-size: .68rem !important;
+    }
 
     .noelactif-result {
       display: none;
@@ -536,6 +587,27 @@ p.help-text a{color:#fbd79d}
       border: 1px solid #efd387;
       border-radius: 16px;
       background: #fff7d7;
+    }
+
+    .noelactif-result-layout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .noelactif-result-copy {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .noelactif-result-image {
+      display: none;
+      flex: 0 0 85px;
+      width: 85px;
+      height: 85px;
+      object-fit: contain;
+      filter: drop-shadow(0 5px 7px rgba(80, 39, 15, .18));
     }
 
     .noelactif-result strong {
@@ -1874,6 +1946,14 @@ p.help-text a{color:#fbd79d}
     @media (max-width: 520px) {
       .noelactif-prizes { grid-template-columns: 1fr; }
       .noelactif-registry-lists { grid-template-columns: 1fr; }
+      .noelactif-stats { grid-template-columns: repeat(2, 1fr); }
+      .noelactif-stat--album { grid-column: 1 / -1; }
+      .noelactif-result-layout { flex-direction: column; gap: 8px; }
+      .noelactif-result-image {
+        flex-basis: 82px;
+        width: 82px;
+        height: 82px;
+      }
       .noelactif-app {
         width: min(100% - 14px, 1180px);
         margin: 18px auto;
@@ -2299,12 +2379,52 @@ p.help-text a{color:#fbd79d}
 
         <div class="noelactif-stats">
           <div class="noelactif-stat">
+            <span class="noelactif-album-title">Ticket(s)</span>
             <strong id="noelactif-balance">0</strong>
-            <span>ticket(s)</span>
           </div>
           <div class="noelactif-stat">
+            <span class="noelactif-album-title">Rotation(s)</span>
             <strong id="noelactif-spins">0</strong>
-            <span>rotation(s)</span>
+          </div>
+          <div class="noelactif-stat noelactif-stat--album">
+            <span class="noelactif-album-title">Mon album de Noël</span>
+            <div id="noelactif-album"
+                 class="noelactif-album-grid"
+                 aria-label="Récompenses collectionnées">
+              <img class="noelactif-album-item"
+                   data-tickets="1"
+                   src="https://i.servimg.com/u/f38/11/01/36/00/groump12.png"
+                   alt="Groumph en chocolat"
+                   title="Groumph en chocolat — à découvrir" />
+              <img class="noelactif-album-item"
+                   data-tickets="2"
+                   src="https://i.servimg.com/u/f38/11/01/36/00/hotte-10.png"
+                   alt="Hotte de papy Chacha"
+                   title="Hotte de papy Chacha — à découvrir" />
+              <img class="noelactif-album-item"
+                   data-tickets="3"
+                   src="https://i.servimg.com/u/f38/11/01/36/00/kardo-10.png"
+                   alt="Kardo surprise"
+                   title="Kardo surprise — à découvrir" />
+              <img class="noelactif-album-item"
+                   data-tickets="4"
+                   src="https://i.servimg.com/u/f38/11/01/36/00/hydrom10.png"
+                   alt="Hydromel de la mère Luzz"
+                   title="Hydromel de la mère Luzz — à découvrir" />
+              <img class="noelactif-album-item"
+                   data-tickets="5"
+                   src="https://i.servimg.com/u/f38/11/01/36/00/peluch10.png"
+                   alt="Peluche Gizmo"
+                   title="Peluche Gizmo — à découvrir" />
+              <img class="noelactif-album-item"
+                   data-tickets="10"
+                   src="https://i38.servimg.com/u/f38/11/01/36/00/jackpo11.png"
+                   alt="Jackpot de Pinguino !"
+                   title="Jackpot de Pinguino ! — à découvrir" />
+            </div>
+            <span id="noelactif-album-count" class="noelactif-album-count">
+              0 récompense(s) sur 6
+            </span>
           </div>
         </div>
 
@@ -2321,8 +2441,16 @@ p.help-text a{color:#fbd79d}
         </div>
 
         <div id="noelactif-result" class="noelactif-result" aria-live="polite">
-          La roue s’est arrêtée sur…
-          <strong id="noelactif-result-text"></strong>
+          <div class="noelactif-result-layout">
+            <div class="noelactif-result-copy">
+              La roue s’est arrêtée sur…
+              <strong id="noelactif-result-text"></strong>
+            </div>
+            <img id="noelactif-result-image"
+                 class="noelactif-result-image"
+                 src=""
+                 alt="" />
+          </div>
         </div>
 
         <h2>L’inventaire de mes gains</h2>
@@ -2334,15 +2462,15 @@ p.help-text a{color:#fbd79d}
           <summary>J’ai perdu mes données de participation</summary>
           <p class="noelactif-recovery-help">
             En cas de perte de ta participation, notamment après avoir effacé les informations enregistrées par ton
-            navigateur, contacte Les Lutins grâce au bouton ci-dessous. Ils pourront te transmettre un code permettant
+            navigateur, contacte les Lutins grâce au bouton ci-dessous. Ils pourront te transmettre un code permettant
             de restaurer ton solde et ton historique.
           </p>
           <div class="noelactif-recovery-fields">
             <button id="noelactif-request-recovery" class="noelactif-button noelactif-button--secondary" type="button">
-              <i class="fa fa-envelope" aria-hidden="true"></i> Contacter Les Lutins
+              <i class="fa fa-envelope" aria-hidden="true"></i> Contacter les Lutins
             </button>
             <p id="noelactif-recovery-request-status" class="noelactif-recovery-status" role="status"></p>
-            <textarea id="noelactif-recovery-code" placeholder="Colle ici le code de restauration transmis par Les Lutins."></textarea>
+            <textarea id="noelactif-recovery-code" placeholder="Colle ici le code de restauration transmis par les Lutins."></textarea>
             <button id="noelactif-restore-participation" class="noelactif-button noelactif-button--secondary" type="button">
               <i class="fa fa-undo" aria-hidden="true"></i> Restaurer ma participation
             </button>
