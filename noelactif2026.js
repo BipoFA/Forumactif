@@ -2661,7 +2661,7 @@ $(function () {
           inventoryItems.push({
             type: "manualBonus",
             dateLabel: dateLabel,
-            label: "Bonus : Ticket(s) supplémentaire(s) par "
+            label: "Bonus : Ticket(s) offert(s) par "
               + (entry.addedBy || "les Lutins"),
             tickets: Number(entry.tickets) || 0,
             sortAt: Number.isFinite(addedAt) ? addedAt : 0
@@ -2685,21 +2685,19 @@ $(function () {
             if (item.type === "albumBonus") {
               $line.css({
                 color: "#8c5a08",
-                fontWeight: "700",
                 borderLeft: "4px solid #d3a12f",
                 background: "rgba(211, 161, 47, .12)",
                 paddingLeft: "10px"
               });
-              $amount.css({ color: "#8c5a08", fontWeight: "700" });
+              $amount.css({ color: "#8c5a08" });
             } else if (item.type === "manualBonus") {
               $line.css({
                 color: "#176238",
-                fontWeight: "700",
                 borderLeft: "4px solid #2d7a47",
                 background: "rgba(45, 122, 71, .1)",
                 paddingLeft: "10px"
               });
-              $amount.css({ color: "#176238", fontWeight: "700" });
+              $amount.css({ color: "#176238" });
             }
 
             $line.append(
