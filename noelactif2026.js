@@ -6,6 +6,7 @@ $(function () {
         testMode: true,
         emergencyStop: false,
         emergencyMessage: "Les Lutins effectuent actuellement une intervention technique. La grande lotterie de Noël est temporairement suspendue. Reviens dans quelques instants !",
+        albumCompletionBonus: 6,
         rulesUrl: "#",
         remoteLog: {
           hostname: "forum.forumactif.com",
@@ -554,6 +555,13 @@ $(function () {
         return { ...CONFIG.wheel[0], index: 0 };
       }
 
+      function rotationTotalTickets(entry) {
+        return (
+          (Number(entry && entry.tickets) || 0)
+          + (Number(entry && entry.bonusTickets) || 0)
+        );
+      }
+
       function collectionTicketsFromEntries(entries) {
         const knownTickets = CONFIG.wheel.map(function (item) {
           return Number(item.tickets);
@@ -640,6 +648,7 @@ $(function () {
           "Horodatage : " + entry.timestamp,
           "Résultat : " + entry.label,
           "Tickets remportés : " + entry.tickets,
+          "Bonus album : " + (Number(entry.bonusTickets) || 0),
           "Numéro de rotation : " + entry.rotation,
           "Solde après rotation : " + entry.balance
         ].join("\n");
@@ -689,6 +698,7 @@ $(function () {
             "[tr][td style=\"height:185px; padding:4px 68px; color:#392313; vertical-align:middle;\"]",
             "[center][size=16][color=#176238][b]" + member.username + "[/b][/color] vient de réunir les six récompenses de la lotterie ![/size]",
             completedAlbumImages,
+            "[size=14][color=#961613][b]Bonus de collection : +" + (Number(entry.bonusTickets) || CONFIG.albumCompletionBonus) + " tickets ![/b][/color][/size]",
             "[size=12][color=#8a6a43][i]Les Lutins célèbrent officiellement cet exploit dans le grand registre de l’atelier ![/i][/color][/size][/center]",
             "[/td][/tr]",
             "[tr][td style=\"height:57px; padding:5px 75px 24px; color:#8a6a43; vertical-align:top;\"]",
@@ -731,6 +741,7 @@ $(function () {
           "Horodatage : " + entry.timestamp,
           "Résultat : " + entry.label,
           "Tickets remportés : " + entry.tickets,
+          "Bonus album : " + (Number(entry.bonusTickets) || 0),
           "Album complété : " + (entry.completesAlbum ? "OUI" : "NON"),
           "Jeton technique : " + token,
           "[/td][/tr][/table]"
@@ -761,6 +772,8 @@ $(function () {
           );
           const resultMatch = text.match(/Résultat\s*:\s*([^\n]+)/i);
           const ticketsMatch = text.match(/Tickets remportés\s*:\s*(\d+)/i);
+          const bonusMatch = text.match(/Bonus album\s*:\s*(\d+)/i);
+          const albumMatch = text.match(/Album complété\s*:\s*(OUI|NON)/i);
           const timestampMatch = text.match(/Horodatage\s*:\s*([^\n]+)/i);
           const tokenMatch = text.match(/Jeton technique\s*:\s*([^\s]+)/i);
           const postIdSource = String(
@@ -781,6 +794,8 @@ $(function () {
             day: Number(dayMatch[1]),
             label: resultMatch[1].trim(),
             tickets: Number(ticketsMatch[1]),
+            bonusTickets: bonusMatch ? Number(bonusMatch[1]) : 0,
+            completesAlbum: albumMatch ? albumMatch[1].toUpperCase() === "OUI" : false,
             timestamp: timestampMatch ? timestampMatch[1].trim() : "",
             token: tokenMatch ? tokenMatch[1].trim() : "",
             postId: postIdMatch ? Number(postIdMatch[1]) : Number.MAX_SAFE_INTEGER,
@@ -1049,15 +1064,23 @@ $(function () {
           });
 
           let imported = 0;
+          let centralGainChanged = false;
           centralEntries.forEach(function (entry) {
             if (!localByDay[entry.day]) {
               imported += 1;
+            } else if (
+              rotationTotalTickets(localByDay[entry.day])
+              !== rotationTotalTickets(entry)
+            ) {
+              centralGainChanged = true;
             }
             localByDay[entry.day] = {
               day: entry.day,
               rotation: 0,
               label: entry.label,
               tickets: entry.tickets,
+              bonusTickets: entry.bonusTickets || 0,
+              completesAlbum: Boolean(entry.completesAlbum),
               balance: 0,
               dateLabel: String(entry.day).padStart(2, "0") + "/12/2026",
               timestamp: entry.timestamp,
@@ -1076,7 +1099,7 @@ $(function () {
 
           let cumulativeBalance = 0;
           mergedHistory.forEach(function (entry, index) {
-            cumulativeBalance += Number(entry.tickets) || 0;
+            cumulativeBalance += rotationTotalTickets(entry);
             entry.rotation = index + 1;
             entry.balance = cumulativeBalance;
           });
@@ -1101,7 +1124,11 @@ $(function () {
           const newDepositFound = keys.some(function (key) {
             return previousValidatedKeys.indexOf(key) === -1;
           });
-          const shouldRecalculate = imported > 0 || newDepositFound;
+          const shouldRecalculate = (
+            imported > 0
+            || newDepositFound
+            || centralGainChanged
+          );
 
           if (shouldRecalculate) {
             const manualAdjustments = state.manualAdjustments || [];
@@ -1109,7 +1136,7 @@ $(function () {
               return total + (Number(entry.tickets) || 0);
             }, 0);
             const won = mergedHistory.reduce(function (total, entry) {
-              return total + (Number(entry.tickets) || 0);
+              return total + rotationTotalTickets(entry);
             }, 0);
             const datedDeposits = memberDeposits.filter(function (entry) {
               return entry.depositAt !== null && entry.remainingBalance !== null;
@@ -1123,7 +1150,7 @@ $(function () {
               ? mergedHistory.reduce(function (total, entry) {
                 const rotationAt = parseForumDateTime(entry.timestamp);
                 return rotationAt !== null && rotationAt > lastDeposit.depositAt
-                  ? total + (Number(entry.tickets) || 0)
+                  ? total + rotationTotalTickets(entry)
                   : total;
               }, 0)
               : null;
@@ -1822,6 +1849,7 @@ $(function () {
           const forumUrlMatch = text.match(/Forum bénéficiaire\s*:\s*(https?:\/\/[^\s]+)/i);
           const resultMatch = text.match(/Résultat\s*:\s*([^\n]+)/i);
           const ticketsMatch = text.match(/Tickets remportés\s*:\s*(\d+)/i);
+          const bonusMatch = text.match(/Bonus album\s*:\s*(\d+)/i);
           const rotationMatch = text.match(/Numéro de rotation\s*:\s*(\d+)/i);
 
           if (
@@ -1841,6 +1869,7 @@ $(function () {
             rotation: rotationMatch ? Number(rotationMatch[1]) : 0,
             label: resultMatch[1].trim(),
             tickets: Number(ticketsMatch[1]),
+            bonusTickets: bonusMatch ? Number(bonusMatch[1]) : 0,
             timestamp: timestampMatch ? timestampMatch[1].trim() : "",
             dateLabel: String(Number(dayMatch[1])).padStart(2, "0") + "/12/2026"
           });
@@ -1893,6 +1922,7 @@ $(function () {
           const ticketsMatch = text.match(/Tickets ajoutés\s*:\s*(\d+)/i);
           const dateMatch = text.match(/Date de l’ajout\s*:\s*([^\n]+)/i);
           const reasonMatch = text.match(/Motif\s*:\s*([^\n]+)/i);
+          const adminMatch = text.match(/Ajout effectué par\s*:\s*([^\n]+)/i);
           if (
             !idMatch
             || Number(idMatch[1]) !== Number(memberId)
@@ -1906,7 +1936,10 @@ $(function () {
             tickets: Number(ticketsMatch[1]),
             timestamp: dateMatch ? dateMatch[1].trim() : "",
             addedAt: dateMatch ? parseForumDateTime(dateMatch[1]) : null,
-            reason: reasonMatch ? reasonMatch[1].trim() : ""
+            reason: reasonMatch ? reasonMatch[1].trim() : "",
+            addedBy: adminMatch
+              ? adminMatch[1].replace(/\s+—\s+ID\s+\d+.*$/i, "").trim()
+              : "les Lutins"
           });
         });
 
@@ -2059,6 +2092,7 @@ $(function () {
                   entry.rotation,
                   entry.label,
                   entry.tickets,
+                  entry.bonusTickets || 0,
                   entry.timestamp
                 ].join("|");
                 if (!uniqueRotations[signature]) {
@@ -2119,6 +2153,7 @@ $(function () {
                   rotation: 0,
                   label: entry.label,
                   tickets: entry.tickets,
+                  bonusTickets: entry.bonusTickets || 0,
                   timestamp: entry.timestamp,
                   dateLabel: String(entry.day).padStart(2, "0") + "/12/2026"
                 };
@@ -2154,7 +2189,7 @@ $(function () {
             });
             const keys = Object.keys(depositedKeys);
             const won = history.reduce(function (total, entry) {
-              return total + entry.tickets;
+              return total + rotationTotalTickets(entry);
             }, 0);
             const manualAdjustments = Object.keys(uniqueAdjustments).map(function (signature) {
               return uniqueAdjustments[signature];
@@ -2175,7 +2210,7 @@ $(function () {
               ? history.reduce(function (total, entry) {
                 const rotationAt = parseForumDateTime(entry.timestamp);
                 return rotationAt !== null && rotationAt > lastDeposit.depositAt
-                  ? total + entry.tickets
+                  ? total + rotationTotalTickets(entry)
                   : total;
               }, 0)
               : null;
@@ -2212,7 +2247,7 @@ $(function () {
               return $.extend({}, entry, {
                 rotation: index + 1,
                 balance: history.slice(0, index + 1).reduce(function (total, item) {
-                  return total + item.tickets;
+                  return total + rotationTotalTickets(item);
                 }, 0),
                 publicationMode: centralHistory.length
                   ? "registre des rotations restauré"
@@ -2587,17 +2622,90 @@ $(function () {
         }
 
         const $history = $("#noelactif-history").empty();
-        $history.toggleClass("is-scrollable", state.history.length >= 6);
-        if (!state.history.length) {
+        const inventoryItems = [];
+
+        state.history.forEach(function (entry) {
+          const rotationAt = parseForumDateTime(entry.timestamp);
+          const fallbackAt = Number(entry.day) * 86400000;
+          inventoryItems.push({
+            type: "rotation",
+            dateLabel: historyDateLabel(entry),
+            label: entry.label,
+            tickets: Number(entry.tickets) || 0,
+            sortAt: rotationAt !== null ? rotationAt : fallbackAt
+          });
+
+          if (Number(entry.bonusTickets) > 0) {
+            inventoryItems.push({
+              type: "albumBonus",
+              dateLabel: historyDateLabel(entry),
+              label: "Bonus : album de Noël complété",
+              tickets: Number(entry.bonusTickets),
+              sortAt: (rotationAt !== null ? rotationAt : fallbackAt) + 1
+            });
+          }
+        });
+
+        (state.manualAdjustments || []).forEach(function (entry) {
+          const addedAt = entry.addedAt !== null && entry.addedAt !== undefined
+            ? Number(entry.addedAt)
+            : parseForumDateTime(entry.timestamp);
+          const dateMatch = String(entry.timestamp || "").match(
+            /(\d{1,2}\/\d{1,2}\/\d{4})/
+          );
+          const dateLabel = dateMatch
+            ? dateMatch[1].split("/").map(function (part, index) {
+              return index < 2 ? part.padStart(2, "0") : part;
+            }).join("/")
+            : "Décembre 2026";
+          inventoryItems.push({
+            type: "manualBonus",
+            dateLabel: dateLabel,
+            label: "Bonus : Ticket(s) supplémentaire(s) par "
+              + (entry.addedBy || "les Lutins"),
+            tickets: Number(entry.tickets) || 0,
+            sortAt: Number.isFinite(addedAt) ? addedAt : 0
+          });
+        });
+
+        inventoryItems.sort(function (a, b) {
+          return b.sortAt - a.sortAt;
+        });
+        $history.toggleClass("is-scrollable", inventoryItems.length >= 6);
+
+        if (!inventoryItems.length) {
           $history.append("<li>Aucune rotation enregistrée.</li>");
         } else {
-          state.history.slice().reverse().forEach(function (entry) {
-            $("<li>")
-              .append(
-                $("<span>").text(historyDateLabel(entry) + " — " + entry.label),
-                $("<time>").text((entry.tickets >= 0 ? "+" : "") + entry.tickets)
-              )
-              .appendTo($history);
+          inventoryItems.forEach(function (item) {
+            const $line = $("<li>");
+            const $amount = $("<time>").text(
+              (item.tickets >= 0 ? "+" : "") + item.tickets
+            );
+
+            if (item.type === "albumBonus") {
+              $line.css({
+                color: "#8c5a08",
+                fontWeight: "700",
+                borderLeft: "4px solid #d3a12f",
+                background: "rgba(211, 161, 47, .12)",
+                paddingLeft: "10px"
+              });
+              $amount.css({ color: "#8c5a08", fontWeight: "700" });
+            } else if (item.type === "manualBonus") {
+              $line.css({
+                color: "#176238",
+                fontWeight: "700",
+                borderLeft: "4px solid #2d7a47",
+                background: "rgba(45, 122, 71, .1)",
+                paddingLeft: "10px"
+              });
+              $amount.css({ color: "#176238", fontWeight: "700" });
+            }
+
+            $line.append(
+              $("<span>").text(item.dateLabel + " — " + item.label),
+              $amount
+            ).appendTo($history);
           });
         }
 
@@ -2710,15 +2818,20 @@ $(function () {
         $("#noelactif-status").text("La roue tourne…");
 
         window.setTimeout(function () {
+          const completesAlbum = completesAlbumWith(result.tickets);
+          const bonusTickets = completesAlbum
+            ? CONFIG.albumCompletionBonus
+            : 0;
           const entry = {
             day: state.simulatedDay,
             rotation: state.rotation + 1,
             label: result.label,
             tickets: result.tickets,
-            balance: state.balance + result.tickets,
+            bonusTickets: bonusTickets,
+            balance: state.balance + result.tickets + bonusTickets,
             dateLabel: String(state.simulatedDay).padStart(2, "0") + "/12/2026",
             timestamp: new Date().toLocaleString("fr-FR"),
-            completesAlbum: completesAlbumWith(result.tickets)
+            completesAlbum: completesAlbum
           };
 
           $("#noelactif-status").text(
