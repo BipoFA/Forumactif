@@ -613,14 +613,24 @@ $(function () {
       function makeRotationRegistryMessage(entry, token) {
         const member = getMember();
         const rewardImage = CONFIG.rewardImages[Number(entry.tickets)] || "";
+        const completedAlbumImages = CONFIG.wheel.map(function (reward) {
+          const image = CONFIG.rewardImages[Number(reward.tickets)] || "";
+          return image ? "[img(58px,58px)]" + image + "[/img]" : "";
+        }).join(" ");
         const albumCelebration = entry.completesAlbum
           ? [
             "",
-            "[table style=\"width:100%; max-width:650px; margin:8px auto; border:2px solid #d6a238; border-radius:8px; background:#6f2519;\"]",
-            "[tr][td style=\"padding:14px 24px; color:#ffe4a3; text-align:center;\"]",
-            "[center][size=18] [b]ALBUM DE NOËL COMPLÉTÉ ![/b] [/size]",
-            "[color=#fff4d2][b]" + member.username + "[/b] vient de réunir les six récompenses de la grande lotterie de Noël ![/color]",
-            "[size=12][color=#f3cf83][i]Les Lutins lui décernent officiellement le titre de grand collectionneur de l’atelier.[/i][/color][/size][/center]",
+            "[table style=\"width:100%; max-width:650px; height:330px; margin:10px auto; border:2px solid #c9953e; border-radius:8px; background-image:url(https://i38.servimg.com/u/f38/11/01/36/00/call_a10.png); background-position:center; background-size:cover; background-repeat:no-repeat;\"]",
+            "[tr][td style=\"height:88px; padding:0 55px; color:#ffe4a3; vertical-align:middle;\"]",
+            "[center][size=18] [b]ALBUM DE NOËL COMPLÉTÉ ![/b] [/size][/center]",
+            "[/td][/tr]",
+            "[tr][td style=\"height:185px; padding:4px 68px; color:#392313; vertical-align:middle;\"]",
+            "[center][size=16][color=#176238][b]" + member.username + "[/b][/color] vient de réunir les six récompenses de la grande lotterie de Noël ![/size]",
+            completedAlbumImages,
+            "[size=12][color=#8a6a43][i]Les Lutins célèbrent officiellement cet exploit dans le grand registre de l’atelier ![/i][/color][/size][/center]",
+            "[/td][/tr]",
+            "[tr][td style=\"height:57px; padding:5px 75px 24px; color:#8a6a43; vertical-align:top;\"]",
+            "[center][size=10][color=#8a6a43]Les six trésors de Noël sont désormais réunis.[/color][/size][/center]",
             "[/td][/tr][/table]"
           ]
           : [];
@@ -968,36 +978,70 @@ $(function () {
           return $.Deferred().resolve({
             accepted: true,
             mode: "simulation locale",
-            topicId: null
+            topicId: null,
+            retried: false
           }).promise();
         }
 
         const token = makeRotationToken();
-        return getPostingForm(
-          "/post?t=" + CONFIG.remoteLog.rotationTopicId + "&mode=reply"
-        )
-          .then(function (formData) {
-            return submitForumPost(
-              formData,
-              "",
-              makeRotationRegistryMessage(entry, token)
-            );
-          })
-          .then(function () {
+        const message = makeRotationRegistryMessage(entry, token);
+        let retried = false;
+
+        function submitRotationMessage() {
+          return getPostingForm(
+            "/post?t=" + CONFIG.remoteLog.rotationTopicId + "&mode=reply"
+          ).then(function (formData) {
+            return submitForumPost(formData, "", message);
+          }).then(function () {
             state.lastRegistryPostAt = Date.now();
             saveState();
-            const deferred = $.Deferred();
-            window.setTimeout(function () {
-              centralRotationsFor(getMember().id, entry.day)
-                .done(deferred.resolve)
-                .fail(deferred.reject);
-            }, 1500);
-            return deferred.promise();
+          });
+        }
+
+        function centralEntriesAfter(delay) {
+          const deferred = $.Deferred();
+          window.setTimeout(function () {
+            centralRotationsFor(getMember().id, entry.day)
+              .done(deferred.resolve)
+              .fail(deferred.reject);
+          }, delay);
+          return deferred.promise();
+        }
+
+        function verifyRotationPublication() {
+          return centralEntriesAfter(1500).then(function (entries) {
+            if (entries.length) {
+              return entries;
+            }
+
+            /*
+             * Une seconde lecture sans republier évite les doublons si le
+             * premier message met simplement un peu de temps à apparaître.
+             */
+            return centralEntriesAfter(900);
+          });
+        }
+
+        return submitRotationMessage()
+          .then(verifyRotationPublication)
+          .then(function (entries) {
+            if (entries.length) {
+              return entries;
+            }
+
+            /*
+             * Forumactif peut interrompre l'envoi lorsqu'une autre réponse a
+             * été publiée entre l'ouverture du formulaire et sa validation.
+             * Le même bulletin et le même jeton sont alors renvoyés une fois,
+             * à partir d'un formulaire neuf.
+             */
+            retried = true;
+            return submitRotationMessage().then(verifyRotationPublication);
           })
           .then(function (entries) {
             if (!entries.length) {
               return $.Deferred().reject(
-                "La rotation a été publiée, mais sa vérification dans le registre central a échoué."
+                "La rotation n’apparaît pas dans le registre central après la relance automatique."
               ).promise();
             }
 
@@ -1005,7 +1049,10 @@ $(function () {
               accepted: entries[0].token === token,
               canonical: entries[0],
               topicId: CONFIG.remoteLog.rotationTopicId,
-              mode: "registre central des rotations"
+              mode: retried
+                ? "registre central des rotations — relance automatique"
+                : "registre central des rotations",
+              retried: retried
             };
           });
       }
