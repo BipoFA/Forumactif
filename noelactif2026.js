@@ -5,7 +5,7 @@ $(function () {
         storageKey: "noelactif2026_forum_test_v2",
         testMode: true,
         emergencyStop: false,
-        emergencyMessage: "Les Lutins effectuent actuellement une intervention technique. La grande lotterie de Noël est temporairement suspendue. Reviens dans quelques instants !",
+        emergencyMessage: "Les Lutins effectuent actuellement une intervention technique. La grande loterie de Noël est temporairement suspendue. Reviens dans quelques instants !",
         albumCompletionBonus: 6,
         rulesUrl: "#",
         remoteLog: {
@@ -350,7 +350,7 @@ $(function () {
             name: "Père Noël",
             avatar: "pere-noel",
             right: true,
-            text: "Excellente idée ! Je déclare officiellement ouverte la grande lotterie de Noël et je charge Les Lutins de son organisation. Au travail : les membres de Forumactif arrivent !"
+            text: "Excellente idée ! Je déclare officiellement ouverte la grande loterie de Noël et je charge Les Lutins de son organisation. Au travail : les membres de Forumactif arrivent !"
           }
         ];
         let timers = [];
@@ -696,7 +696,7 @@ $(function () {
             "[center][size=18] [b]ALBUM DE NOËL COMPLÉTÉ ![/b] [/size][/center]",
             "[/td][/tr]",
             "[tr][td style=\"height:185px; padding:4px 68px; color:#392313; vertical-align:middle;\"]",
-            "[center][size=16][color=#176238][b]" + member.username + "[/b][/color] vient de réunir les six récompenses de la lotterie ![/size]",
+            "[center][size=16][color=#176238][b]" + member.username + "[/b][/color] vient de réunir les six récompenses de la loterie ![/size]",
             completedAlbumImages,
             "[size=14][color=#961613][b]Bonus de collection : +" + (Number(entry.bonusTickets) || CONFIG.albumCompletionBonus) + " tickets ![/b][/color][/size]",
             "[size=12][color=#8a6a43][i]Les Lutins célèbrent officiellement cet exploit dans le grand registre de l’atelier ![/i][/color][/size][/center]",
