@@ -4,6 +4,8 @@ $(function () {
       const CONFIG = {
         storageKey: "noelactif2026_forum_test_v2",
         testMode: true,
+        emergencyStop: false,
+        emergencyMessage: "Les Lutins effectuent actuellement une intervention technique. La grande lotterie de Noël est temporairement suspendue. Reviens dans quelques instants !",
         rulesUrl: "#",
         remoteLog: {
           hostname: "forum.forumactif.com",
@@ -11,8 +13,8 @@ $(function () {
           privateForumUrl: "/f110-signalements-d-archives",
           publicForumId: 110,
           publicForumUrl: "/f110-signalements-d-archives",
-          rotationTopicId: 413345,
-          rotationTopicUrl: "/t413345-noelactif-2026-participation-des-membres",
+          rotationTopicId: 413364,
+          rotationTopicUrl: "/t413364-noelactif-2026-participation-des-membres",
           registryTopicId: 413332,
           registryTopicUrl: "/t413332-noelactif-2026-registre-des-hottes-du-pere-noel",
           recoveryTopicId: 413333,
@@ -75,6 +77,63 @@ $(function () {
           }
         }
       };
+
+      function activateEmergencyStop() {
+        if (!CONFIG.emergencyStop) {
+          return false;
+        }
+
+        $("<style>", {
+          id: "noelactif-emergency-style",
+          text: [
+            "body.noelactif-emergency-locked{overflow:hidden!important;}",
+            "#noelactif-emergency-overlay{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,42px);overflow-y:auto;background:radial-gradient(circle at 50% 20%,rgba(202,145,55,.2),transparent 35%),rgba(18,8,3,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}",
+            "#noelactif-emergency-dialog{position:relative;width:min(680px,100%);padding:clamp(28px,5vw,46px);color:#392313;border:2px solid #d9aa50;border-radius:24px;background:linear-gradient(rgba(255,249,218,.97),rgba(240,218,161,.98));box-shadow:0 0 0 6px rgba(75,31,14,.9),0 18px 55px rgba(0,0,0,.68),inset 0 0 28px rgba(125,69,24,.18);text-align:center;}",
+            "#noelactif-emergency-dialog:before{content:'';position:absolute;inset:9px;pointer-events:none;border:1px solid rgba(151,91,31,.34);border-radius:16px;}",
+            "#noelactif-emergency-dialog>*{position:relative;z-index:1;}",
+            "#noelactif-emergency-dialog .noelactif-emergency-icon{display:block;margin:0 0 12px;color:#9d2d1c;font-size:3rem;line-height:1;}",
+            "#noelactif-emergency-dialog h2{margin:0 0 16px;color:#742714;font:700 clamp(1.65rem,4vw,2.25rem)/1.15 Georgia,'Times New Roman',serif;}",
+            "#noelactif-emergency-dialog p{max-width:540px;margin:0 auto;color:#392313;font-size:1rem;line-height:1.7;}",
+            "#noelactif-emergency-dialog .noelactif-emergency-signature{margin-top:18px;color:#176238;font-weight:700;}"
+          ].join("")
+        }).appendTo("head");
+
+        $("<div>", {
+          id: "noelactif-emergency-overlay",
+          role: "alertdialog",
+          "aria-modal": "true",
+          "aria-labelledby": "noelactif-emergency-title"
+        }).append(
+          $("<div>", { id: "noelactif-emergency-dialog" }).append(
+            $("<span>", {
+              class: "noelactif-emergency-icon",
+              "aria-hidden": "true",
+              text: "🎄"
+            }),
+            $("<h2>", {
+              id: "noelactif-emergency-title",
+              text: "Atelier temporairement fermé"
+            }),
+            $("<p>").text(CONFIG.emergencyMessage),
+            $("<p>", {
+              class: "noelactif-emergency-signature",
+              text: "Les Lutins de Forumactif"
+            })
+          )
+        ).appendTo("body");
+
+        $("body")
+          .addClass("noelactif-emergency-locked")
+          .children()
+          .not("#noelactif-emergency-overlay")
+          .attr("aria-hidden", "true");
+        $("#noelactif-emergency-dialog").attr("tabindex", "-1").trigger("focus");
+        return true;
+      }
+
+      if (activateEmergencyStop()) {
+        return;
+      }
 
       Object.keys(CONFIG.rewardImages).forEach(function (tickets) {
         const image = new Image();
@@ -586,16 +645,19 @@ $(function () {
         ].join("\n");
       }
 
-      function rotationRegistryMatcher(url) {
+      function rotationRegistryMatcher(url, topicId) {
+        const expectedTopicId = Number(
+          topicId || CONFIG.remoteLog.rotationTopicId
+        );
         return (
           new RegExp(
             "^/t"
-            + CONFIG.remoteLog.rotationTopicId
+            + expectedTopicId
             + "(?:p\\d+)?(?:-|$)",
             "i"
           ).test(url.pathname)
           || (
-            url.searchParams.get("t") === String(CONFIG.remoteLog.rotationTopicId)
+            url.searchParams.get("t") === String(expectedTopicId)
             && url.pathname.indexOf("/viewtopic") !== -1
           )
         );
@@ -625,7 +687,7 @@ $(function () {
             "[center][size=18] [b]ALBUM DE NOËL COMPLÉTÉ ![/b] [/size][/center]",
             "[/td][/tr]",
             "[tr][td style=\"height:185px; padding:4px 68px; color:#392313; vertical-align:middle;\"]",
-            "[center][size=16][color=#176238][b]" + member.username + "[/b][/color] vient de réunir les six récompenses de la grande lotterie de Noël ![/size]",
+            "[center][size=16][color=#176238][b]" + member.username + "[/b][/color] vient de réunir les six récompenses de la lotterie ![/size]",
             completedAlbumImages,
             "[size=12][color=#8a6a43][i]Les Lutins célèbrent officiellement cet exploit dans le grand registre de l’atelier ![/i][/color][/size][/center]",
             "[/td][/tr]",
@@ -729,11 +791,157 @@ $(function () {
         return entries;
       }
 
-      function fetchRotationRegistryPages() {
-        return fetchPaginatedPages(
-          CONFIG.remoteLog.rotationTopicUrl,
-          rotationRegistryMatcher
+      function rotationSuccessorTopicId(pages, currentTopicId) {
+        let latestPost = null;
+
+        pages.forEach(function (html, pageOrder) {
+          const documentNode = new DOMParser().parseFromString(
+            String(html || ""),
+            "text/html"
+          );
+          let $posts = $(documentNode).find(".post");
+          if (!$posts.length) {
+            $posts = $(documentNode).find(".postbody");
+          }
+
+          $posts.each(function (postOrder) {
+            const $post = $(this);
+            const rawId = String($post.attr("id") || "");
+            const idMatch = rawId.match(/(?:^|[^0-9])p?(\d+)(?:$|[^0-9])/i);
+            const postId = idMatch
+              ? Number(idMatch[1])
+              : (pageOrder * 10000) + postOrder;
+
+            if (!latestPost || postId > latestPost.id) {
+              latestPost = {
+                id: postId,
+                element: this
+              };
+            }
+          });
+        });
+
+        if (!latestPost) {
+          return null;
+        }
+
+        let successorId = null;
+        $(latestPost.element).find("a[href]").each(function () {
+          if (successorId !== null) {
+            return;
+          }
+          try {
+            const url = new URL(
+              this.getAttribute("href"),
+              window.location.origin
+            );
+            const candidateId = Number(url.searchParams.get("t"));
+            if (
+              url.origin === window.location.origin
+              && url.pathname.indexOf("/viewtopic") !== -1
+              && candidateId
+              && candidateId !== Number(currentTopicId)
+            ) {
+              successorId = candidateId;
+            }
+          } catch (error) {
+            // Les liens non standard sont ignorés.
+          }
+        });
+
+        return successorId;
+      }
+
+      function validRotationRegistrySuccessor(html) {
+        const documentNode = new DOMParser().parseFromString(
+          String(html || ""),
+          "text/html"
         );
+        const heading = [
+          $(documentNode).find("h1, .page-title, .topic-title").text(),
+          documentNode.title || ""
+        ].join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const text = $(documentNode).text();
+
+        return (
+          /noelactif\s*2026/i.test(heading)
+          && /participation\s+des\s+membres/i.test(heading)
+          && /NOELACTIF 2026\s*[—-]\s*ROTATION CENTRALE/i.test(text)
+        );
+      }
+
+      function resolveRotationRegistryChain() {
+        const visited = {};
+        const topics = [];
+        const pages = [];
+        const maximumTopics = 20;
+
+        function finish(activeTopicId) {
+          return {
+            pages: pages,
+            topics: topics,
+            activeTopicId: Number(activeTopicId)
+          };
+        }
+
+        function follow(topicId, topicUrl) {
+          const numericTopicId = Number(topicId);
+          if (
+            !numericTopicId
+            || visited[numericTopicId]
+            || topics.length >= maximumTopics
+          ) {
+            return $.Deferred().resolve(
+              finish(topics.length
+                ? topics[topics.length - 1].id
+                : CONFIG.remoteLog.rotationTopicId)
+            ).promise();
+          }
+
+          visited[numericTopicId] = true;
+          return fetchPaginatedPages(
+            topicUrl,
+            function (url) {
+              return rotationRegistryMatcher(url, numericTopicId);
+            },
+            150
+          ).then(function (topicPages) {
+            topics.push({
+              id: numericTopicId,
+              url: topicUrl
+            });
+            Array.prototype.push.apply(pages, topicPages);
+
+            const successorId = rotationSuccessorTopicId(
+              topicPages,
+              numericTopicId
+            );
+            if (!successorId || visited[successorId]) {
+              return finish(numericTopicId);
+            }
+
+            const successorUrl = "/viewtopic.php?t=" + successorId;
+            return $.get(successorUrl).then(function (successorHtml) {
+              if (!validRotationRegistrySuccessor(successorHtml)) {
+                return finish(numericTopicId);
+              }
+              return follow(successorId, successorUrl);
+            }, function () {
+              return finish(numericTopicId);
+            });
+          });
+        }
+
+        return follow(
+          CONFIG.remoteLog.rotationTopicId,
+          CONFIG.remoteLog.rotationTopicUrl
+        );
+      }
+
+      function fetchRotationRegistryPages() {
+        return resolveRotationRegistryChain().then(function (chain) {
+          return chain.pages;
+        });
       }
 
       function centralRotationsFor(memberId, day) {
@@ -986,11 +1194,15 @@ $(function () {
         const token = makeRotationToken();
         const message = makeRotationRegistryMessage(entry, token);
         let retried = false;
+        let publishedTopicId = CONFIG.remoteLog.rotationTopicId;
 
         function submitRotationMessage() {
-          return getPostingForm(
-            "/post?t=" + CONFIG.remoteLog.rotationTopicId + "&mode=reply"
-          ).then(function (formData) {
+          return resolveRotationRegistryChain().then(function (chain) {
+            publishedTopicId = chain.activeTopicId;
+            return getPostingForm(
+              "/post?t=" + publishedTopicId + "&mode=reply"
+            );
+          }).then(function (formData) {
             return submitForumPost(formData, "", message);
           }).then(function () {
             state.lastRegistryPostAt = Date.now();
@@ -1048,7 +1260,7 @@ $(function () {
             return {
               accepted: entries[0].token === token,
               canonical: entries[0],
-              topicId: CONFIG.remoteLog.rotationTopicId,
+              topicId: publishedTopicId,
               mode: retried
                 ? "registre central des rotations — relance automatique"
                 : "registre central des rotations",
@@ -1536,13 +1748,14 @@ $(function () {
         return urls;
       }
 
-      function fetchPaginatedPages(startUrl, matcher) {
+      function fetchPaginatedPages(startUrl, matcher, maximumPages) {
         const pending = [startUrl];
         const visited = {};
         const pages = [];
+        const pageLimit = Number(maximumPages) || 50;
 
         function next() {
-          if (!pending.length || pages.length >= 50) {
+          if (!pending.length || pages.length >= pageLimit) {
             return $.Deferred().resolve(pages).promise();
           }
           const url = pending.shift();
