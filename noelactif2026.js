@@ -30,6 +30,7 @@ $(function () {
           { username: "Lixyr", id: 108944 },
           { username: "Skouliki", id: 174625 },
           { username: "Tony*", id: 141293 },
+          { username: "Typlo", id: 1 },
           { username: "Lutins", id: 177295 }
         ],
         shopTesters: [
