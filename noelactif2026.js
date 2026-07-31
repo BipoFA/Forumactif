@@ -4,7 +4,7 @@ $(function () {
       const CONFIG = {
         storageKey: "noelactif2026_forum_test_v2",
         testMode: true,
-        emergencyStop: false,
+        emergencyStop: true,
         emergencyMessage: "Les Lutins effectuent actuellement une intervention technique. La grande lotterie de Noël est temporairement suspendue. Reviens dans quelques instants !",
         albumCompletionBonus: 6,
         rulesUrl: "#",
