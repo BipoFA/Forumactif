@@ -1353,10 +1353,6 @@ $(function () {
           }
         });
 
-        parsed.querySelectorAll("link[rel='canonical']").forEach(function (link) {
-          trustedAddresses.push(link.getAttribute("href") || "");
-        });
-
         parsed.querySelectorAll("script").forEach(function (script) {
           const code = script.textContent || "";
           const redirectPatterns = [
@@ -1423,6 +1419,50 @@ $(function () {
         return filtered;
       }
 
+      function postingFieldValue(formData, name) {
+        const field = (formData.fields || []).find(function (candidate) {
+          return candidate.name === name;
+        });
+        return field ? String(field.value || "") : "";
+      }
+
+      function journalFormMatchesMember(formData, topicId, member) {
+        const formTopicId = Number(postingFieldValue(formData, "t") || 0);
+        const subject = postingFieldValue(formData, "subject")
+          .replace(/^\s*re\s*:\s*/i, "")
+          .replace(/\s+/g, " ")
+          .trim();
+        const expectedId = "ID " + member.id;
+
+        if (formTopicId && formTopicId !== Number(topicId)) {
+          return false;
+        }
+
+        /*
+         * Le titre est la preuve d'identité du journal. Un formulaire de
+         * réponse dépourvu de ce titre, ou pointant vers le journal d'un autre
+         * membre, ne doit jamais être utilisé.
+         */
+        return subject.indexOf("[Noëlactif 2026] Journal") !== -1
+          && subject.indexOf(expectedId) !== -1;
+      }
+
+      function verifyJournalTopic(topicId, member) {
+        return getPostingForm("/post?t=" + topicId + "&mode=reply")
+          .then(function (formData) {
+            if (!journalFormMatchesMember(formData, topicId, member)) {
+              return $.Deferred().reject(
+                "Le sujet détecté ne correspond pas au journal de "
+                + member.username
+                + " (ID "
+                + member.id
+                + ")."
+              ).promise();
+            }
+            return formData;
+          });
+      }
+
       function submitForumPost(formData, subject, message) {
         let fields = formData.fields;
         fields = setField(fields, "subject", subject || "");
@@ -1467,12 +1507,15 @@ $(function () {
               ).promise();
             }
 
-            state.topicId = result.topicId;
-            saveState();
-            return {
-              mode: isFallback ? "nouveau sujet de secours" : "nouveau journal",
-              topicId: result.topicId
-            };
+            return verifyJournalTopic(result.topicId, member)
+              .then(function () {
+                state.topicId = result.topicId;
+                saveState();
+                return {
+                  mode: isFallback ? "nouveau sujet de secours" : "nouveau journal",
+                  topicId: result.topicId
+                };
+              });
           });
       }
 
@@ -1481,7 +1524,7 @@ $(function () {
           ? arguments[1]
           : makePrivateMessage(entry);
 
-        return getPostingForm("/post?t=" + state.topicId + "&mode=reply")
+        return verifyJournalTopic(state.topicId, getMember())
           .then(function (formData) {
             return submitForumPost(formData, "", message);
           })
