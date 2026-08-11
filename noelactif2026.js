@@ -459,6 +459,7 @@ $(function () {
           forumUrl: "",
           forumUrlDeclaredAt: null,
           topicId: null,
+          journalOwnerId: null,
           pendingSpin: null,
           allocations: [],
           pendingAllocation: null,
@@ -1428,23 +1429,25 @@ $(function () {
 
       function journalFormMatchesMember(formData, topicId, member) {
         const formTopicId = Number(postingFieldValue(formData, "t") || 0);
-        const subject = postingFieldValue(formData, "subject")
-          .replace(/^\s*re\s*:\s*/i, "")
-          .replace(/\s+/g, " ")
-          .trim();
-        const expectedId = "ID " + member.id;
+        const action = String(formData.action || "");
+        const actionMatch = action.match(/[?&]t=(\d+)/i);
+        const actionTopicId = actionMatch ? Number(actionMatch[1]) : 0;
 
         if (formTopicId && formTopicId !== Number(topicId)) {
           return false;
         }
 
         /*
-         * Le titre est la preuve d'identité du journal. Un formulaire de
-         * réponse dépourvu de ce titre, ou pointant vers le journal d'un autre
-         * membre, ne doit jamais être utilisé.
+         * Selon le thème Forumactif, le formulaire de réponse ne contient pas
+         * toujours de champ « subject ». On contrôle donc les identifiants
+         * techniques disponibles, sans exiger un titre absent du formulaire.
          */
-        return subject.indexOf("[Noëlactif 2026] Journal") !== -1
-          && subject.indexOf(expectedId) !== -1;
+        if (actionTopicId && actionTopicId !== Number(topicId)) {
+          return false;
+        }
+
+        return !state.journalOwnerId
+          || Number(state.journalOwnerId) === Number(member.id);
       }
 
       function verifyJournalTopic(topicId, member) {
@@ -1510,6 +1513,7 @@ $(function () {
             return verifyJournalTopic(result.topicId, member)
               .then(function () {
                 state.topicId = result.topicId;
+                state.journalOwnerId = member.id;
                 saveState();
                 return {
                   mode: isFallback ? "nouveau sujet de secours" : "nouveau journal",
@@ -1520,15 +1524,27 @@ $(function () {
       }
 
       function replyToJournal(entry) {
+        const member = getMember();
         const message = arguments.length > 1 && arguments[1]
           ? arguments[1]
           : makePrivateMessage(entry);
 
-        return verifyJournalTopic(state.topicId, getMember())
+        if (
+          state.journalOwnerId
+          && Number(state.journalOwnerId) !== Number(member.id)
+        ) {
+          return $.Deferred().reject(
+            "Le journal mémorisé appartient à un autre membre."
+          ).promise();
+        }
+
+        return verifyJournalTopic(state.topicId, member)
           .then(function (formData) {
             return submitForumPost(formData, "", message);
           })
           .then(function () {
+            state.journalOwnerId = member.id;
+            saveState();
             return { mode: "réponse au journal", topicId: state.topicId };
           });
       }
@@ -1549,6 +1565,7 @@ $(function () {
            * trace est créée afin de ne jamais perdre le résultat.
            */
           state.topicId = null;
+          state.journalOwnerId = null;
           saveState();
           return createJournalTopic(entry, true);
         });
