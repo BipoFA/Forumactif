@@ -2,7 +2,7 @@ $(function () {
       "use strict";
 
       const CONFIG = {
-        storageKey: "noelactif2026_forum_test_v2",
+        storageKey: "noelactif2026_forum_production_v1",
         testMode: false,
         emergencyStop: true,
         emergencyMessage: "Les Lutins effectuent actuellement une intervention technique. La grande loterie de Noël est temporairement suspendue. Reviens dans quelques instants !",
@@ -26,13 +26,7 @@ $(function () {
         debugOwners: [
           { username: "Bipo", id: 112158 },
           { username: "Luzz", id: 50306 },
-          { username: "Pinguino", id: 1 },
           { username: "Chacha", id: 110116 },
-          { username: "Walt", id: 166230 },
-          { username: "chattigre", id: 175350 },
-          { username: "Lixyr", id: 108944 },
-          { username: "Skouliki", id: 174625 },
-          { username: "Tony*", id: 141293 },
           { username: "Lutins", id: 177295 }
         ],
         shopTesters: [
@@ -292,13 +286,60 @@ $(function () {
         });
       }
 
+      function productionParticipationDay() {
+        const parts = new Intl.DateTimeFormat("fr-FR", {
+          timeZone: "Europe/Paris",
+          year: "numeric",
+          month: "numeric",
+          day: "numeric"
+        }).formatToParts(new Date()).reduce(function (result, part) {
+          if (part.type !== "literal") {
+            result[part.type] = Number(part.value);
+          }
+          return result;
+        }, {});
+
+        if (parts.year < 2026 || (parts.year === 2026 && parts.month < 12)) {
+          return 0;
+        }
+        if (parts.year > 2026 || parts.month > 12 || parts.day > 25) {
+          return 26;
+        }
+        return parts.day;
+      }
+
+      function synchronizeParticipationDay() {
+        if (!CONFIG.testMode) {
+          state.simulatedDay = productionParticipationDay();
+        }
+      }
+
+      function rotationWindowIsOpen() {
+        if (CONFIG.testMode) {
+          return state.simulatedDay >= 1 && state.simulatedDay <= 25;
+        }
+        return productionParticipationDay() >= 1
+          && productionParticipationDay() <= 25;
+      }
+
       function renderDebugPanel() {
         const authorized = isDebugOwner();
         $("#noelactif-debug-panel").prop("hidden", !authorized);
+
+        $(
+          "#noelactif-next-day, "
+          + "#noelactif-test-allocation, "
+          + "#noelactif-test-tickets, "
+          + "#noelactif-reset"
+        ).prop("hidden", !CONFIG.testMode);
+
         if (authorized) {
           $(".noelactif-admin-details > .noelactif-note").text(
-            "Espace technique réservé à l’équipe de test autorisée. "
-            + "Les actions effectuées ici peuvent publier une trace réelle sur le forum."
+            CONFIG.testMode
+              ? "Espace technique réservé à l’équipe de test autorisée. "
+                + "Les actions effectuées ici peuvent publier une trace réelle sur le forum."
+              : "Espace d’administration réservé aux Lutins autorisés. "
+                + "Les restaurations et ajouts manuels publient une trace réelle sur le forum."
           );
         }
       }
@@ -2606,6 +2647,7 @@ $(function () {
       }
 
       function render() {
+        synchronizeParticipationDay();
         renderDebugPanel();
         $("#noelactif-balance").text(state.balance);
         $("#noelactif-spins").text(state.rotation);
@@ -2638,6 +2680,7 @@ $(function () {
         const alreadyPlayed = state.lastSpinDay === state.simulatedDay
           || centrallyBlockedSpinDay === state.simulatedDay;
         const hasPendingSpin = state.pendingSpin && state.pendingSpin.day === state.simulatedDay;
+        const eventStarted = state.simulatedDay >= 1;
         const eventFinished = state.simulatedDay > 25;
 
         $("#noelactif-spin")
@@ -2646,11 +2689,14 @@ $(function () {
             spinning
             || centralSyncInProgress
             || alreadyPlayed
+            || !eventStarted
             || eventFinished
             || !state.forumUrl
           )
           .text(
-            eventFinished
+            !eventStarted
+              ? "Ouverture le 1er décembre"
+              : eventFinished
               ? "Événement terminé"
               : alreadyPlayed
                 ? "Rotation déjà effectuée"
@@ -2662,7 +2708,11 @@ $(function () {
         $("#noelactif-next-day")
           .prop("disabled", spinning || state.simulatedDay >= 31);
 
-        if (eventFinished) {
+        if (!eventStarted) {
+          $("#noelactif-status").text(
+            "La grande loterie ouvrira le 1er décembre 2026 à 00h00."
+          );
+        } else if (eventFinished) {
           $("#noelactif-status").text(
             state.simulatedDay === 26
               ? "Les rotations sont terminées. Les hottes sont désormais ouvertes."
@@ -2771,11 +2821,12 @@ $(function () {
       }
 
       function spinWheel() {
+        synchronizeParticipationDay();
         if (
           spinning
           || centralSyncInProgress
           || state.lastSpinDay === state.simulatedDay
-          || state.simulatedDay > 25
+          || !rotationWindowIsOpen()
         ) {
           return;
         }
@@ -3015,7 +3066,7 @@ $(function () {
       });
 
       $("#noelactif-next-day").on("click", function () {
-        if (!isDebugOwner()) {
+        if (!CONFIG.testMode || !isDebugOwner()) {
           return;
         }
 
@@ -3031,7 +3082,7 @@ $(function () {
       });
 
       $("#noelactif-test-allocation").on("click", function () {
-        if (!isDebugOwner()) {
+        if (!CONFIG.testMode || !isDebugOwner()) {
           return;
         }
 
@@ -3053,7 +3104,7 @@ $(function () {
       });
 
       $("#noelactif-test-tickets").on("click", function () {
-        if (!isDebugOwner()) {
+        if (!CONFIG.testMode || !isDebugOwner()) {
           return;
         }
 
@@ -3426,7 +3477,7 @@ $(function () {
       });
 
       $("#noelactif-reset").on("click", function () {
-        if (!isDebugOwner()) {
+        if (!CONFIG.testMode || !isDebugOwner()) {
           return;
         }
 
