@@ -3,8 +3,8 @@ $(function () {
 
       const CONFIG = {
         storageKey: "noelactif2026_forum_test_v2",
-        testMode: true,
-        emergencyStop: false,
+        testMode: false,
+        emergencyStop: true,
         emergencyMessage: "Les Lutins effectuent actuellement une intervention technique. La grande loterie de Noël est temporairement suspendue. Reviens dans quelques instants !",
         albumCompletionBonus: 6,
         rulesUrl: "#",
@@ -12,8 +12,8 @@ $(function () {
           hostname: "forum.forumactif.com",
           privateForumId: 110,
           privateForumUrl: "/f110-signalements-d-archives",
-          publicForumId: 110,
-          publicForumUrl: "/f110-signalements-d-archives",
+          publicForumId: 5,
+          publicForumUrl: "/f5-discussions-generales",
           rotationTopicId: 413364,
           rotationTopicUrl: "/t413364-noelactif-2026-participation-des-membres",
           registryTopicId: 413332,
