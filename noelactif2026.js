@@ -7,7 +7,7 @@ $(function () {
         emergencyStop: false,
         emergencyMessage: "Les Lutins effectuent actuellement une intervention technique. La grande loterie de Noël est temporairement suspendue. Reviens dans quelques instants !",
         albumCompletionBonus: 6,
-        rulesUrl: "#",
+        rulesUrl: "https://forum.forumactif.com/t413778-concours-noelactif-2026-la-grande-loterie-de-noel",
         remoteLog: {
           hostname: "forum.forumactif.com",
           privateForumId: 110,
